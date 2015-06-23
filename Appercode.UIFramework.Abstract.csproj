@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{499D0BEA-196D-463F-B0BA-8F4CDD31D542}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Appercode.UI</RootNamespace>
+    <AssemblyName>Appercode.UIFramework.Abstract</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>%24/AppercodeFramework/Dev/Dev-Main/Framework/UI Framework</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <SccAuxPath>https://tfs.300it.ru:8080/tfs/itsparta</SccAuxPath>
+    <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\Appercode.UIFramework.Abstract.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Controls\AppBarButton.cs" />
+    <Compile Include="Controls\AppercodePage.cs" />
+    <Compile Include="Controls\AppercodeVisualRoot.cs" />
+    <Compile Include="Controls\Base\GridSizeCollectionBase.cs" />
+    <Compile Include="Controls\BitmapIcon.cs" />
+    <Compile Include="Controls\Button.Abstract.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\Canvas.Abstract.cs" />
+    <Compile Include="Controls\Canvas.cs" />
+    <Compile Include="Controls\CheckBox.cs" />
+    <Compile Include="Controls\ClickMode.cs" />
+    <Compile Include="Controls\ColumnDefinition.cs" />
+    <Compile Include="Controls\ColumnDefinitionCollection.cs" />
+    <Compile Include="Controls\CommandBar.Abstract.cs" />
+    <Compile Include="Controls\CommandBar.cs" />
+    <Compile Include="Controls\CommandBarElementCollection.cs" />
+    <Compile Include="Controls\ContentControl.Abstract.cs" />
+    <Compile Include="Controls\ContentControl.cs" />
+    <Compile Include="Controls\ContentPresenter.Abstract.cs" />
+    <Compile Include="Controls\ContentPresenter.cs" />
+    <Compile Include="Controls\Control.cs" />
+    <Compile Include="Controls\DefinitionBase.cs" />
+    <Compile Include="Controls\Grid.Abstract.cs" />
+    <Compile Include="Controls\Grid.cs" />
+    <Compile Include="Controls\ICommandBarElement.cs" />
+    <Compile Include="Controls\Image.Abstract.cs" />
+    <Compile Include="Controls\DataTemplateSelector.cs" />
+    <Compile Include="Controls\FontFamily.cs" />
+    <Compile Include="Controls\FontStyle.cs" />
+    <Compile Include="Controls\FontStyles.cs" />
+    <Compile Include="Controls\FontStyleType.cs" />
+    <Compile Include="Controls\FontWeight.cs" />
+    <Compile Include="Controls\FontWeights.cs" />
+    <Compile Include="Controls\FontWeightType.cs" />
+    <Compile Include="Controls\Image.cs" />
+    <Compile Include="Controls\Input\InputScope.cs" />
+    <Compile Include="Controls\IPivotItemProvider.cs" />
+    <Compile Include="Controls\ItemCollection.cs" />
+    <Compile Include="Controls\ItemsControl.Abstract.cs" />
+    <Compile Include="Controls\ItemsControl.cs" />
+    <Compile Include="Controls\ItemsPanelTemplate.cs" />
+    <Compile Include="Controls\ListBox.cs" />
+    <Compile Include="Controls\ListBoxItem.Abstract.cs" />
+    <Compile Include="Controls\ListBoxItem.cs" />
+    <Compile Include="Controls\ListPicker.Abstract.cs" />
+    <Compile Include="Controls\ListPicker.cs" />
+    <Compile Include="Controls\ManipulationMode.cs" />
+    <Compile Include="Controls\MediaElement.Abstract.cs" />
+    <Compile Include="Controls\MediaElement.cs" />
+    <Compile Include="Controls\Media\AppercodeColors.cs" />
+    <Compile Include="Controls\Media\ImageSource.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapCreateOptions.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapImage.Abstract.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapImage.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapSource.cs" />
+    <Compile Include="Controls\Media\Imaging\DownloadProgressEventArgs.cs" />
+    <Compile Include="Controls\Media\TokenizerHelper.cs" />
+    <Compile Include="Controls\Navigation\IFrame.cs" />
+    <Compile Include="Controls\Navigation\NavigatedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigatingCancelEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigatingCancelEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigatingEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigationEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigationFailedEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigationFailedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigationMode.cs" />
+    <Compile Include="Controls\Navigation\NavigationService.cs" />
+    <Compile Include="Controls\Navigation\NavigationStoppedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigationType.cs" />
+    <Compile Include="Controls\NotifyEventArgs.cs" />
+    <Compile Include="Controls\Orientation.cs" />
+    <Compile Include="Controls\OrientationChangedEventArgs.cs" />
+    <Compile Include="Controls\Page.cs" />
+    <Compile Include="Controls\PageOrientation.cs" />
+    <Compile Include="Controls\Panel.Abstract.cs" />
+    <Compile Include="Controls\Panel.cs" />
+    <Compile Include="Controls\PasswordBox.Abstract.cs" />
+    <Compile Include="Controls\PasswordBox.cs" />
+    <Compile Include="Controls\PivotHeadersControl.Abstract.cs" />
+    <Compile Include="Controls\Primitives\IconElement.cs" />
+    <Compile Include="Controls\Primitives\PickerBase.Abstract.cs" />
+    <Compile Include="Controls\Pivot.Abstract.cs" />
+    <Compile Include="Controls\Pivot.cs" />
+    <Compile Include="Controls\PivotHeaderItem.cs" />
+    <Compile Include="Controls\PivotHeaderMode.cs" />
+    <Compile Include="Controls\PivotHeadersControl.cs" />
+    <Compile Include="Controls\PivotItem.cs" />
+    <Compile Include="Controls\PivotItemContainerGenerator.cs" />
+    <Compile Include="Controls\PivotVirtualizingPanel.Abstract.cs" />
+    <Compile Include="Controls\PivotVirtualizingPanel.cs" />
+    <Compile Include="Controls\PresentationFrameworkCollection.cs" />
+    <Compile Include="Controls\Primitives\ButtonBase.Abstract.cs" />
+    <Compile Include="Controls\Primitives\ButtonBase.cs" />
+    <Compile Include="Controls\Primitives\ItemContainerGenerator.cs" />
+    <Compile Include="Controls\Primitives\IVirtualizingPanel.cs" />
+    <Compile Include="Controls\Primitives\PickerBase.cs" />
+    <Compile Include="Controls\Primitives\RangeBase.Abstract.cs" />
+    <Compile Include="Controls\Primitives\RangeBase.cs" />
+    <Compile Include="Controls\Primitives\Selector.cs" />
+    <Compile Include="Controls\Primitives\ToggleButton.Abstract.cs" />
+    <Compile Include="Controls\Primitives\ToggleButton.cs" />
+    <Compile Include="Controls\ProgressBar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\ProgressRing.cs" />
+    <Compile Include="Controls\RadioButton.cs" />
+    <Compile Include="Controls\RangePicker.Abstract.cs" />
+    <Compile Include="Controls\RangePicker.cs" />
+    <Compile Include="Controls\RowDefinition.cs" />
+    <Compile Include="Controls\RowDefinitionCollection.cs" />
+    <Compile Include="Controls\ScrollBarVisibility.cs" />
+    <Compile Include="Controls\ScrollViewer.Abstract.cs" />
+    <Compile Include="Controls\ScrollViewer.cs" />
+    <Compile Include="Controls\Slider.cs" />
+    <Compile Include="Controls\SelectionMode.cs" />
+    <Compile Include="Controls\StackPanel.Abstract.cs" />
+    <Compile Include="Controls\StackPanel.cs" />
+    <Compile Include="Controls\SupportedPageOrientation.cs" />
+    <Compile Include="Controls\TextAlignment.cs" />
+    <Compile Include="Controls\TextBlock.Abstract.cs" />
+    <Compile Include="Controls\TextBlock.cs" />
+    <Compile Include="Controls\TextBox.Abstract.cs" />
+    <Compile Include="Controls\TextBox.cs" />
+    <Compile Include="Controls\TextChangedEventHandler.cs" />
+    <Compile Include="Controls\TextTrimming.cs" />
+    <Compile Include="Controls\TextWrapping.cs" />
+    <Compile Include="Controls\Border.cs" />
+    <Compile Include="Controls\Border.Abstract.cs" />
+    <Compile Include="Controls\Validation.cs" />
+    <Compile Include="Controls\ValidationError.cs" />
+    <Compile Include="Controls\ValidationErrorEventAction.cs" />
+    <Compile Include="Controls\ValidationErrorEventArgs.cs" />
+    <Compile Include="Controls\VirtualizingPanel.cs" />
+    <Compile Include="Controls\VirtualizingStackPanel.Abstract.cs" />
+    <Compile Include="Controls\VirtualizingStackPanel.cs" />
+    <Compile Include="Controls\WebBrowser.Abstract.cs" />
+    <Compile Include="Controls\WebBrowser.cs" />
+    <Compile Include="Controls\WebBrowserBase.cs" />
+    <Compile Include="ControlTemplate.cs" />
+    <Compile Include="DataTemplate.cs" />
+    <Compile Include="Data\Binding.cs" />
+    <Compile Include="Data\BindingBase.cs" />
+    <Compile Include="Data\BindingExpression.cs" />
+    <Compile Include="Data\BindingExpressionBase.cs" />
+    <Compile Include="Data\BindingMode.cs" />
+    <Compile Include="Data\BindingOperations.cs" />
+    <Compile Include="Data\CollectionView.cs" />
+    <Compile Include="Data\CollectionViewGroup.cs" />
+    <Compile Include="Data\CollectionViewSource.cs" />
+    <Compile Include="Data\FilterEventArgs.cs" />
+    <Compile Include="Data\FilterEventHandler.cs" />
+    <Compile Include="Data\IValueConverter.cs" />
+    <Compile Include="Data\RelativeSource.cs" />
+    <Compile Include="Data\RelativeSourceMode.cs" />
+    <Compile Include="Data\UpdateSourceTrigger.cs" />
+    <Compile Include="Device\GeoCoordinate.cs" />
+    <Compile Include="System.Windows\Expression.cs" />
+    <Compile Include="FrameworkElementFactory.cs" />
+    <Compile Include="FrameworkTemplate.Abstract.cs" />
+    <Compile Include="FrameworkTemplate.cs" />
+    <Compile Include="System.Windows\GetReadOnlyValueCallback.cs" />
+    <Compile Include="GridLength.cs" />
+    <Compile Include="GridLengthConverter.cs" />
+    <Compile Include="GridUnitType.cs" />
+    <Compile Include="Helpers\EnumerableHelper.cs" />
+    <Compile Include="Helpers\ResourceDictionaryManager.cs" />
+    <Compile Include="Helpers\WeakEventHandler.cs" />
+    <Compile Include="Controls\HyperlinkButton.cs" />
+    <Compile Include="Input\GestureEventArgs.cs" />
+    <Compile Include="Internals\BaseValueSourceInternal.cs" />
+    <Compile Include="Internals\BindingValueCache.cs" />
+    <Compile Include="Internals\BindingValueChangedEventArgs.cs" />
+    <Compile Include="Internals\Boxes\BooleanBoxes.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewGroupInternal.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewGroupRoot.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewProxy.cs" />
+    <Compile Include="Internals\CollectionView\EnumerableCollectionView.cs" />
+    <Compile Include="Internals\CollectionView\IViewLifetime.cs" />
+    <Compile Include="Internals\CollectionView\ListCollectionView.cs" />
+    <Compile Include="Internals\CollectionView\SortFieldComparer.cs" />
+    <Compile Include="Internals\CollectionView\ViewManager.cs" />
+    <Compile Include="Internals\CollectionView\ViewRecord.cs" />
+    <Compile Include="Internals\CollectionView\ViewTable.cs" />
+    <Compile Include="Internals\DataContextChangedEventArgs.cs" />
+    <Compile Include="Internals\DataContextChangedEventHandler.cs" />
+    <Compile Include="Internals\DataContextChangedReason.cs" />
+    <Compile Include="Internals\DefaultValueConverter.cs" />
+    <Compile Include="Internals\DeferredReference.cs" />
+    <Compile Include="Internals\DeferredResourceReference.cs" />
+    <Compile Include="Internals\DependencyPropertyChangedWeakListener.cs" />
+    <Compile Include="Internals\DependencySource.cs" />
+    <Compile Include="Internals\DynamicValueConverter.cs" />
+    <Compile Include="Internals\ExpressionMode.cs" />
+    <Compile Include="Internals\Helpers\MathF.cs" />
+    <Compile Include="Internals\Helpers\ThicknessExtensions.cs" />
+    <Compile Include="Internals\ICollectionChangedListener.cs" />
+    <Compile Include="Internals\IDataContextChangedListener.cs" />
+    <Compile Include="Internals\IErrorsChangedListener.cs" />
+    <Compile Include="Internals\IMarkupExtension.cs" />
+    <Compile Include="Internals\InterfaceConverter.cs" />
+    <Compile Include="Internals\ISealable.cs" />
+    <Compile Include="Internals\LogicalOp.cs" />
+    <Compile Include="Internals\ObjectSourceConverter.cs" />
+    <Compile Include="Internals\ObjectTargetConverter.cs" />
+    <Compile Include="Internals\PathParser\CLRPropertyListener.cs" />
+    <Compile Include="Internals\PathParser\DependencyPropertyAccessStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\DependencyPropertyListener.cs" />
+    <Compile Include="Internals\PathParser\IndexerListener.cs" />
+    <Compile Include="Internals\PathParser\IndexerPathStep.cs" />
+    <Compile Include="Internals\PathParser\IndexerPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\IRaisePropertyPathStepChanged.cs" />
+    <Compile Include="Internals\PathParser\ISourcePropertyChanged.cs" />
+    <Compile Include="Internals\PathParser\PropertyAccessPathStep.cs" />
+    <Compile Include="Internals\PathParser\PropertyAccessPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\PropertyListener.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathChangedEventArgs.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathListener.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStep.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStepChangedHandler.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\SourcePathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\SourcePropertyPathStep.cs" />
+    <Compile Include="Internals\PathParser\WeakDependencyPropertyChangedListener.cs" />
+    <Compile Include="Internals\PathParser\WeakPropertyChangedListener.cs" />
+    <Compile Include="Internals\PropertyPathParser.cs" />
+    <Compile Include="Internals\PropertyValue.cs" />
+    <Compile Include="Internals\PropertyValueType.cs" />
+    <Compile Include="Internals\ResourceDictionaryCollection.cs" />
+    <Compile Include="Internals\ResourceReferenceExpression.cs" />
+    <Compile Include="Internals\ResourcesChangedEventArgs.cs" />
+    <Compile Include="Internals\ResourcesChangeInfo.cs" />
+    <Compile Include="Internals\SourceDefaultValueConverter.cs" />
+    <Compile Include="Internals\StyleHelper.cs" />
+    <Compile Include="Internals\SystemConvertConverter.cs" />
+    <Compile Include="Internals\TargetDefaultValueConverter.cs" />
+    <Compile Include="Internals\TriggerCondition.cs" />
+    <Compile Include="Internals\WeakCollectionChangedListener.cs" />
+    <Compile Include="Internals\WeakDataContextChangedListener.cs" />
+    <Compile Include="Internals\WeakErrorsChangedListener.cs" />
+    <Compile Include="Internals\WeakRefKey.cs" />
+    <Compile Include="Markup\StaticResource.cs" />
+    <Compile Include="Markup\TemplateBindingExtension.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\Point.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\PointConverter.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\PointF.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\Rectangle.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\RectangleConverter.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\RectangleF.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\Size.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\SizeConverter.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\SizeF.cs" />
+    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\SizeFConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventArgs.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventHandler.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\GroupDescription.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\ICollectionView.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\ICollectionViewFactory.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\IEditableCollectionView.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\NewItemPlaceholderPosition.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescription.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescriptionCollection.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Converters\PointValueSerializer.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Converters\SizeValueSerializer.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Converters\VectorValueSerializer.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media.Converters\MatrixValueSerializer.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\Matrix.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\MatrixConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\CoerceValueCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObject.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObjectType.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyProperty.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyChangedEventArgs.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyChangedEventHandler.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyKey.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Freezable.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\LocalValueEntry.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\LocalValueEnumerator.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Point.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PointConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PropertyChangedCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PropertyMetadata.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Size.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\SizeConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\ValidateValueCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Vector.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\VectorConverter.cs" />
+    <Compile Include="PerfomanceLogger.cs" />
+    <Compile Include="PropertyPath.cs" />
+    <Compile Include="System.Windows\ReadOnlyFrameworkPropertyMetadata.cs" />
+    <Compile Include="RoutedEvent.cs" />
+    <Compile Include="RoutedEventArgs.cs" />
+    <Compile Include="RoutingStrategy.cs" />
+    <Compile Include="StylesAndResources\ApplicationResourcesAttribute.cs" />
+    <Compile Include="StylesAndResources\ResourceDictionary.cs" />
+    <Compile Include="StylesAndResources\Setter.Abstract.cs" />
+    <Compile Include="StylesAndResources\Setter.cs" />
+    <Compile Include="StylesAndResources\SetterBase.cs" />
+    <Compile Include="StylesAndResources\SetterBaseCollection.cs" />
+    <Compile Include="StylesAndResources\Style.Abstract.cs" />
+    <Compile Include="StylesAndResources\Style.cs" />
+    <Compile Include="Controls\SelectionChangedEventHandler.cs" />
+    <Compile Include="Controls\TypeConverters.cs" />
+    <Compile Include="System.Windows\CornerRadius.cs" />
+    <Compile Include="System.Windows\Duration.cs" />
+    <Compile Include="System.Windows\ExceptionRoutedEventArgs.cs" />
+    <Compile Include="System.Windows\HorizontalAlignment.cs" />
+    <Compile Include="System.Windows\Input\FocusManager.cs" />
+    <Compile Include="System.Windows\Markup\IAddChild.cs" />
+    <Compile Include="System.Windows\Media\Brush.cs" />
+    <Compile Include="System.Windows\Media\MediaElementState.cs" />
+    <Compile Include="System.Windows\Media\SolidColorBrush.cs" />
+    <Compile Include="System.Windows\Media\Stretch.cs" />
+    <Compile Include="System.Windows\NullableBoolConverter.cs" />
+    <Compile Include="System.Windows\RoutedPropertyChangedEventHandler.cs" />
+    <Compile Include="System.Windows\Thickness.cs" />
+    <Compile Include="Controls\UIElement.Abstract.cs" />
+    <Compile Include="Controls\UIElement.cs" />
+    <Compile Include="Controls\UIElementCollection.cs" />
+    <Compile Include="Controls\UserControl.Abstract.cs" />
+    <Compile Include="Controls\UserControl.cs" />
+    <Compile Include="Controls\Visibility.cs" />
+    <Compile Include="Properties\AssemblyInfo.Abstract.cs" />
+    <Compile Include="System.Windows\Media\Color.cs" />
+    <Compile Include="System.Windows\Threading\Dispatcher.Abstract.cs" />
+    <Compile Include="System.Windows\Threading\Dispatcher.cs" />
+    <Compile Include="System.Windows\Threading\DispatcherObject.Abstract.cs" />
+    <Compile Include="System.Windows\Threading\DispatcherObject.cs" />
+    <Compile Include="LogicalTreeHelper.cs" />
+    <Compile Include="System.Windows\VerticalAlignment.cs" />
+    <Compile Include="TemplateBindingExpression.cs" />
+    <Compile Include="TextChangedEventArgs.cs" />
+    <Compile Include="ValueConverterFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\Control.Abstact.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="System.Windows\Input\FocusManager.Abstract.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\ProgressBar.Abstract.cs" />
+    <None Include="Key.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="mono\mcs\class\System.Xaml\System.Windows.Markup\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\HyperlinkButton.Abstract.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\Slider.Abstract.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
