@@ -1,0 +1,468 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <ProjectGuid>{5ED9C745-61A7-4F2B-B8B2-6D44CABE7A32}</ProjectGuid>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Appercode.UI</RootNamespace>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>Appercode.UIFramework.iOS</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <CodePage>65001</CodePage>
+    <_AppBundleName>AppercodeUIFrameworkiOS</_AppBundleName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchLink>None</MtouchLink>
+    <MtouchDebug>true</MtouchDebug>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchLink>None</MtouchLink>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhone\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchDebug>true</MtouchDebug>
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhone\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <DocumentationFile>bin\iPhone\Release\Appercode.UIFramework.iOS.XML</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+    <BuildIpa>True</BuildIpa>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\iPhone\AppStore</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Controls\FontWeight.cs" />
+    <Compile Include="Controls\AppBarButton.iOS.cs" />
+    <Compile Include="Controls\AppBarButton.cs" />
+    <Compile Include="Controls\AppercodePage.cs" />
+    <Compile Include="Controls\AppercodePage.iOS.cs" />
+    <Compile Include="Controls\AppercodeVisualRoot.cs" />
+    <Compile Include="Controls\Base\GridSizeCollectionBase.cs" />
+    <Compile Include="Controls\BitmapIcon.iOS.cs" />
+    <Compile Include="Controls\Canvas.cs" />
+    <Compile Include="Controls\Canvas.iOS.cs" />
+    <Compile Include="Controls\CheckBox.cs" />
+    <Compile Include="Controls\CheckBox.iOS.cs" />
+    <Compile Include="Controls\ColumnDefinition.cs" />
+    <Compile Include="Controls\ColumnDefinitionCollection.cs" />
+    <Compile Include="Controls\CommandBar.iOS.cs" />
+    <Compile Include="Controls\ContentPresenter.cs" />
+    <Compile Include="Controls\ContentPresenter.iOS.cs" />
+    <Compile Include="Controls\DataTemplateSelector.cs" />
+    <Compile Include="Controls\DefinitionBase.cs" />
+    <Compile Include="Controls\Grid.cs" />
+    <Compile Include="Controls\Grid.iOS.cs" />
+    <Compile Include="Controls\HyperlinkButton.cs" />
+    <Compile Include="Controls\HyperlinkButton.iOS.cs" />
+    <Compile Include="Controls\BitmapIcon.cs" />
+    <Compile Include="Controls\ICommandBarElement.cs" />
+    <Compile Include="Controls\Image.cs" />
+    <Compile Include="Controls\Image.iOS.cs" />
+    <Compile Include="Controls\Input\InputScope.cs" />
+    <Compile Include="Controls\ItemsControl.iOS.cs" />
+    <Compile Include="Controls\ItemsPanelTemplate.cs" />
+    <Compile Include="Controls\ListBox.cs" />
+    <Compile Include="Controls\ListBox.iOS.cs" />
+    <Compile Include="Controls\ListBoxItem.cs" />
+    <Compile Include="Controls\ListBoxItem.iOS.cs" />
+    <Compile Include="Controls\ManipulationMode.cs" />
+    <Compile Include="Controls\MediaElement.cs" />
+    <Compile Include="Controls\MediaElement.iOS.cs" />
+    <Compile Include="Controls\Media\AppercodeColors.cs" />
+    <Compile Include="Controls\Media\ImageSource.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapCreateOptions.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapImage.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapImage.iOS.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapSource.cs" />
+    <Compile Include="Controls\Media\Imaging\DownloadProgressEventArgs.cs" />
+    <Compile Include="Controls\Media\TokenizerHelper.cs" />
+    <Compile Include="Controls\NativeControl\IndeterminateUIProgressView.cs" />
+    <Compile Include="Controls\Navigation\IFrameStyler.cs" />
+    <Compile Include="Controls\Navigation\NavigationType.cs" />
+    <Compile Include="Controls\PasswordBox.cs" />
+    <Compile Include="Controls\PasswordBox.iOS.cs" />
+    <Compile Include="Controls\Popups\MessageDialog.cs" />
+    <Compile Include="Controls\Popups\MessageDialog.iOS.cs" />
+    <Compile Include="Controls\Popups\UICommand.cs" />
+    <Compile Include="Controls\PresentationFrameworkCollection.cs" />
+    <Compile Include="Controls\Primitives\GeneratorDirection.cs" />
+    <Compile Include="Controls\Primitives\GeneratorPosition.cs" />
+    <Compile Include="Controls\Primitives\IconElement.iOS.cs" />
+    <Compile Include="Controls\Primitives\IconElement.cs" />
+    <Compile Include="Controls\Primitives\ItemContainerGenerator.cs" />
+    <Compile Include="Controls\Primitives\IVirtualizingPanel.cs" />
+    <Compile Include="Controls\Primitives\RangeBase.cs" />
+    <Compile Include="Controls\Primitives\RangeBase.iOS.cs" />
+    <Compile Include="Controls\Primitives\Selector.cs" />
+    <Compile Include="Controls\ProgressBar.cs" />
+    <Compile Include="Controls\ProgressBar.iOS.cs" />
+    <Compile Include="Controls\Primitives\IItemContainerGenerator.cs" />
+    <Compile Include="Controls\CommandBar.cs" />
+    <Compile Include="Controls\RadioButton.cs" />
+    <Compile Include="Controls\RadioButton.iOS.cs" />
+    <Compile Include="Controls\RowDefinition.cs" />
+    <Compile Include="Controls\RowDefinitionCollection.cs" />
+    <Compile Include="Controls\ScrollBarVisibility.cs" />
+    <Compile Include="Controls\ScrollViewer.cs" />
+    <Compile Include="Controls\ScrollViewer.iOS.cs" />
+    <Compile Include="Controls\SelectionChangedEventHandler.cs" />
+    <Compile Include="Controls\SelectionMode.cs" />
+    <Compile Include="Controls\ProgressRing.cs" />
+    <Compile Include="Controls\ProgressRing.iOS.cs" />
+    <Compile Include="Controls\TextChangedEventHandler.cs" />
+    <Compile Include="Controls\TypeConverters.cs" />
+    <Compile Include="Controls\CommandBarElementCollection.cs" />
+    <Compile Include="Controls\Validation.cs" />
+    <Compile Include="Controls\ValidationError.cs" />
+    <Compile Include="Controls\ValidationErrorEventAction.cs" />
+    <Compile Include="Controls\ValidationErrorEventArgs.cs" />
+    <Compile Include="Controls\VirtualizingPanel.cs" />
+    <Compile Include="Controls\VirtualizingStackPanel.cs" />
+    <Compile Include="Controls\VirtualizingStackPanel.iOS.cs" />
+    <Compile Include="ControlTemplate.cs" />
+    <Compile Include="Data\Binding.cs" />
+    <Compile Include="Data\BindingBase.cs" />
+    <Compile Include="Data\BindingExpression.cs" />
+    <Compile Include="Data\BindingExpressionBase.cs" />
+    <Compile Include="Data\BindingMode.cs" />
+    <Compile Include="Data\BindingOperations.cs" />
+    <Compile Include="Data\CollectionView.cs" />
+    <Compile Include="Data\CollectionViewGroup.cs" />
+    <Compile Include="Data\CollectionViewSource.cs" />
+    <Compile Include="Data\FilterEventArgs.cs" />
+    <Compile Include="Data\FilterEventHandler.cs" />
+    <Compile Include="Data\IValueConverter.cs" />
+    <Compile Include="Data\RelativeSource.cs" />
+    <Compile Include="Data\RelativeSourceMode.cs" />
+    <Compile Include="Data\UpdateSourceTrigger.cs" />
+    <Compile Include="Device\GeoCoordinate.cs" />
+    <Compile Include="Controls\Slider.cs" />
+    <Compile Include="Controls\Slider.iOS.cs" />
+    <Compile Include="Device\ScreenProperties.cs" />
+    <Compile Include="Device\ScreenProperties.iOS.cs" />
+    <Compile Include="GridLength.cs" />
+    <Compile Include="GridLengthConverter.cs" />
+    <Compile Include="GridUnitType.cs" />
+    <Compile Include="Helpers\EnumerableHelper.cs" />
+    <Compile Include="Helpers\ResourceDictionaryManager.cs" />
+    <Compile Include="Helpers\UIImageExtension.cs" />
+    <Compile Include="Helpers\WeakEventHandler.cs" />
+    <Compile Include="Input\GestureEventArgs.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewGroupInternal.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewGroupRoot.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewProxy.cs" />
+    <Compile Include="Internals\CollectionView\EnumerableCollectionView.cs" />
+    <Compile Include="Internals\CollectionView\IViewLifetime.cs" />
+    <Compile Include="Internals\CollectionView\ListCollectionView.cs" />
+    <Compile Include="Internals\CollectionView\SortFieldComparer.cs" />
+    <Compile Include="Internals\CollectionView\ViewRecord.cs" />
+    <Compile Include="Internals\CollectionView\ViewTable.cs" />
+    <Compile Include="Internals\DataContextChangedEventArgs.cs" />
+    <Compile Include="Internals\DataContextChangedEventHandler.cs" />
+    <Compile Include="Internals\DataContextChangedReason.cs" />
+    <Compile Include="Internals\DependencyPropertyChangedWeakListener.cs" />
+    <Compile Include="Internals\DynamicValueConverter.cs" />
+    <Compile Include="Internals\Helpers\MathF.cs" />
+    <Compile Include="Internals\IDataContextChangedListener.cs" />
+    <Compile Include="Internals\IErrorsChangedListener.cs" />
+    <Compile Include="Internals\InterfaceConverter.cs" />
+    <Compile Include="Internals\ObjectSourceConverter.cs" />
+    <Compile Include="Internals\ObjectTargetConverter.cs" />
+    <Compile Include="Internals\SourceDefaultValueConverter.cs" />
+    <Compile Include="Internals\SystemConvertConverter.cs" />
+    <Compile Include="Internals\TargetDefaultValueConverter.cs" />
+    <Compile Include="Internals\CollectionView\ViewManager.cs" />
+    <Compile Include="Internals\WeakErrorsChangedListener.cs" />
+    <Compile Include="Internals\WeakDataContextChangedListener.cs" />
+    <Compile Include="Internals\WeakRefKey.cs" />
+    <Compile Include="mono\external\referencesource\System\sys\system\windows\markup\ValueSerializerAttribute.cs" />
+    <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\INameScope.cs" />
+    <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\MarkupExtension.cs" />
+    <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\XmlnsDefinitionAttribute.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventArgs.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventHandler.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\GroupDescription.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\ICollectionView.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\ICollectionViewFactory.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\IEditableCollectionView.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\NewItemPlaceholderPosition.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescription.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescriptionCollection.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\Matrix.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\MatrixConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\CoerceValueCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObject.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObjectType.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyProperty.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyChangedEventArgs.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyChangedEventHandler.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyKey.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Freezable.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\LocalValueEntry.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\LocalValueEnumerator.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Point.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PointConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PropertyChangedCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PropertyMetadata.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Size.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\SizeConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\ValidateValueCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Vector.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\VectorConverter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyPath.cs" />
+    <Compile Include="RoutedEvent.cs" />
+    <Compile Include="RoutedEventArgs.cs" />
+    <Compile Include="RoutingStrategy.cs" />
+    <Compile Include="StylesAndResources\ApplicationResourcesAttribute.cs" />
+    <Compile Include="StylesAndResources\ResourceDictionary.cs" />
+    <Compile Include="StylesAndResources\Setter.cs" />
+    <Compile Include="StylesAndResources\SetterBase.cs" />
+    <Compile Include="StylesAndResources\SetterBaseCollection.cs" />
+    <Compile Include="StylesAndResources\Style.cs" />
+    <Compile Include="Controls\ItemCollection.cs" />
+    <Compile Include="Controls\ItemsControl.cs" />
+    <Compile Include="DataTemplate.cs" />
+    <Compile Include="System.Windows\ExceptionRoutedEventArgs.cs" />
+    <Compile Include="FrameworkElementFactory.cs" />
+    <Compile Include="FrameworkTemplate.cs" />
+    <Compile Include="Internals\BaseValueSourceInternal.cs" />
+    <Compile Include="Internals\BindingValueCache.cs" />
+    <Compile Include="Internals\BindingValueChangedEventArgs.cs" />
+    <Compile Include="Internals\Boxes\BooleanBoxes.cs" />
+    <Compile Include="Internals\DefaultValueConverter.cs" />
+    <Compile Include="Internals\DeferredReference.cs" />
+    <Compile Include="Internals\DeferredResourceReference.cs" />
+    <Compile Include="Internals\PathParser\CLRPropertyListener.cs" />
+    <Compile Include="Internals\PathParser\DependencyPropertyAccessStepDescriptor.cs" />
+    <Compile Include="Internals\DependencySource.cs" />
+    <Compile Include="Internals\ExpressionMode.cs" />
+    <Compile Include="Internals\ICollectionChangedListener.cs" />
+    <Compile Include="Internals\ISealable.cs" />
+    <Compile Include="Internals\LogicalOp.cs" />
+    <Compile Include="Internals\PathParser\DependencyPropertyListener.cs" />
+    <Compile Include="Internals\PathParser\IndexerListener.cs" />
+    <Compile Include="Internals\PathParser\IndexerPathStep.cs" />
+    <Compile Include="Internals\PathParser\IndexerPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\IRaisePropertyPathStepChanged.cs" />
+    <Compile Include="Internals\PathParser\ISourcePropertyChanged.cs" />
+    <Compile Include="Internals\PathParser\PropertyAccessPathStep.cs" />
+    <Compile Include="Internals\PathParser\PropertyListener.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathChangedEventArgs.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathListener.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStep.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStepChangedHandler.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\SourcePathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\SourcePropertyPathStep.cs" />
+    <Compile Include="Internals\PathParser\WeakDependencyPropertyChangedListener.cs" />
+    <Compile Include="Internals\PathParser\PropertyAccessPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\WeakPropertyChangedListener.cs" />
+    <Compile Include="Internals\PropertyPathParser.cs" />
+    <Compile Include="Internals\PropertyValue.cs" />
+    <Compile Include="Internals\PropertyValueType.cs" />
+    <Compile Include="Internals\ResourceDictionaryCollection.cs" />
+    <Compile Include="Internals\ResourceReferenceExpression.cs" />
+    <Compile Include="Internals\ResourcesChangedEventArgs.cs" />
+    <Compile Include="Internals\ResourcesChangeInfo.cs" />
+    <Compile Include="Internals\StyleHelper.cs" />
+    <Compile Include="Internals\TriggerCondition.cs" />
+    <Compile Include="Internals\WeakCollectionChangedListener.cs" />
+    <Compile Include="Internals\IMarkupExtension.cs" />
+    <Compile Include="System.Windows\Expression.cs" />
+    <Compile Include="System.Windows\GetReadOnlyValueCallback.cs" />
+    <Compile Include="System.Windows\Input\FocusManager.cs" />
+    <Compile Include="System.Windows\Input\FocusManager.iOS.cs" />
+    <Compile Include="Controls\Media\ImageSource.iOS.cs" />
+    <Compile Include="System.Windows\Media\Color.iOS.cs" />
+    <Compile Include="System.Windows\Media\MediaElementState.cs" />
+    <Compile Include="System.Windows\Media\SolidColorBrush.cs" />
+    <Compile Include="System.Windows\HorizontalAlignment.cs" />
+    <Compile Include="System.Windows\Markup\IAddChild.cs" />
+    <Compile Include="System.Windows\Media\Brush.cs" />
+    <Compile Include="System.Windows\Media\Brush.iOS.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\ContentControl.iOS.cs" />
+    <Compile Include="Controls\FontFamily.cs" />
+    <Compile Include="Controls\FontStyle.cs" />
+    <Compile Include="Controls\FontStyles.cs" />
+    <Compile Include="Controls\FontStyleType.cs" />
+    <Compile Include="Controls\FontWeights.cs" />
+    <Compile Include="Controls\FontWeightType.cs" />
+    <Compile Include="Controls\Navigation\IFrame.cs" />
+    <Compile Include="Controls\Navigation\NavigatedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigatingCancelEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigatingCancelEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigationEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigationFailedEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigationFailedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigationMode.cs" />
+    <Compile Include="Controls\Navigation\NavigationService.cs" />
+    <Compile Include="Controls\Navigation\NavigationStoppedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\StackNavigationFrame.cs" />
+    <Compile Include="Controls\Navigation\StackNavigationFrame.iOS.cs" />
+    <Compile Include="Controls\Orientation.cs" />
+    <Compile Include="Controls\OrientationChangedEventArgs.cs" />
+    <Compile Include="Controls\Page.cs" />
+    <Compile Include="Controls\PageOrientation.cs" />
+    <Compile Include="Controls\Panel.cs" />
+    <Compile Include="System.Windows\Media\SolidColorBrush.iOS.cs" />
+    <Compile Include="Controls\Panel.iOS.cs" />
+    <Compile Include="Controls\Primitives\ToggleButton.cs" />
+    <Compile Include="Controls\Primitives\ToggleButton.iOS.cs" />
+    <Compile Include="Controls\StackPanel.cs" />
+    <Compile Include="Controls\StackPanel.iOS.cs" />
+    <Compile Include="Controls\SupportedPageOrientation.cs" />
+    <Compile Include="Controls\TextAlignment.cs" />
+    <Compile Include="Controls\TextBlock.cs" />
+    <Compile Include="Controls\TextBlock.iOS.cs" />
+    <Compile Include="Controls\TextBox.cs" />
+    <Compile Include="Controls\TextBox.iOS.cs" />
+    <Compile Include="Controls\TextTrimming.cs" />
+    <Compile Include="Controls\TextWrapping.cs" />
+    <Compile Include="Controls\UIElement.cs" />
+    <Compile Include="Controls\UIElement.iOS.cs" />
+    <Compile Include="Controls\UIElementCollection.cs" />
+    <Compile Include="Controls\UserControl.cs" />
+    <Compile Include="Controls\UserControl.iOS.cs" />
+    <Compile Include="Controls\Visibility.cs" />
+    <Compile Include="LogicalTreeHelper.cs" />
+    <Compile Include="System.Windows\Media\Color.cs" />
+    <Compile Include="System.Windows\Media\Stretch.cs" />
+    <Compile Include="System.Windows\NullableBoolConverter.cs" />
+    <Compile Include="System.Windows\ReadOnlyFrameworkPropertyMetadata.cs" />
+    <Compile Include="System.Windows\RoutedPropertyChangedEventHandler.cs" />
+    <Compile Include="System.Windows\Thickness.cs" />
+    <Compile Include="System.Windows\Threading\Dispatcher.cs" />
+    <Compile Include="System.Windows\Threading\Dispatcher.iOS.cs" />
+    <Compile Include="System.Windows\Threading\DispatcherObject.cs" />
+    <Compile Include="Controls\Button.iOS.cs" />
+    <Compile Include="Controls\Control.cs" />
+    <Compile Include="Controls\Control.iOS.cs" />
+    <Compile Include="Controls\ContentControl.cs" />
+    <Compile Include="Controls\Primitives\ButtonBase.cs" />
+    <Compile Include="Controls\ClickMode.cs" />
+    <Compile Include="Controls\Primitives\ButtonBase.iOS.cs" />
+    <Compile Include="Markup\TemplateBindingExtension.cs" />
+    <Compile Include="System.Windows\Threading\DispatcherObject.iOS.cs" />
+    <Compile Include="System.Windows\VerticalAlignment.cs" />
+    <Compile Include="TemplateBindingExpression.cs" />
+    <Compile Include="TextChangedEventArgs.cs" />
+    <Compile Include="Controls\WebBrowser.cs" />
+    <Compile Include="Controls\WebBrowser.iOS.cs" />
+    <Compile Include="Controls\WebBrowserBase.cs" />
+    <Compile Include="Controls\NotifyEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigatingEventArgs.cs" />
+    <Compile Include="System.Windows\Duration.cs" />
+    <Compile Include="Controls\Border.cs" />
+    <Compile Include="Controls\Border.iOS.cs" />
+    <Compile Include="System.Windows\CornerRadius.cs" />
+    <Compile Include="Controls\Navigation\Primitives\TabBarTab.cs" />
+    <Compile Include="Controls\Navigation\Primitives\TabBarTabsCollection.cs" />
+    <Compile Include="Controls\Navigation\TabsNavigationFrame.cs" />
+    <Compile Include="Controls\Navigation\TabsNavigationFrame.iOS.cs" />
+    <Compile Include="Controls\IPivotItemProvider.cs" />
+    <Compile Include="Controls\Pivot.cs" />
+    <Compile Include="Controls\Pivot.iOS.cs" />
+    <Compile Include="Controls\PivotHeaderItem.cs" />
+    <Compile Include="Controls\PivotHeaderMode.cs" />
+    <Compile Include="Controls\PivotHeadersControl.cs" />
+    <Compile Include="Controls\PivotHeadersControl.iOS.cs" />
+    <Compile Include="Controls\PivotItem.cs" />
+    <Compile Include="Controls\PivotItemContainerGenerator.cs" />
+    <Compile Include="Controls\PivotVirtualizingPanel.cs" />
+    <Compile Include="Controls\PivotVirtualizingPanel.iOS.cs" />
+    <Compile Include="ValueConverterFactory.cs" />
+    <Compile Include="Controls\Primitives\PickerBase.cs" />
+    <Compile Include="Controls\Primitives\PickerBase.iOS.cs" />
+    <Compile Include="Controls\ListPicker.cs" />
+    <Compile Include="Controls\ListPicker.iOS.cs" />
+    <Compile Include="Controls\RangePicker.cs" />
+    <Compile Include="Controls\RangePicker.iOS.cs" />
+    <Compile Include="Internals\Helpers\ThicknessExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="mono\mcs\class\System.Xaml\System.Xaml\" />
+    <Folder Include="mono\mcs\class\WindowsBase\System.Windows.Converters\" />
+    <Folder Include="mono\mcs\class\WindowsBase\System.Windows.Media.Converters\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.iOS" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+  <ItemGroup>
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonChecked%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonChecked.png" />
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonUnchecked%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonUnchecked.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxUnchecked.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxUnchecked%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonUncheckediOS6.png" />
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonUncheckediOS6%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxChecked.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxChecked%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\ProgressIndicatorBar%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\ProgressIndicatorBar.png" />
+    <BundleResource Include="Resources\iOS_Resources\ProgressIndicatorDefault%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\ProgressIndicatorDefault.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxCheckediOS6.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxCheckediOS6%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxUncheckediOS6.png" />
+    <BundleResource Include="Resources\iOS_Resources\CheckBoxUncheckediOS6%402x.png" />
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonCheckediOS6.png" />
+    <BundleResource Include="Resources\iOS_Resources\RadioButtonCheckediOS6%402x.png" />
+  </ItemGroup>
+</Project>

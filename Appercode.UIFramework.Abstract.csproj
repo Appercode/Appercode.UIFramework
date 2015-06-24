@@ -202,6 +202,7 @@
     <Compile Include="Data\RelativeSourceMode.cs" />
     <Compile Include="Data\UpdateSourceTrigger.cs" />
     <Compile Include="Device\GeoCoordinate.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\MatrixConverter.cs" />
     <Compile Include="System.Windows\Expression.cs" />
     <Compile Include="FrameworkElementFactory.cs" />
     <Compile Include="FrameworkTemplate.Abstract.cs" />
@@ -307,12 +308,7 @@
     <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\NewItemPlaceholderPosition.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescription.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescriptionCollection.cs" />
-    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Converters\PointValueSerializer.cs" />
-    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Converters\SizeValueSerializer.cs" />
-    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Converters\VectorValueSerializer.cs" />
-    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media.Converters\MatrixValueSerializer.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\Matrix.cs" />
-    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\MatrixConverter.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.Windows\CoerceValueCallback.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObject.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObjectType.cs" />
@@ -367,7 +363,7 @@
     <Compile Include="Controls\UserControl.Abstract.cs" />
     <Compile Include="Controls\UserControl.cs" />
     <Compile Include="Controls\Visibility.cs" />
-    <Compile Include="Properties\AssemblyInfo.Abstract.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System.Windows\Media\Color.cs" />
     <Compile Include="System.Windows\Threading\Dispatcher.Abstract.cs" />
     <Compile Include="System.Windows\Threading\Dispatcher.cs" />

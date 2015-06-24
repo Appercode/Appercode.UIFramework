@@ -1,0 +1,409 @@
+using Appercode.UI.Controls.Navigation.Primitives;
+using Appercode.UI.StylesAndResources;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+
+namespace Appercode.UI.Controls.Navigation
+{
+    /// <summary>
+    /// Class providing tab navigation in Appercode
+    /// </summary>
+    public partial class TabsNavigationFrame : IFrame
+    {
+        private readonly IFrameStyler styler;
+        private AppercodeVisualRoot visualRoot;
+        private AppercodePage currentPage;
+        private int currentTabIndex = -1;
+
+#if __ANDROID__ || WINDOWS_PHONE
+        private NavigationService navigationService;
+        private Stack<AppercodePage> backStack;
+#else
+        private List<StackNavigationFrame> navigationStacks;
+#endif
+
+        public TabsNavigationFrame(IFrameStyler styler = null)
+        {
+            this.styler = styler;
+#if __ANDROID__ || WINDOWS_PHONE
+            this.navigationService = new NavigationService(this);
+            this.backStack = new Stack<AppercodePage>();
+#else
+            this.navigationStacks = new List<StackNavigationFrame>();
+#endif
+            this.visualRoot = AppercodeVisualRoot.Instance;
+            this.NativeTabsNavigationFrame();
+
+            this.Tabs = new TabBarTabsCollection();
+            this.Tabs.CollectionChanged += Tabs_CollectionChanged;
+
+            this.LoadApplicationResourcesFromAssembly(Assembly.GetCallingAssembly());
+            if (this.styler != null)
+            {
+                this.styler.StyleTabBar(this);
+            }
+        }
+
+#if WINDOWS_PHONE
+        
+        public new event NavigatedEventHandler Navigated;
+
+        public new event NavigatingCancelEventHandler Navigating;
+
+        public new event NavigationFailedEventHandler NavigationFailed;
+
+        public new event NavigationStoppedEventHandler NavigationStopped;
+#else
+        public event NavigatedEventHandler Navigated;
+
+        public event NavigatingCancelEventHandler Navigating;
+
+        public event NavigationFailedEventHandler NavigationFailed;
+
+        public event NavigationStoppedEventHandler NavigationStopped;
+#endif
+
+#pragma warning disable 108
+        /// <summary>
+        /// not used now
+        /// </summary>
+        public int CacheSize
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+#if __ANDROID__ || WINDOWS_PHONE
+        private IEnumerable<AppercodePage> BackStack
+        {
+            get
+            {
+                return this.backStack;
+            }
+        }
+#endif
+
+        /// <summary>
+        /// true if thare is screens in the current BackStack and you can <see cref="GoBack"/>
+        /// </summary>
+        public bool CanGoBack
+        {
+            get
+            {
+#if __ANDROID__ || WINDOWS_PHONE
+                return this.BackStack.Count() > 0;
+#else
+                return false;
+#endif
+            }
+        }
+
+        /// <summary>
+        /// true if you can <see cref="GoForward"/>
+        /// </summary>
+        /// <remarks>
+        /// not used now
+        /// </remarks>
+        public bool CanGoForward
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public System.Windows.Threading.Dispatcher Dispatcher
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+#pragma warning restore 108
+
+        public PresentationFrameworkCollection<TabBarTab> Tabs
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// <see cref="AppercodePage"/> that currently is showing
+        /// </summary>
+        public AppercodePage CurrentPage
+        {
+            get
+            {
+                return this.currentPage;
+            }
+            private set
+            {
+                this.currentPage = value;
+            }
+        }
+
+        /// <summary>
+        /// Is navigation process is in progress
+        /// </summary>
+        public bool IsNavigationInProgress
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Navigate to page in cuttent stack
+        /// </summary>
+        /// <param name="sourcePageType">Type of <see cref="AppercodePage"/> to Navigate</param>
+        /// <returns>was <see cref="AppercodePage"/> navigated to or it was canceled</returns>
+        public bool Navigate(Type sourcePageType, NavigationType navigationType)
+        {
+            return this.Navigate(sourcePageType, null, navigationType);
+        }
+
+        /// <summary>
+        /// Navigate to page in cuttent stack
+        /// </summary>
+        /// <param name="sourcePageType">Type of <see cref="AppercodePage"/> to Navigate</param>
+        /// <param name="parameter">Parameter to put on <see cref="AppercodePage"/> when navigated to</param>
+        /// <returns>was <see cref="AppercodePage"/> navigated to or it was canceled</returns>
+        public bool Navigate(Type sourcePageType, object parameter, NavigationType navigationType)
+        {
+            return this.Navigate(sourcePageType, parameter, false, navigationType);
+        }
+
+        public void SelectTabAt(int index)
+        {
+            this.currentTabIndex = index;
+            this.NativeSelectTabAt(index);
+        }
+
+        /// <summary>
+        /// Sets the bage. Removes it if <paramref name="value"/> is null or empty
+        /// </summary>
+        /// <param name="index">Index.</param>
+        /// <param name="value">Value.</param>
+        public void SetBage(int index, string value)
+        {
+            this.NativeSetBage(index, value);
+        }
+
+        private bool Navigate(Type sourcePageType, object parameter, bool isTabSwitching, NavigationType navigationType, AppercodePage tabPage = null)
+        {
+#if __ANDROID__ || WINDOWS_PHONE
+            if (sourcePageType == null)
+            {
+                throw new ArgumentNullException("sourcePageType", "sourcePageType must not be null");
+            }
+            if (!sourcePageType.IsSubclassOf(typeof(AppercodePage)) && sourcePageType != typeof(AppercodePage))
+            {
+                throw new ArgumentException("sourcePageType must be an AppercodePage", "sourcePageType");
+            }
+
+            if (this.IsNavigationInProgress)
+            {
+                return false;
+            }
+            this.IsNavigationInProgress = true;
+
+            // navigating from with check
+            NavigatingCancelEventArgs navigatingCancelEventArgs = new NavigatingCancelEventArgs(sourcePageType, NavigationMode.New);
+
+            if (this.CurrentPage != null)
+            {
+                this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
+                if (navigatingCancelEventArgs.Cancel == true)
+                {
+                    this.IsNavigationInProgress = false;
+                    return false;
+                }
+            }
+            AppercodePage pageInstance;
+
+            // navigated from
+            if (this.CurrentPage != null)
+            {
+                this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(sourcePageType, parameter));
+                this.backStack.Push(this.CurrentPage);
+            }
+
+            // Create page
+            if (isTabSwitching && backStack.Any())
+            {
+                this.backStack.Clear();
+            }
+
+            if (isTabSwitching && tabPage != null)
+            {
+                pageInstance = tabPage;
+            }
+            else
+            {
+                pageInstance = InstantiatePage(sourcePageType);
+            }
+
+            pageInstance.NavigationService = this.navigationService;
+            //this.visualRoot.Child = pageInstance;
+            this.NativeShowPage(pageInstance, NavigationMode.New, isTabSwitching);
+
+            // navigated to
+            pageInstance.InternalOnNavigatedTo(new NavigationEventArgs(sourcePageType, parameter));
+
+            this.CurrentPage = pageInstance;
+
+            this.IsNavigationInProgress = false;
+            return true;
+#else
+            if (this.currentTabIndex < 0 || this.currentTabIndex >= this.navigationStacks.Count)
+            {
+                return false; 
+            }
+            return this.navigationStacks[this.currentTabIndex].Navigate(sourcePageType, parameter, navigationType);
+#endif
+        }
+
+        public void Load()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnBackKeyPress()
+        {            
+            this.CurrentPage.InternalOnBackKeyPress(new CancelEventArgs(false));
+        }
+
+#pragma warning disable 108
+
+        public void GoBack()
+        { 
+#if __ANDROID__ || WINDOWS_PHONE
+         
+            if (this.IsNavigationInProgress)
+            {
+                return;
+            }
+            this.IsNavigationInProgress = true;
+
+            AppercodePage previosPage = this.BackStack.FirstOrDefault();
+            if (previosPage == null)
+            {
+                this.CloseApplication();
+                this.IsNavigationInProgress = false;
+                return;
+            }
+            Type previosPageType = previosPage.GetType();
+
+            // navigating from
+            NavigatingCancelEventArgs navigatingCancelEventArgs = new NavigatingCancelEventArgs(previosPageType, NavigationMode.Back);
+            this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
+            if (navigatingCancelEventArgs.Cancel == true)
+            {
+                this.IsNavigationInProgress = false;
+                return;
+            }
+
+            if(backStack.Count == 1)
+            {
+                this.NativeBackToTabs();
+
+                this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
+                this.CurrentPage = previosPage;
+                // navigated to
+                previosPage.InternalOnNavigatedTo(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
+                this.IsNavigationInProgress = false;
+                return;
+            }
+
+            // navigated from
+            this.backStack.Pop();
+            this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
+
+            // navigation
+            //this.visualRoot.Child = previosPage;
+            this.NativeShowPage(previosPage, NavigationMode.Back, false);
+
+            this.CurrentPage = previosPage;
+            // navigated to
+            previosPage.InternalOnNavigatedTo(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
+            this.IsNavigationInProgress = false;
+#else
+            if (this.currentTabIndex < 0 || this.currentTabIndex >= this.navigationStacks.Count)
+            {
+                return;
+            }
+            this.navigationStacks[this.currentTabIndex].GoBack();
+#endif
+        }
+            
+
+        public void RemoveBackEntry()
+        {
+            #if __ANDROID__ || WINDOWS_PHONE
+            if (this.backStack.Count > 0)
+            {
+                this.backStack.Pop();
+            }
+            #else
+            this.navigationStacks[this.currentTabIndex].RemoveBackEntry();
+            #endif
+        }
+
+        /// <summary>
+        /// Go forward to <see cref="AppercodePage"/> previously went back from
+        /// </summary>
+        /// <remarks>not used</remarks>
+        public void GoForward()
+        {
+            throw new NotImplementedException();
+        }
+
+#pragma warning restore 108
+
+        private void LoadApplicationResourcesFromAssembly(Assembly assembly)
+        {
+            var allTypes = assembly.GetExportedTypes();
+            var applicationResourcesSources = allTypes.Where(t => t.GetCustomAttribute(typeof(Appercode.UI.StylesAndResources.ApplicationResourcesAttribute)) != null);
+
+            foreach (var source in applicationResourcesSources)
+            {
+                var generatorMethod = source.GetMethod("GetResourceDictionary", BindingFlags.Static | BindingFlags.Public);
+                if (generatorMethod == null || generatorMethod.ReturnType != typeof(ResourceDictionary))
+                {
+                    throw new InvalidOperationException(string.Format("Can't find GetResourceDictionary method returning ResourceDictionary for ApplicationResource {0}", source.FullName));
+                }
+                var rd = (ResourceDictionary)generatorMethod.Invoke(null, new object[] { });
+                this.visualRoot.Resources.MergedDictionaries.Add(rd);
+            }
+        }
+
+        internal AppercodePage InstantiatePage(Type sourcePageType)
+        {
+            var pageConstructorInfo = sourcePageType.GetConstructor(new Type[] {
+
+            });
+            AppercodePage pageInstance = null;
+            try
+            {
+                pageInstance = (AppercodePage)pageConstructorInfo.Invoke(new object[] {});
+            }
+            catch (System.Reflection.TargetInvocationException e)
+            {
+                this.IsNavigationInProgress = false;
+                throw e.InnerException;
+            }
+            return pageInstance;
+        }
+
+        private void CloseApplication()
+        {
+            if (this.CanCloseApp)
+            {
+                this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(default(Type), null));
+                this.NativeCloseApplication();
+            }
+        }
+    }
+}
