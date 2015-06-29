@@ -1,0 +1,479 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0B707F53-DA32-403E-ACD0-E539247741C8}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Appercode.UI</RootNamespace>
+    <AssemblyName>Appercode.UIFramework.Droid</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;__ANDROID__</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;__ANDROID__</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="Mono.Android.Export" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ViewPagerIndicator, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Appercode.ViewPagerIndicator.1.0.0.1\lib\MonoAndroid\ViewPagerIndicator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v13, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Xamarin.Android.Support.v13.22.2.0.0\lib\MonoAndroid403\Xamarin.Android.Support.v13.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v4, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Xamarin.Android.Support.v4.22.2.0.0\lib\MonoAndroid403\Xamarin.Android.Support.v4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\AppercodePage.cs" />
+    <Compile Include="Controls\AppercodePage.Droid.cs" />
+    <Compile Include="Controls\AppercodeVisualRoot.cs" />
+    <Compile Include="Controls\Base\GridSizeCollectionBase.cs" />
+    <Compile Include="Controls\Border.cs" />
+    <Compile Include="Controls\CommandBar.cs" />
+    <Compile Include="Controls\CommandBarElementCollection.cs" />
+    <Compile Include="Controls\FontWeight.cs" />
+    <Compile Include="Controls\ICommandBarElement.cs" />
+    <Compile Include="Controls\IPivotItemProvider.cs" />
+    <Compile Include="Controls\ListPicker.cs" />
+    <Compile Include="Controls\ListPicker.Droid.cs" />
+    <Compile Include="Controls\NativeControl\ActivityEventArgs.cs" />
+    <Compile Include="Controls\NativeControl\BundleEventArgs.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\Button.Droid.cs" />
+    <Compile Include="Controls\Canvas.cs" />
+    <Compile Include="Controls\Canvas.Droid.cs" />
+    <Compile Include="Controls\CheckBox.cs" />
+    <Compile Include="Controls\CheckBox.Droid.cs" />
+    <Compile Include="Controls\ClickMode.cs" />
+    <Compile Include="Controls\ColumnDefinition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\ColumnDefinitionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\ContentControl.Droid.cs" />
+    <Compile Include="Controls\ContentPresenter.cs" />
+    <Compile Include="Controls\ContentPresenter.Droid.cs" />
+    <Compile Include="Controls\DefinitionBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\Grid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\Grid.Droid.cs" />
+    <Compile Include="Controls\HyperlinkButton.cs" />
+    <Compile Include="Controls\HyperlinkButton.Droid.cs" />
+    <Compile Include="Controls\Image.Droid.cs" />
+    <Compile Include="Controls\DataTemplateSelector.cs" />
+    <Compile Include="Controls\Image.cs" />
+    <Compile Include="Controls\Input\InputScope.cs" />
+    <Compile Include="Controls\ItemCollection.cs" />
+    <Compile Include="Controls\ItemsControl.cs" />
+    <Compile Include="Controls\ItemsControl.Droid.cs" />
+    <Compile Include="Controls\ItemsPanelTemplate.cs" />
+    <Compile Include="Controls\ListBox.cs" />
+    <Compile Include="Controls\ListBox.Droid.cs" />
+    <Compile Include="Controls\ListBoxItem.cs" />
+    <Compile Include="Controls\ListBoxItem.Droid.cs" />
+    <Compile Include="Controls\ManipulationMode.cs" />
+    <Compile Include="Controls\MediaElement.cs" />
+    <Compile Include="Controls\MediaElement.Droid.cs" />
+    <Compile Include="Controls\Media\AppercodeColors.cs" />
+    <Compile Include="Controls\Media\ImageSource.cs" />
+    <Compile Include="Controls\Media\TokenizerHelper.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\NativeMediaPlayer.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\WrapedVideoView.cs" />
+    <Compile Include="Controls\Navigation\IFrameStyler.cs" />
+    <Compile Include="Controls\Navigation\NavigationType.cs" />
+    <Compile Include="Controls\Navigation\Primitives\TabBarTab.cs" />
+    <Compile Include="Controls\Navigation\Primitives\TabBarTabsCollection.cs" />
+    <Compile Include="Controls\Navigation\Primitives\ViewPagerPage.cs" />
+    <Compile Include="Controls\Navigation\TabsNavigationFrame.cs" />
+    <Compile Include="Controls\Navigation\TabsNavigationFrame.Droid.cs" />
+    <Compile Include="Controls\Pivot.cs" />
+    <Compile Include="Controls\Pivot.Droid.cs" />
+    <Compile Include="Controls\PivotHeaderItem.cs" />
+    <Compile Include="Controls\PivotHeaderMode.cs" />
+    <Compile Include="Controls\PivotHeadersControl.Droid.cs" />
+    <Compile Include="Controls\PivotHeadersControl.cs" />
+    <Compile Include="Controls\PivotItem.cs" />
+    <Compile Include="Controls\PivotItemContainerGenerator.cs" />
+    <Compile Include="Controls\PivotVirtualizingPanel.Droid.cs" />
+    <Compile Include="Controls\PivotVirtualizingPanel.cs" />
+    <Compile Include="Controls\Popups\MessageDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\Popups\MessageDialog.Droid.cs" />
+    <Compile Include="Controls\Popups\UICommand.cs" />
+    <Compile Include="Controls\Primitives\PickerBase.cs" />
+    <Compile Include="Controls\Primitives\PickerBase.Droid.cs" />
+    <Compile Include="Controls\RangePicker.cs" />
+    <Compile Include="Controls\TextChangedEventHandler.cs" />
+    <Compile Include="Controls\RangePicker.Droid.cs" />
+    <Compile Include="ControlTemplate.cs" />
+    <Compile Include="Internals\Helpers\MathF.cs" />
+    <Compile Include="Internals\Helpers\ThicknessExtensions.cs" />
+    <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\INameScope.cs" />
+    <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\MarkupExtension.cs" />
+    <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\XmlnsDefinitionAttribute.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventArgs.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventHandler.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\GroupDescription.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\ICollectionView.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\ICollectionViewFactory.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\IEditableCollectionView.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\NewItemPlaceholderPosition.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescription.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\SortDescriptionCollection.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\Matrix.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows.Media\MatrixConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\CoerceValueCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObject.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyObjectType.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyProperty.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyChangedEventArgs.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyChangedEventHandler.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\DependencyPropertyKey.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Freezable.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\LocalValueEntry.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\LocalValueEnumerator.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Point.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PointConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PropertyChangedCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\PropertyMetadata.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Size.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\SizeConverter.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\ValidateValueCallback.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\Vector.cs" />
+    <Compile Include="mono\mcs\class\WindowsBase\System.Windows\VectorConverter.cs" />
+    <Compile Include="System.Windows\Expression.cs" />
+    <Compile Include="System.Windows\GetReadOnlyValueCallback.cs" />
+    <Compile Include="System.Windows\ReadOnlyFrameworkPropertyMetadata.cs" />
+    <Compile Include="ValueConverterFactory.cs" />
+    <Compile Include="Controls\Border.Droid.cs" />
+    <Compile Include="Device\GeoCoordinate.cs" />
+    <Compile Include="Controls\Media\Imaging\DownloadProgressEventArgs.cs" />
+    <Compile Include="Controls\NativeAppercodeFragment.cs" />
+    <Compile Include="Controls\NativeControl\CheckBoxDrawableHelper.cs" />
+    <Compile Include="Controls\NativeControl\NativeContentControl.cs" />
+    <Compile Include="Controls\NativeControl\NativeScrollViewer.cs" />
+    <Compile Include="Controls\NativeControl\NativeToggleButton.cs" />
+    <Compile Include="Controls\NativeControl\RadioButtonDrawableHelper.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\ClickDetector.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\IClickableView.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\IJavaFinalizable.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\ISelectableView.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\ITapableView.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\TapDetector.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\WrapedEditText.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\WrapedImageView.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\WrapedProgressBar.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\WrapedTextView.cs" />
+    <Compile Include="Controls\NativeControl\Wrapers\WrapedViewGroup.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Controls\NativeControl\Wrapers\WrappedSeekBar.cs" />
+    <Compile Include="Controls\PasswordBox.cs" />
+    <Compile Include="Controls\PasswordBox.Droid.cs" />
+    <Compile Include="Controls\PresentationFrameworkCollection.cs" />
+    <Compile Include="Controls\Primitives\ItemContainerGenerator.cs" />
+    <Compile Include="Controls\Primitives\IVirtualizingPanel.cs" />
+    <Compile Include="Controls\Primitives\RangeBase.cs" />
+    <Compile Include="Controls\Primitives\RangeBase.Droid.cs" />
+    <Compile Include="Controls\Primitives\Selector.cs" />
+    <Compile Include="Controls\ProgressBar.cs" />
+    <Compile Include="Controls\ProgressBar.Droid.cs" />
+    <Compile Include="Controls\RowDefinition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\RowDefinitionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\ScrollViewer.Droid.cs" />
+    <Compile Include="Controls\SelectionChangedEventHandler.cs" />
+    <Compile Include="Controls\TypeConverters.cs" />
+    <Compile Include="Controls\VirtualizingPanel.cs" />
+    <Compile Include="Controls\VirtualizingStackPanel.cs" />
+    <Compile Include="Controls\VirtualizingStackPanel.Droid.cs" />
+    <Compile Include="Controls\SelectionMode.cs" />
+    <Compile Include="Controls\Validation.cs" />
+    <Compile Include="Controls\ValidationError.cs" />
+    <Compile Include="Controls\ValidationErrorEventAction.cs" />
+    <Compile Include="Controls\ValidationErrorEventArgs.cs" />
+    <Compile Include="Data\Binding.cs" />
+    <Compile Include="Data\BindingBase.cs" />
+    <Compile Include="Data\BindingExpression.cs" />
+    <Compile Include="Data\BindingExpressionBase.cs" />
+    <Compile Include="Data\BindingMode.cs" />
+    <Compile Include="Data\BindingOperations.cs" />
+    <Compile Include="Data\CollectionView.cs" />
+    <Compile Include="Data\CollectionViewGroup.cs" />
+    <Compile Include="Data\CollectionViewSource.cs" />
+    <Compile Include="Data\FilterEventArgs.cs" />
+    <Compile Include="Data\FilterEventHandler.cs" />
+    <Compile Include="Data\IValueConverter.cs" />
+    <Compile Include="Data\RelativeSource.cs" />
+    <Compile Include="Data\RelativeSourceMode.cs" />
+    <Compile Include="Data\UpdateSourceTrigger.cs" />
+    <Compile Include="Controls\Slider.cs" />
+    <Compile Include="Controls\Slider.Droid.cs" />
+    <Compile Include="Device\ScreenProperties.cs" />
+    <Compile Include="Device\ScreenProperties.Droid.cs" />
+    <Compile Include="GridLength.cs" />
+    <Compile Include="GridLengthConverter.cs" />
+    <Compile Include="GridUnitType.cs" />
+    <Compile Include="Helpers\EnumerableHelper.cs" />
+    <Compile Include="Helpers\ResourceDictionaryManager.cs" />
+    <Compile Include="Helpers\WeakEventHandler.cs" />
+    <Compile Include="Input\GestureEventArgs.cs" />
+    <Compile Include="Internals\BindingValueChangedEventArgs.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewGroupInternal.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewGroupRoot.cs" />
+    <Compile Include="Internals\CollectionView\CollectionViewProxy.cs" />
+    <Compile Include="Internals\CollectionView\EnumerableCollectionView.cs" />
+    <Compile Include="Internals\CollectionView\IViewLifetime.cs" />
+    <Compile Include="Internals\CollectionView\ListCollectionView.cs" />
+    <Compile Include="Internals\CollectionView\SortFieldComparer.cs" />
+    <Compile Include="Internals\CollectionView\ViewManager.cs" />
+    <Compile Include="Internals\CollectionView\ViewRecord.cs" />
+    <Compile Include="Internals\CollectionView\ViewTable.cs" />
+    <Compile Include="Internals\DataContextChangedEventArgs.cs" />
+    <Compile Include="Internals\DataContextChangedEventHandler.cs" />
+    <Compile Include="Internals\DataContextChangedReason.cs" />
+    <Compile Include="Internals\DependencyPropertyChangedWeakListener.cs" />
+    <Compile Include="Internals\DynamicValueConverter.cs" />
+    <Compile Include="Internals\ICollectionChangedListener.cs" />
+    <Compile Include="Internals\IDataContextChangedListener.cs" />
+    <Compile Include="Internals\IErrorsChangedListener.cs" />
+    <Compile Include="Internals\IMarkupExtension.cs" />
+    <Compile Include="Internals\InterfaceConverter.cs" />
+    <Compile Include="Internals\ObjectSourceConverter.cs" />
+    <Compile Include="Internals\ObjectTargetConverter.cs" />
+    <Compile Include="Internals\PathParser\CLRPropertyListener.cs" />
+    <Compile Include="Internals\PathParser\DependencyPropertyAccessStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\DependencyPropertyListener.cs" />
+    <Compile Include="Internals\PathParser\IndexerListener.cs" />
+    <Compile Include="Internals\PathParser\IndexerPathStep.cs" />
+    <Compile Include="Internals\PathParser\IndexerPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\IRaisePropertyPathStepChanged.cs" />
+    <Compile Include="Internals\PathParser\ISourcePropertyChanged.cs" />
+    <Compile Include="Internals\PathParser\PropertyAccessPathStep.cs" />
+    <Compile Include="Internals\PathParser\PropertyAccessPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\PropertyListener.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathChangedEventArgs.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathListener.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStep.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStepChangedHandler.cs" />
+    <Compile Include="Internals\PathParser\PropertyPathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\SourcePathStepDescriptor.cs" />
+    <Compile Include="Internals\PathParser\SourcePropertyPathStep.cs" />
+    <Compile Include="Internals\PathParser\WeakDependencyPropertyChangedListener.cs" />
+    <Compile Include="Internals\PathParser\WeakPropertyChangedListener.cs" />
+    <Compile Include="Internals\PropertyPathParser.cs" />
+    <Compile Include="Internals\SourceDefaultValueConverter.cs" />
+    <Compile Include="Internals\SystemConvertConverter.cs" />
+    <Compile Include="Internals\TargetDefaultValueConverter.cs" />
+    <Compile Include="Internals\WeakCollectionChangedListener.cs" />
+    <Compile Include="Internals\WeakDataContextChangedListener.cs" />
+    <Compile Include="Internals\WeakErrorsChangedListener.cs" />
+    <Compile Include="Internals\WeakRefKey.cs" />
+    <Compile Include="PerfomanceLogger.cs" />
+    <Compile Include="PropertyPath.cs" />
+    <Compile Include="RoutedEvent.cs" />
+    <Compile Include="RoutedEventArgs.cs" />
+    <Compile Include="RoutingStrategy.cs" />
+    <Compile Include="StylesAndResources\ApplicationResourcesAttribute.cs" />
+    <Compile Include="StylesAndResources\ResourceDictionary.cs" />
+    <Compile Include="StylesAndResources\Setter.cs" />
+    <Compile Include="StylesAndResources\SetterBase.cs" />
+    <Compile Include="StylesAndResources\SetterBaseCollection.cs" />
+    <Compile Include="StylesAndResources\Style.cs" />
+    <Compile Include="System.Windows\CornerRadius.cs" />
+    <Compile Include="System.Windows\Duration.cs" />
+    <Compile Include="System.Windows\ExceptionRoutedEventArgs.cs" />
+    <Compile Include="System.Windows\Input\FocusManager.cs" />
+    <Compile Include="System.Windows\Input\FocusManager.Droid.cs" />
+    <Compile Include="System.Windows\Media\Brush.Droid.cs" />
+    <Compile Include="System.Windows\Media\BrushMappingMode.cs" />
+    <Compile Include="System.Windows\Media\ColorInterpolationMode.cs" />
+    <Compile Include="System.Windows\Media\Color.Droid.cs" />
+    <Compile Include="System.Windows\Media\GradientBrush.cs" />
+    <Compile Include="System.Windows\Media\GradientSpreadMethod.cs" />
+    <Compile Include="System.Windows\Media\GradientStop.cs" />
+    <Compile Include="System.Windows\Media\GradientStopCollection.cs" />
+    <Compile Include="System.Windows\Media\ImageBrush.cs" />
+    <Compile Include="System.Windows\Media\ImageBrush.Droid.cs" />
+    <Compile Include="Controls\Media\ImageSource.Droid.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapCreateOptions.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapImage.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapImage.Droid.cs" />
+    <Compile Include="Controls\Media\Imaging\BitmapSource.cs" />
+    <Compile Include="System.Windows\Media\MediaElementState.cs" />
+    <Compile Include="System.Windows\Media\SolidColorBrush.cs" />
+    <Compile Include="System.Windows\Media\SolidColorBrush.Droid.cs" />
+    <Compile Include="Controls\NativeControl\ContentViewGroup.cs" />
+    <Compile Include="Controls\Navigation\IFrame.cs" />
+    <Compile Include="Controls\Navigation\NavigatedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigatingCancelEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigatingCancelEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigationEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigationFailedEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigationFailedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\NavigationMode.cs" />
+    <Compile Include="Controls\Navigation\NavigationService.cs" />
+    <Compile Include="Controls\Navigation\NavigationStoppedEventHandler.cs" />
+    <Compile Include="Controls\Navigation\StackNavigationFrame.cs" />
+    <Compile Include="Controls\Navigation\StackNavigationFrame.Driod.cs" />
+    <Compile Include="Controls\OrientationChangedEventArgs.cs" />
+    <Compile Include="Controls\Page.cs" />
+    <Compile Include="Controls\PageOrientation.cs" />
+    <Compile Include="Controls\Primitives\ToggleButton.Droid.cs" />
+    <Compile Include="Controls\RadioButton.cs" />
+    <Compile Include="Controls\RadioButton.Droid.cs" />
+    <Compile Include="Controls\ScrollBarVisibility.cs" />
+    <Compile Include="Controls\ScrollViewer.cs" />
+    <Compile Include="Controls\SupportedPageOrientation.cs" />
+    <Compile Include="Controls\UserControl.cs" />
+    <Compile Include="Controls\UserControl.Droid.cs" />
+    <Compile Include="DataTemplate.cs" />
+    <Compile Include="FrameworkElementFactory.cs" />
+    <Compile Include="FrameworkTemplate.cs" />
+    <Compile Include="Internals\BaseValueSourceInternal.cs" />
+    <Compile Include="Internals\BindingValueCache.cs" />
+    <Compile Include="Internals\Boxes\BooleanBoxes.cs" />
+    <Compile Include="Internals\DefaultValueConverter.cs" />
+    <Compile Include="Internals\DeferredReference.cs" />
+    <Compile Include="Internals\DeferredResourceReference.cs" />
+    <Compile Include="Internals\DependencySource.cs" />
+    <Compile Include="Internals\ExpressionMode.cs" />
+    <Compile Include="Internals\ISealable.cs" />
+    <Compile Include="Internals\LogicalOp.cs" />
+    <Compile Include="Internals\PropertyValue.cs" />
+    <Compile Include="Internals\PropertyValueType.cs" />
+    <Compile Include="Internals\ResourceDictionaryCollection.cs" />
+    <Compile Include="Internals\ResourceReferenceExpression.cs" />
+    <Compile Include="Internals\ResourcesChangedEventArgs.cs" />
+    <Compile Include="Internals\ResourcesChangeInfo.cs" />
+    <Compile Include="Internals\StyleHelper.cs" />
+    <Compile Include="Internals\TriggerCondition.cs" />
+    <Compile Include="LogicalTreeHelper.cs" />
+    <Compile Include="Markup\TemplateBindingExtension.cs" />
+    <Compile Include="System.Windows\HorizontalAlignment.cs" />
+    <Compile Include="System.Windows\Markup\IAddChild.cs" />
+    <Compile Include="System.Windows\Media\Color.cs" />
+    <Compile Include="Controls\ContentControl.cs" />
+    <Compile Include="Controls\Control.cs" />
+    <Compile Include="Controls\Control.Droid.cs" />
+    <Compile Include="Controls\FontFamily.cs" />
+    <Compile Include="Controls\FontStyle.cs" />
+    <Compile Include="Controls\FontStyles.cs" />
+    <Compile Include="Controls\FontStyleType.cs" />
+    <Compile Include="Controls\FontWeights.cs" />
+    <Compile Include="Controls\FontWeightType.cs" />
+    <Compile Include="Controls\Orientation.cs" />
+    <Compile Include="Controls\Panel.cs" />
+    <Compile Include="Controls\Panel.Droid.cs" />
+    <Compile Include="Controls\Primitives\ButtonBase.cs" />
+    <Compile Include="Controls\Primitives\ButtonBase.Droid.cs" />
+    <Compile Include="Controls\Primitives\ToggleButton.cs" />
+    <Compile Include="Controls\StackPanel.cs" />
+    <Compile Include="Controls\StackPanel.Droid.cs" />
+    <Compile Include="Controls\TextAlignment.cs" />
+    <Compile Include="Controls\TextBlock.cs" />
+    <Compile Include="Controls\TextBlock.Droid.cs" />
+    <Compile Include="Controls\TextBox.cs" />
+    <Compile Include="Controls\TextBox.Droid.cs" />
+    <Compile Include="Controls\TextTrimming.cs" />
+    <Compile Include="Controls\TextWrapping.cs" />
+    <Compile Include="Controls\UIElement.cs" />
+    <Compile Include="Controls\UIElement.Droid.cs" />
+    <Compile Include="Controls\UIElementCollection.cs" />
+    <Compile Include="Controls\Visibility.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System.Windows\Media\Stretch.cs" />
+    <Compile Include="System.Windows\NullableBoolConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="System.Windows\RoutedPropertyChangedEventHandler.cs" />
+    <Compile Include="System.Windows\Thickness.cs" />
+    <Compile Include="System.Windows\Threading\Dispatcher.cs" />
+    <Compile Include="System.Windows\Threading\Dispatcher.Droid.cs" />
+    <Compile Include="System.Windows\Threading\DispatcherObject.cs" />
+    <Compile Include="System.Windows\Threading\DispatcherObject.Droid.cs" />
+    <Compile Include="System.Windows\VerticalAlignment.cs" />
+    <Compile Include="TemplateBindingExpression.cs" />
+    <Compile Include="TextChangedEventArgs.cs" />
+    <Compile Include="Controls\Navigation\NavigatingEventArgs.cs" />
+    <Compile Include="Controls\NotifyEventArgs.cs" />
+    <Compile Include="Controls\WebBrowser.cs" />
+    <Compile Include="Controls\WebBrowser.Droid.cs" />
+    <Compile Include="Controls\WebBrowserBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.Appercode.UIFramework.Droid.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\fadein.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\fadeout.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="xamandroidsupportv13-18">
+      <Visible>False</Visible>
+      <Version>22.2.0.0</Version>
+    </XamarinComponentReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!--Import Project="..\..\Dependencies\StyleCop\StyleCop.targets" /-->
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

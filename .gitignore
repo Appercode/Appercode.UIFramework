@@ -141,7 +141,10 @@ publish/
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
-#!**/packages/repositories.config
+!**/packages/repositories.config
+
+# Xamarin Components
+/Components
 
 # Windows Azure Build Output
 csx/
@@ -194,3 +197,6 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+# Xamarin Android Resources
+Resource.Designer.cs
