@@ -389,9 +389,7 @@
     <Compile Include="Controls\ProgressBar.Abstract.cs" />
     <None Include="Key.snk" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="mono\mcs\class\System.Xaml\System.Windows.Markup\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="Controls\HyperlinkButton.Abstract.cs" />
   </ItemGroup>

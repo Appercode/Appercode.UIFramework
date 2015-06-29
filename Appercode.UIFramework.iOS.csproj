@@ -224,7 +224,6 @@
     <Compile Include="Internals\WeakErrorsChangedListener.cs" />
     <Compile Include="Internals\WeakDataContextChangedListener.cs" />
     <Compile Include="Internals\WeakRefKey.cs" />
-    <Compile Include="mono\external\referencesource\System\sys\system\windows\markup\ValueSerializerAttribute.cs" />
     <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\INameScope.cs" />
     <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\MarkupExtension.cs" />
     <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\XmlnsDefinitionAttribute.cs" />
@@ -430,11 +429,7 @@
     <Compile Include="Controls\RangePicker.iOS.cs" />
     <Compile Include="Internals\Helpers\ThicknessExtensions.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="mono\mcs\class\System.Xaml\System.Xaml\" />
-    <Folder Include="mono\mcs\class\WindowsBase\System.Windows.Converters\" />
-    <Folder Include="mono\mcs\class\WindowsBase\System.Windows.Media.Converters\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Windows" />
