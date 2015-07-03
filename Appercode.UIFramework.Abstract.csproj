@@ -376,7 +376,7 @@
     <Compile Include="ValueConverterFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\Control.Abstact.cs" />
+    <Compile Include="Controls\Control.Abstract.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
