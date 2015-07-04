@@ -6,7 +6,10 @@ namespace System.Windows.Input
     {
         private static bool ChechFocus(UIElement element)
         {
-            return element.NativeUIElement.IsFirstResponder;
+            // An element might have NativeUIElement set to null,
+            // because a control could not be presented by a descendant of UIView.
+            var nativeElement = element.NativeUIElement;
+            return nativeElement != null && nativeElement.IsFirstResponder;
         }
     }
 }
