@@ -33,16 +33,11 @@ namespace Appercode.UI.Controls
             return size;
         }
 
-        public override void Arrange(CGRect finalRect)
-        {
-            base.Arrange(finalRect);
-        }
-
         protected internal override void NativeInit()
         {
             if (this.NativeUIElement == null)
             {
-                var textField = new UITextField() { SecureTextEntry = true };
+                var textField = new UITextField { SecureTextEntry = true };
                 textField.BorderStyle = UITextBorderStyle.RoundedRect;
                 foreach (UIView view in textField.Subviews[0].Subviews)
                 {
@@ -57,14 +52,8 @@ namespace Appercode.UI.Controls
                 {
                     return this.NativeMaxLength == 0 || textField.Text.Length + txt.Length <= this.NativeMaxLength;
                 };
-                textField.EditingChanged += (sender, e) =>
-                {
-                    if (this.PasswordChanged != null)
-                    {
-                        this.PasswordChanged(this, new RoutedEventArgs());
-                    }
-                    this.OnLayoutUpdated();
-                };
+                textField.EditingChanged += this.OnEditingChanged;
+                textField.EditingDidEnd += (sender, e) => this.OnLostFocus(new RoutedEventArgs());
                 this.NativeUIElement = textField;
             }
             base.NativeInit();
@@ -101,6 +90,17 @@ namespace Appercode.UI.Controls
                 textField.EditingDidBegin -= this.SelectOnEditing;
                 textField.EditingDidBegin += this.SelectOnEditing;
             }
+        }
+
+        private void OnEditingChanged(object sender, EventArgs e)
+        {
+            this.Password = ((UITextField)sender).Text;
+            if (this.PasswordChanged != null)
+            {
+                this.PasswordChanged(this, new RoutedEventArgs());
+            }
+
+            this.OnLayoutUpdated();
         }
 
         private void SelectOnEditing(object sender, EventArgs e)
