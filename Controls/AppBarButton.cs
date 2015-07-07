@@ -15,11 +15,6 @@ namespace Appercode.UI.Controls
         public static readonly DependencyProperty LabelProperty =
             DependencyProperty.Register("Label", typeof(string), typeof(AppBarButton));
 
-        static AppBarButton()
-        {
-            Button.VisibilityProperty.OverrideMetadata(typeof(AppBarButton), new PropertyMetadata(OnVisibilityChanged));
-        }
-
         public event EventHandler VisibilityChanged;
 
         public IconElement Icon
@@ -49,15 +44,13 @@ namespace Appercode.UI.Controls
             }
         }
 
-        private static void OnVisibilityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        protected override void OnVisibilityChanged(Visibility newValue)
         {
-            var button = d as AppBarButton;
-            if (button != null)
+            base.OnVisibilityChanged(newValue);
+            var visibilityChanged = VisibilityChanged;
+            if (visibilityChanged != null)
             {
-                if (button.VisibilityChanged != null)
-                {
-                    button.VisibilityChanged(button, EventArgs.Empty);
-                }
+                visibilityChanged(this, EventArgs.Empty);
             }
         }
 
