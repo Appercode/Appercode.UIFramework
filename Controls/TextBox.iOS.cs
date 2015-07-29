@@ -191,13 +191,12 @@ namespace Appercode.UI.Controls
             set
             {
                 this.nativeIsReadOnly = value;
-                if (!value)
+                if (value)
                 {
                     this.textField.UserInteractionEnabled = false;
                     this.textView.UserInteractionEnabled = false;
-                    return;
                 }
-                if (this.nativeAcceptsReturn || this.TextWrapping == Controls.TextWrapping.Wrap)
+                else if (this.nativeAcceptsReturn || this.TextWrapping == TextWrapping.Wrap)
                 {
                     this.textView.UserInteractionEnabled = true;
                 }
