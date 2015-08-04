@@ -1,3 +1,4 @@
+using Appercode.UI.Internals.Boxes;
 using Appercode.UI.StylesAndResources;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Appercode.UI.Controls.Navigation
     /// </summary>
     public partial class StackNavigationFrame : IFrame
     {
+        private readonly Dispatcher dispatcher;
         private readonly IFrameStyler styler;
         private NavigationService navigationService;
         private AppercodePage currentPage;
@@ -24,6 +26,7 @@ namespace Appercode.UI.Controls.Navigation
         /// </summary>
         public StackNavigationFrame(IFrameStyler styler = null)
         {
+            this.dispatcher = Dispatcher.CurrentDispatcher;
             this.styler = styler;
             this.Initialize();
         }
@@ -94,7 +97,7 @@ namespace Appercode.UI.Controls.Navigation
 
         public Dispatcher Dispatcher
         {
-            get { throw new NotImplementedException(); }
+            get { return this.dispatcher; }
         }
 #pragma warning restore 108
 
@@ -166,6 +169,7 @@ namespace Appercode.UI.Controls.Navigation
             {
                 throw new ArgumentNullException("sourcePageType", "sourcePageType must not be null");
             }
+
             if (!sourcePageType.IsSubclassOf(typeof(AppercodePage)) && sourcePageType != typeof(AppercodePage))
             {
                 throw new ArgumentException("sourcePageType must be an AppercodePage", "sourcePageType");
@@ -175,53 +179,9 @@ namespace Appercode.UI.Controls.Navigation
             {
                 return false;
             }
-            this.IsNavigationInProgress = true;
 
-            // navigating from
-            NavigatingCancelEventArgs navigatingCancelEventArgs = new NavigatingCancelEventArgs(sourcePageType, NavigationMode.New);
-
-            if (this.CurrentPage != null)
-            {
-                this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
-                if (navigatingCancelEventArgs.Cancel == true)
-                {
-                    this.IsNavigationInProgress = false;
-                    return false;
-                }
-            }
-
-            // navigeted from
-            if (this.CurrentPage != null)
-            {
-                this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(sourcePageType, parameter));
-                this.backStack.Push(this.CurrentPage);
-            }
-
-            // Create page
-            var pageConstructorInfo = sourcePageType.GetConstructor(new Type[] { });
-            AppercodePage pageInstance = null;
-            try
-            {
-                pageInstance = (AppercodePage)pageConstructorInfo.Invoke(new object[] { });
-            }
-            catch (System.Reflection.TargetInvocationException e)
-            {
-                this.IsNavigationInProgress = false;
-                throw e.InnerException;
-            }
-
-            pageInstance.NavigationService = this.NavigationService;
-            this.visualRoot.Child = pageInstance;
-            this.NativeShowPage(pageInstance, NavigationMode.New, navigationType);
-            this.modalIsDisplayed |= navigationType == NavigationType.Modal;
-
-            // navigated to
-            pageInstance.InternalOnNavigatedTo(new NavigationEventArgs(sourcePageType, parameter));
-
-            this.CurrentPage = pageInstance;
-
-            this.IsNavigationInProgress = false;
-            return true;
+            return BooleanBoxes.TrueBox == this.Dispatcher.Invoke(
+                (Func<Type, object, NavigationType, object>)this.NavigateInternal, sourcePageType, parameter, navigationType);
         }
 
         /// <summary>
@@ -318,6 +278,56 @@ namespace Appercode.UI.Controls.Navigation
                 var rd = (ResourceDictionary)generatorMethod.Invoke(null, new object[] { });
                 this.visualRoot.Resources.MergedDictionaries.Add(rd);
             }
+        }
+
+        private object NavigateInternal(Type sourcePageType, object parameter, NavigationType navigationType)
+        {
+            this.IsNavigationInProgress = true;
+
+            // navigating from
+            if (this.CurrentPage != null)
+            {
+                var navigatingCancelEventArgs = new NavigatingCancelEventArgs(sourcePageType, NavigationMode.New);
+                this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
+                if (navigatingCancelEventArgs.Cancel)
+                {
+                    this.IsNavigationInProgress = false;
+                    return BooleanBoxes.FalseBox;
+                }
+            }
+
+            // navigated from
+            var navigationEventArgs = new NavigationEventArgs(sourcePageType, parameter);
+            if (this.CurrentPage != null)
+            {
+                this.CurrentPage.InternalOnNavigatedFrom(navigationEventArgs);
+                this.backStack.Push(this.CurrentPage);
+            }
+
+            // Create page
+            var pageConstructorInfo = sourcePageType.GetConstructor(new Type[] { });
+            AppercodePage pageInstance;
+            try
+            {
+                pageInstance = (AppercodePage)pageConstructorInfo.Invoke(new object[] { });
+            }
+            catch (TargetInvocationException e)
+            {
+                this.IsNavigationInProgress = false;
+                throw e.InnerException;
+            }
+
+            pageInstance.NavigationService = this.NavigationService;
+            this.visualRoot.Child = pageInstance;
+            this.NativeShowPage(pageInstance, NavigationMode.New, navigationType);
+            this.modalIsDisplayed |= navigationType == NavigationType.Modal;
+
+            // navigated to
+            pageInstance.InternalOnNavigatedTo(navigationEventArgs);
+
+            this.CurrentPage = pageInstance;
+            this.IsNavigationInProgress = false;
+            return BooleanBoxes.TrueBox;
         }
 
         private void OnNavigated(NavigationEventArgs e)
