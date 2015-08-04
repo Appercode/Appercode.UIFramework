@@ -1,4 +1,5 @@
 using Android.OS;
+using System.Threading;
 
 namespace System.Windows.Threading
 {
@@ -27,7 +28,12 @@ namespace System.Windows.Threading
         /// </summary>
         public bool CheckAccess()
         {
-            return System.Threading.SynchronizationContext.Current != null;
+            return SynchronizationContext.Current != null;
+        }
+
+        private static object InvokeInternal(Delegate d, object[] args)
+        {
+            throw new NotImplementedException("Synchronous invocation from a non-UI thread is not implemented.");
         }
     }
 }

@@ -25,5 +25,10 @@ namespace System.Windows.Threading
         {
             d.DynamicInvoke(args);
         }
+
+        private static object InvokeInternal(Delegate d, object[] args)
+        {
+            return d.DynamicInvoke(args);
+        }
     }
 }

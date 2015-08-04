@@ -94,6 +94,25 @@ namespace System.Windows.Threading
             return dispatcher;
         }
 
+        /// <summary>
+        /// Executes the specified delegate with the specified arguments synchronously on the UI thread.
+        /// <para /> If current thread is the UI thread, the delegate will be executed immediately, otherwise execution will be queued on the UI thread.
+        /// </summary>
+        /// <param name="d">Delegate to execute.</param>
+        /// <param name="args">Arguments to pass to the delegate.</param>
+        /// <returns>The value returned from the delegate or null if the delegate has no return value.</returns>
+        public object Invoke(Delegate d, params object[] args)
+        {
+            if (CheckAccess())
+            {
+                return d.DynamicInvoke(args);
+            }
+            else
+            {
+                return InvokeInternal(d, args);
+            }
+        }
+
         public void VerifyAccess()
         {
             if (!this.CheckAccess())
