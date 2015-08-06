@@ -1,5 +1,4 @@
 using Foundation;
-using ObjCRuntime;
 using System;
 using System.Windows;
 using UIKit;
@@ -27,7 +26,7 @@ namespace Appercode.UI.Controls.Media.Imaging
                 {
                     this.image = UIImage.FromBundle(this.UriSource.OriginalString);
                 }
-                else if (this.UriSource.Scheme.ToLower() == "http")
+                else if (this.UriSource.Scheme == Uri.UriSchemeHttp || this.UriSource.Scheme == Uri.UriSchemeHttps)
                 {
                     NSUrlRequest req = new NSMutableUrlRequest(this.UriSource);
                     NSOperationQueue queue = new NSOperationQueue();
