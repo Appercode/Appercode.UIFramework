@@ -59,11 +59,12 @@ namespace Appercode.UI.Controls.Navigation
         [Export("navigationBar:shouldPopItem:")]
         public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
         {
-            if (this.isGoingBack)
+            if (this.isGoingBack && this.ViewControllers.Length < navigationBar.Items.Length)
             {
                 this.isGoingBack = false;
                 return true;
             }
+
             this.GoBack();
             return false;
         }
