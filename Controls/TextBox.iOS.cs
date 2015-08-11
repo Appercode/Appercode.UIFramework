@@ -244,19 +244,11 @@ namespace Appercode.UI.Controls
                     this.nativeSelectionLength = range.Length;
                 };
 
-                this.textView.ShouldChangeText = (tv, range, str) =>
-                {
-                    return this.ChangeTextBaseOnLimit(ref range, str);
-                };
-
-                this.textField.ShouldChangeCharacters = (tf, range, str) =>
-                {
-                    return this.ChangeTextBaseOnLimit(ref range, str);
-                };
+                this.textView.ShouldChangeText = (tv, range, str) => this.ChangeTextBaseOnLimit(ref range, str);
+                this.textField.ShouldChangeCharacters = (tf, range, str) => this.ChangeTextBaseOnLimit(ref range, str);
 
                 v.AddSubview(this.textField);
                 v.AddSubview(this.textView);
-
                 this.NativeUIElement = v;
             }
 
@@ -368,32 +360,41 @@ namespace Appercode.UI.Controls
         {
             var location = (int)range.Location;
             var length = (int)range.Length;
-            if (this.MaxLength == 0 || str == string.Empty)
+            var maxLength = this.MaxLength;
+            var text = this.Text;
+            if (maxLength == 0 || str == string.Empty)
             {
-                var sb = new StringBuilder();
-                if (this.Text != null)
+                var newText = str;
+                if (text != null)
                 {
-                    sb.Append(this.Text.Substring(0, location));
+                    newText = text.Substring(0, location) + str + text.Substring(location + length);
                 }
-                sb.Append(str);
-                if (this.Text != null)
-                {
-                    sb.Append(this.Text.Substring(location + length));
-                }
-                this.Text = sb.ToString();
-                this.Select(location + str.Length, 0);
-                return false;
+
+                this.Text = newText;
             }
-            var count = this.MaxLength - (this.Text.Length - length);
-            if (count > 0)
+            else if (text == null)
             {
-                StringBuilder sb = new StringBuilder();
-                sb.Append(this.Text.Substring(0, location));
-                sb.Append(str.Substring(0, Math.Min(str.Length, count)));
-                sb.Append(this.Text.Substring(location + length));
-                this.Text = sb.ToString();
-                this.Select(location + count, 0);
+                this.Text = str.Substring(0, Math.Min(str.Length, maxLength));
             }
+            else
+            {
+                var count = maxLength - (text.Length - length);
+                if (count > 0)
+                {
+                    if (count < str.Length)
+                    {
+                        str = str.Remove(count);
+                    }
+
+                    this.Text = text.Substring(0, location) + str + text.Substring(location + length);
+                }
+                else
+                {
+                    str = string.Empty;
+                }
+            }
+
+            this.Select(location + str.Length, 0);
             return false;
         }
 
