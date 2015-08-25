@@ -79,8 +79,15 @@ namespace Appercode.UI.Controls.Navigation
             {
                 if (navigationType == NavigationType.Modal)
                 {
+                    // the idea taken at https://github.com/HugeLawn-MiracleApps/Xamarin-Forms-Labs/commit/87a8d5a5c1b9628de222d1d509e46865d255db7b
+                    var topViewController = UIApplication.SharedApplication.KeyWindow.RootViewController;
+                    while (topViewController.PresentedViewController != null)
+                    {
+                        topViewController = topViewController.PresentedViewController;
+                    }
+
                     var modalNavigationFrame = new StackNavigationFrame(this, pageInstance.ViewController);
-                    this.PresentViewController(modalNavigationFrame, true, null);
+                    topViewController.PresentViewController(modalNavigationFrame, true, null);
                 }
                 else
                 {
