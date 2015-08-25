@@ -207,36 +207,14 @@ namespace Appercode.UI.Controls.Navigation
         /// </summary>
         public void GoBack()
         {
-            AppercodePage previosPage = this.BackStack.FirstOrDefault();
-            if (previosPage == null)
+            if (this.backStack.Count == 0)
             {
                 this.CloseApplication();
-                return;
             }
-            Type previosPageType = previosPage.GetType();
-
-            // navigating from
-            NavigatingCancelEventArgs navigatingCancelEventArgs = new NavigatingCancelEventArgs(previosPageType, NavigationMode.Back);
-            this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
-            if (navigatingCancelEventArgs.Cancel == true)
+            else
             {
-                return;
+                this.Dispatcher.BeginInvoke(this.GoBackInternal);
             }
-
-            // navigated from
-            this.backStack.Pop();
-            this.visualRoot.Child = null;
-            this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
-
-            // navigation
-            this.visualRoot.Child = previosPage;
-            this.NativeShowPage(previosPage, NavigationMode.Back, this.modalIsDisplayed ? NavigationType.Modal : NavigationType.Default);
-            this.modalIsDisplayed = false;
-
-            this.CurrentPage = previosPage;
-
-            // navigated to
-            previosPage.InternalOnNavigatedTo(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
         }
 
         /// <summary>
@@ -328,6 +306,34 @@ namespace Appercode.UI.Controls.Navigation
             this.CurrentPage = pageInstance;
             this.IsNavigationInProgress = false;
             return BooleanBoxes.TrueBox;
+        }
+
+        private void GoBackInternal()
+        {
+            var previousPage = this.backStack.Peek();
+            var previousPageType = previousPage.GetType();
+
+            // navigating from
+            var navigatingCancelEventArgs = new NavigatingCancelEventArgs(previousPageType, NavigationMode.Back);
+            this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
+            if (navigatingCancelEventArgs.Cancel)
+            {
+                return;
+            }
+
+            // navigated from
+            this.backStack.Pop();
+            this.visualRoot.Child = null;
+            this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
+
+            // navigation
+            this.visualRoot.Child = previousPage;
+            this.NativeShowPage(previousPage, NavigationMode.Back, this.modalIsDisplayed ? NavigationType.Modal : NavigationType.Default);
+            this.modalIsDisplayed = false;
+            this.CurrentPage = previousPage;
+
+            // navigated to
+            previousPage.InternalOnNavigatedTo(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
         }
 
         private void OnNavigated(NavigationEventArgs e)
