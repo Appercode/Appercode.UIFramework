@@ -121,23 +121,12 @@ namespace Appercode.UI.Controls
                     }
                 }
             }
-
-            public override bool ScrollEnabled
-            {
-                get
-                {
-                    return base.ScrollEnabled;
-                }
-                set
-                {
-                    base.ScrollEnabled = value;
-                }
-            }
         }
 
         protected internal class AppercodePageViewController : UIViewController
         {
-            internal AppercodeUIScrollView Scroll;
+            internal readonly AppercodeUIScrollView Scroll;
+            private bool defaultInsetsAreSet;
             private UIEdgeInsets defaultContentInsets;
             private UIEdgeInsets defaultIndicatorsInsets;
 
@@ -222,19 +211,6 @@ namespace Appercode.UI.Controls
                 return FindFirstResponder(this.View);
             }
 
-            protected virtual void KeyboardWillChangeFrameNotification(NSNotification notification)
-            {
-                var keyboardBounds = UIKeyboard.FrameEndFromNotification(notification);
-                if (this.View.Frame.IntersectsWith(keyboardBounds))
-                {
-                    this.KeyboardWillShowNotification(notification);
-                }
-                else
-                {
-                    this.KeyboardWillHideNotification(notification);
-                }
-            }
-
             protected virtual void KeyboardWillShowNotification(NSNotification notification)
             {
                 UIView activeView = this.KeyboardGetActiveView();
@@ -252,10 +228,14 @@ namespace Appercode.UI.Controls
                     keyboardBounds = new CGRect(keyboardBounds.Y, keyboardBounds.X, keyboardBounds.Height, keyboardBounds.Width);
                 }
 
-                var scroll = this.Scroll.Subviews.Length > 0 && this.Scroll.Subviews[0] is UIScrollView ? (UIScrollView)this.Scroll.Subviews[0] : this.Scroll;
+                var scroll = this.GetScrollView();
+                if (defaultInsetsAreSet == false)
+                {
+                    defaultInsetsAreSet = true;
+                    this.defaultContentInsets = scroll.ContentInset;
+                    this.defaultIndicatorsInsets = scroll.ScrollIndicatorInsets;
+                }
 
-                this.defaultContentInsets = scroll.ContentInset;
-                this.defaultIndicatorsInsets = scroll.ScrollIndicatorInsets;
                 UIEdgeInsets contentInsets = new UIEdgeInsets(scroll.ContentInset.Top, 0.0f, keyboardBounds.Size.Height, 0.0f);
                 scroll.ScrollIndicatorInsets = contentInsets;
                 scroll.ContentInset = contentInsets;
@@ -266,26 +246,21 @@ namespace Appercode.UI.Controls
                         {
                             scroll.ScrollRectToVisible(scroll.Subviews[0].ConvertRectFromView(activeView.Frame, activeView.Superview), false);
                         },
-                        () =>
-                        {
-                            this.ignoreScroling = false;
-                        });
+                        () => this.ignoreScroling = false);
                 }
             }
 
             protected virtual void KeyboardWillHideNotification(NSNotification notification)
             {
                 UIView activeView = this.KeyboardGetActiveView();
-
-                if (this.Scroll == null)
+                if (this.Scroll != null)
                 {
-                    return;
-                }
-                this.Scroll.ScrollEnabled = false;
+                    this.Scroll.ScrollEnabled = false;
 
-                // Reset the content inset of the ScrollView and animate using the current keyboard animation duration
-                double animationDuration = activeView == null ? 0 : UIKeyboard.AnimationDurationFromNotification(notification);
-                this.ScroolViewToDefaultState(animationDuration);
+                    // Reset the content inset of the ScrollView and animate using the current keyboard animation duration
+                    var animationDuration = activeView == null ? 0 : UIKeyboard.AnimationDurationFromNotification(notification);
+                    UIView.Animate(animationDuration, this.ResetScrollView);
+                }
             }
 
             private static UIView FindFirstResponder(UIView view)
@@ -305,16 +280,17 @@ namespace Appercode.UI.Controls
                 return null;
             }
 
-            private void ScroolViewToDefaultState(double animationDuration)
+            private void ResetScrollView()
             {
-                UIView.Animate(animationDuration, delegate
-                {
-                    var scroll = this.Scroll.Subviews.Length > 0 && this.Scroll.Subviews[0] is UIScrollView ? (UIScrollView)this.Scroll.Subviews[0] : this.Scroll;
-                    scroll.ScrollIndicatorInsets = this.defaultContentInsets;
-                    scroll.ContentInset = this.defaultIndicatorsInsets;
-                }, delegate
-                {
-                });
+                var scroll = this.GetScrollView();
+                scroll.ScrollIndicatorInsets = this.defaultContentInsets;
+                scroll.ContentInset = this.defaultIndicatorsInsets;
+                defaultInsetsAreSet = false;
+            }
+
+            private UIScrollView GetScrollView()
+            {
+                return this.Scroll.Subviews.FirstOrDefault() as UIScrollView ?? this.Scroll;
             }
 
             #endregion
