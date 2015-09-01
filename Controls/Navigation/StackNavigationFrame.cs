@@ -67,13 +67,13 @@ namespace Appercode.UI.Controls.Navigation
         }
 
         /// <summary>
-        /// true if thare is screens in the current BackStack and you can <see cref="GoBack"/>
+        /// True if there are any pages in the current BackStack and you can <see cref="GoBack" />
         /// </summary>
         public bool CanGoBack
         {
             get
             {
-                return this.BackStack.Count() > 0;
+                return this.backStack.Count > 0;
             }
         }
 
@@ -137,15 +137,17 @@ namespace Appercode.UI.Controls.Navigation
             }
         }
 
-#pragma warning disable 108
-        private IEnumerable<AppercodePage> BackStack
+        /// <summary>
+        /// Returns an IEnumerable that can be used to enumerate the entries in back navigation history for a Frame.
+        /// </summary>
+        public IEnumerable<AppercodePage> BackStack
         {
             get
             {
-                return this.backStack;
+                // return a read-only copy of the backStack to avoid cast and modification by external code
+                return this.backStack.AsReadonly();
             }
         }
-#pragma warning restore 108
 
         /// <summary>
         /// Navigate to page

@@ -81,25 +81,32 @@ namespace Appercode.UI.Controls.Navigation
                 throw new NotImplementedException();
             }
         }
-#if __ANDROID__ || WINDOWS_PHONE
-        private IEnumerable<AppercodePage> BackStack
+
+        /// <summary>
+        /// Returns an IEnumerable that can be used to enumerate the entries in back navigation history for a Frame.
+        /// </summary>
+        public IEnumerable<AppercodePage> BackStack
         {
             get
             {
-                return this.backStack;
+#if __ANDROID__ || WINDOWS_PHONE
+                // return a read-only copy of the backStack to avoid cast and modification by external code
+                return this.backStack.AsReadonly();
+#else
+                return Enumerable.Empty<AppercodePage>();
+#endif
             }
         }
-#endif
 
         /// <summary>
-        /// true if thare is screens in the current BackStack and you can <see cref="GoBack"/>
+        /// True if there are any pages in the current BackStack and you can <see cref="GoBack" />
         /// </summary>
         public bool CanGoBack
         {
             get
             {
 #if __ANDROID__ || WINDOWS_PHONE
-                return this.BackStack.Count() > 0;
+                return this.backStack.Count > 0;
 #else
                 return false;
 #endif
@@ -287,17 +294,18 @@ namespace Appercode.UI.Controls.Navigation
             }
             this.IsNavigationInProgress = true;
 
-            AppercodePage previosPage = this.BackStack.FirstOrDefault();
-            if (previosPage == null)
+            if (this.backStack.Count == 0)
             {
                 this.CloseApplication();
                 this.IsNavigationInProgress = false;
                 return;
             }
-            Type previosPageType = previosPage.GetType();
+
+            var previousPage = this.backStack.Peek();
+            var previousPageType = previousPage.GetType();
 
             // navigating from
-            NavigatingCancelEventArgs navigatingCancelEventArgs = new NavigatingCancelEventArgs(previosPageType, NavigationMode.Back);
+            var navigatingCancelEventArgs = new NavigatingCancelEventArgs(previousPageType, NavigationMode.Back);
             this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
             if (navigatingCancelEventArgs.Cancel == true)
             {
@@ -305,29 +313,29 @@ namespace Appercode.UI.Controls.Navigation
                 return;
             }
 
-            if(backStack.Count == 1)
+            if (backStack.Count == 1)
             {
                 this.NativeBackToTabs();
 
-                this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
-                this.CurrentPage = previosPage;
+                this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
+                this.CurrentPage = previousPage;
                 // navigated to
-                previosPage.InternalOnNavigatedTo(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
+                previousPage.InternalOnNavigatedTo(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
                 this.IsNavigationInProgress = false;
                 return;
             }
 
             // navigated from
             this.backStack.Pop();
-            this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
+            this.CurrentPage.InternalOnNavigatedFrom(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
 
             // navigation
             //this.visualRoot.Child = previosPage;
-            this.NativeShowPage(previosPage, NavigationMode.Back, false);
+            this.NativeShowPage(previousPage, NavigationMode.Back, false);
 
-            this.CurrentPage = previosPage;
+            this.CurrentPage = previousPage;
             // navigated to
-            previosPage.InternalOnNavigatedTo(new NavigationEventArgs(previosPageType, null, NavigationMode.Back, true));
+            previousPage.InternalOnNavigatedTo(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
             this.IsNavigationInProgress = false;
 #else
             if (this.currentTabIndex < 0 || this.currentTabIndex >= this.navigationStacks.Count)

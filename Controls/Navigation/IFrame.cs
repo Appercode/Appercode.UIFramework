@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows.Threading;
 
 namespace Appercode.UI.Controls.Navigation
@@ -19,6 +16,11 @@ namespace Appercode.UI.Controls.Navigation
         event NavigationFailedEventHandler NavigationFailed;
 
         event NavigationStoppedEventHandler NavigationStopped;
+
+        /// <summary>
+        /// Returns an IEnumerable that can be used to enumerate the entries in back navigation history for a Frame.
+        /// </summary>
+        IEnumerable<AppercodePage> BackStack { get; }
 
         int CacheSize
         {

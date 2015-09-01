@@ -1,13 +1,33 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Appercode.Helpers
+namespace Appercode
 {
     /// <summary>
     /// Represents a set of helpers for IList interface
     /// </summary>
     internal static class EnumerableHelper
     {
+        public static IEnumerable<T> AsReadonly<T>(this IEnumerable<T> source)
+        {
+            var collection = source as ICollection;
+            if (collection == null)
+            {
+                return source.ToArray();
+            }
+
+            if (collection.Count == 0)
+            {
+                return Enumerable.Empty<T>();
+            }
+
+            var result = new T[collection.Count];
+            collection.CopyTo(result, 0);
+            return result;
+        }
+
         /// <summary>
         /// Enumerates a list in specified range
         /// </summary>
