@@ -215,7 +215,7 @@ namespace Appercode.UI.Controls.Navigation
             }
             else
             {
-                this.Dispatcher.BeginInvoke(this.GoBackInternal);
+                this.Dispatcher.Invoke((Action)this.GoBackInternal);
             }
         }
 
