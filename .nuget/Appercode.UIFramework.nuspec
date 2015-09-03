@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Appercode.UIFramework</id>
+        <version>0.9.2.4614</version>
+        <title>Appercode UI Framework</title>
+        <authors>Appercode</authors>
+        <owners>Appercode</owners>
+        <licenseUrl>https://github.com/Appercode/UIFramework/blob/master/LICENSE.md</licenseUrl>
+        <projectUrl>https://github.com/Appercode/UIFramework</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Appercode UI Framework allows to build user interfrace of cross-platform mobile applications with single XAML layout.</description>
+        <copyright>© Appercode 2015</copyright>
+        <references />
+    </metadata>
+    <files>
+        <file src="..\bin\Release\Appercode.UIFramework.Droid.dll" target="lib\MonoAndroid\Appercode.UIFramework.Droid.dll" />
+        <file src="..\bin\iPhone\Release\Appercode.UIFramework.iOS.dll" target="lib\Xamarin.iOS10\Appercode.UIFramework.iOS.dll" />
+        <file src="..\bin\iPhone\Release\Appercode.UIFramework.iOS.pdb" target="lib\Xamarin.iOS10\Appercode.UIFramework.iOS.pdb" />
+        <!-- TODO: Uncoment when Xamarin provides support of loading of symbols from symbol server
+        <file src="..\bin\Release\Appercode.UIFramework.Droid.pdb" target="lib\MonoAndroid\Appercode.UIFramework.Droid.pdb" />
+        <file src="..\**\*.cs" exclude="..\**\*.Abstract.cs;..\obj\**\*.*;..\mono\**\*.*" target="src" />
+        <file src="..\mono\mcs\class\System.Xaml\System.Windows.Markup\*.cs" target="src\mono\mcs\class\System.Xaml\System.Windows.Markup" />
+        <file src="..\mono\mcs\class\WindowsBase\System.ComponentModel\*.cs" target="src\mono\mcs\class\WindowsBase\System.ComponentModel" />
+        <file src="..\mono\mcs\class\WindowsBase\System.Windows\*.cs" target="src\mono\mcs\class\WindowsBase\System.Windows" />
+        <file src="..\mono\mcs\class\WindowsBase\System.Windows.Media\*.cs" target="src\mono\mcs\class\WindowsBase\System.Windows.Media" />-->
+    </files>
+</package>
