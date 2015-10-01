@@ -1,5 +1,6 @@
 using Appercode.UI.Controls.Media;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
@@ -10,7 +11,7 @@ namespace Appercode.UI.Controls
 
         static ProgressRing()
         {
-            ProgressRing.ForegroundProperty.AddOwner(typeof(ProgressRing), new PropertyMetadata(AppercodeColors.White));
+            ForegroundProperty.AddOwner(typeof(ProgressRing), new PropertyMetadata(new SolidColorBrush(AppercodeColors.White)));
         }
 
         public bool IsActive
