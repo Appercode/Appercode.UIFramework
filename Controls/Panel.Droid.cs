@@ -40,7 +40,7 @@ namespace Appercode.UI.Controls
                 {
                     if (child.NativeUIElement != null && child.NativeUIElement.Parent != this.NativeUIElement)
                     {
-                        LogicalTreeHelper.AddLogicalChild(this, child);
+                        this.AddLogicalChild(child);
                         this.AddNativeChildView(child);
                     }
                 }

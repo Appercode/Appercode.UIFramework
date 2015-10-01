@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
 using Appercode.UI.Controls.NativeControl.Wrapers;
@@ -165,30 +164,29 @@ namespace Appercode.UI.Controls
             public override View GetView(int position, View reusableView, ViewGroup parent)
             {
                 UIElement listItem;
-                if (reusableView == null)
+                var resultView = reusableView as WrapedViewGroup;
+                if (resultView == null)
                 {
-                    reusableView = new WrapedViewGroup(parent.Context);
+                    resultView = new WrapedViewGroup(parent.Context);
                     listItem = (UIElement)this.Generator.ContainerFromIndex(position);
-                    LogicalTreeHelper.AddLogicalChild(this.VirtualizingStackPanel, listItem);
+                    this.VirtualizingStackPanel.AddLogicalChild(listItem);
                     this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
-                    ((WrapedViewGroup)reusableView).AddView(listItem.NativeUIElement);
+                    resultView.AddView(listItem.NativeUIElement);
                 }
                 else
                 {
-
-                    var nativeItem = ((WrapedViewGroup)reusableView).GetChildAt(0);
-                    if (this.NativeViewContainers.ContainsKey(nativeItem))
+                    var nativeItem = resultView.GetChildAt(0);
+                    if (this.NativeViewContainers.TryGetValue(nativeItem, out listItem))
                     {
-                        listItem = this.NativeViewContainers[nativeItem];
                         this.Generator.Reuse(position, listItem);
                     }
                     else
                     {
-                        ((WrapedViewGroup)reusableView).RemoveAllViews();
+                        resultView.RemoveAllViews();
                         listItem = (UIElement)this.Generator.ContainerFromIndex(position);
-                        LogicalTreeHelper.AddLogicalChild(this.VirtualizingStackPanel, listItem);
+                        this.VirtualizingStackPanel.AddLogicalChild(listItem);
                         this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
-                        ((WrapedViewGroup)reusableView).AddView(listItem.NativeUIElement);
+                        resultView.AddView(listItem.NativeUIElement);
                     }
                 }
 
@@ -199,9 +197,8 @@ namespace Appercode.UI.Controls
                 listItem.Arrange(new RectangleF(PointF.Empty, measuredSize));
 
                 // Need to use AbsListView.LayoutParams to prevent Java.CastException
-                reusableView.LayoutParameters = new AbsListView.LayoutParams((int)ScreenProperties.ConvertDPIToPixels(listItem.measuredSize.Width), (int)ScreenProperties.ConvertDPIToPixels(listItem.measuredSize.Height));
-
-                return reusableView;
+                resultView.LayoutParameters = new AbsListView.LayoutParams((int)ScreenProperties.ConvertDPIToPixels(listItem.measuredSize.Width), (int)ScreenProperties.ConvertDPIToPixels(listItem.measuredSize.Height));
+                return resultView;
             }
 
             public override Java.Lang.Object GetItem(int position)

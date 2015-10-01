@@ -45,7 +45,7 @@ namespace Appercode.UI.Controls
 
         protected virtual View CreateLayoutControl(UIElement value)
         {
-            LogicalTreeHelper.AddLogicalChild(this, value);
+            this.AddLogicalChild(value);
             return value.NativeUIElement;
         }
 

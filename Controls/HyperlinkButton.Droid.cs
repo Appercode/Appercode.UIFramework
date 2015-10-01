@@ -28,7 +28,7 @@ namespace Appercode.UI.Controls
                     FontStyle = this.FontStyle,
                     Foreground = this.Foreground
                 };
-                LogicalTreeHelper.AddLogicalChild(this, control);
+                this.AddLogicalChild(control);
                 return control.NativeUIElement;
             }
             else

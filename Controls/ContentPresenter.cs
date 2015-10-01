@@ -144,7 +144,7 @@ namespace Appercode.UI.Controls
                 if (oldValue != null)
                 {
                     this.templateInstance.LayoutUpdated -= this.OnTemplateInstanceLayoutUpdated;
-                    LogicalTreeHelper.RemoveLogicalChild(this, oldValue);
+                    this.RemoveLogicalChild(oldValue);
                 }
 
                 this.templateInstance = value;
@@ -450,14 +450,11 @@ namespace Appercode.UI.Controls
                     contentElement = (UIElement)converter.ConvertTo(content, typeof(UIElement));
                 }
 
-                if (contentElement != null)
+                var parent = contentElement?.Parent;
+                if (parent != null)
                 {
-                    var parent = LogicalTreeHelper.GetParent(contentElement) as UIElement;
-                    if (parent != null)
-                    {
-                        parent.TemplateChild = null;
-                        parent.InvalidateMeasure();
-                    }
+                    parent.TemplateChild = null;
+                    parent.InvalidateMeasure();
                 }
 
                 container.TemplateChild = contentElement;

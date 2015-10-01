@@ -52,7 +52,7 @@ namespace Appercode.UI.Controls
                 }
                 if (this.child != null)
                 {
-                    LogicalTreeHelper.RemoveLogicalChild(this, this.child);
+                    this.RemoveLogicalChild(this.child);
                     this.child.LayoutUpdated -= this.Child_LayoutUpdated;
                 }
 
@@ -60,7 +60,7 @@ namespace Appercode.UI.Controls
                 if (this.child == null)
                     return;
                 this.child.LayoutUpdated += this.Child_LayoutUpdated;
-                LogicalTreeHelper.AddLogicalChild(this, this.child);
+                this.AddLogicalChild(this.child);
 
                 // first of all apply values from style, arrange goes next 
                 this.UpdateVisualTreeProperties();

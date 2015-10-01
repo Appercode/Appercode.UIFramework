@@ -159,10 +159,10 @@ namespace Appercode.UI.Controls
 
         private static void OnPositioningChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            UIElement uiElement = d as UIElement;
+            var uiElement = d as UIElement;
             if (uiElement != null)
             {
-                Canvas parent = LogicalTreeHelper.GetParent(uiElement) as Canvas;
+                var parent = uiElement.Parent as Canvas;
                 if (parent != null)
                 {
                     parent.childSizeCache.Remove(uiElement);
@@ -173,13 +173,13 @@ namespace Appercode.UI.Controls
 
         private static void OnZIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            UIElement uiElement = d as UIElement;
+            var uiElement = d as UIElement;
             if (uiElement != null)
             {
-                Canvas parent = LogicalTreeHelper.GetParent(uiElement) as Canvas;
+                var parent = uiElement.Parent as Canvas;
                 if (parent != null)
                 {
-                    parent.Children.Sort((x, y) => ((int)x.GetValue(Canvas.ZIndexProperty)).CompareTo((int)y.GetValue(Canvas.ZIndexProperty)));
+                    parent.Children.Sort((x, y) => ((int)x.GetValue(ZIndexProperty)).CompareTo((int)y.GetValue(ZIndexProperty)));
                     parent.NativeReorderChildren();
                     parent.ChildLayoutUpdated(uiElement, EventArgs.Empty);
                 }
@@ -207,8 +207,9 @@ namespace Appercode.UI.Controls
 
         private void ChildLayoutUpdated(object sender, EventArgs e)
         {
-            this.childSizeCache.Remove((UIElement)sender);
-            this.ArrangeChild((UIElement)sender);
+            var element = (UIElement)sender;
+            this.childSizeCache.Remove(element);
+            this.ArrangeChild(element);
         }
 
         #endregion

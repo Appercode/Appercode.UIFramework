@@ -91,50 +91,43 @@ namespace Appercode.UI.Controls
             public override View GetView(int position, View reusableView, ViewGroup parent)
             {
                 UIElement listItem;
-                if (reusableView == null)
+                var resultView = reusableView as WrapedViewGroup;
+                if (resultView == null)
                 {
-                    reusableView = new WrapedViewGroup(parent.Context);
+                    resultView = new WrapedViewGroup(parent.Context);
                     listItem = (UIElement)this.Generator.ContainerFromIndex(position);
-                    LogicalTreeHelper.AddLogicalChild(this.ListPicker, listItem);
+                    this.ListPicker.AddLogicalChild(listItem);
                     this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
-                    ((WrapedViewGroup)reusableView).AddView(listItem.NativeUIElement);
+                    resultView.AddView(listItem.NativeUIElement);
                 }
                 else
                 {
-
-                    var nativeItem = ((WrapedViewGroup)reusableView).GetChildAt(0);
-                    if (this.NativeViewContainers.ContainsKey(nativeItem))
+                    var nativeItem = resultView.GetChildAt(0);
+                    if (this.NativeViewContainers.TryGetValue(nativeItem, out listItem))
                     {
-                        listItem = this.NativeViewContainers[nativeItem];
                         this.Generator.Reuse(position, listItem);
                     }
                     else
                     {
-                        ((WrapedViewGroup)reusableView).RemoveAllViews();
+                        resultView.RemoveAllViews();
                         listItem = (UIElement)this.Generator.ContainerFromIndex(position);
-                        LogicalTreeHelper.AddLogicalChild(this.ListPicker, listItem);
+                        this.ListPicker.AddLogicalChild(listItem);
                         this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
-                        ((WrapedViewGroup)reusableView).AddView(listItem.NativeUIElement);
+                        resultView.AddView(listItem.NativeUIElement);
                     }
                 }
+
                 var width = GetDialogWidth() / WidthDivider;
                 var availableSize = new SizeF(ScreenProperties.ConvertPixelsToDPI(width), float.PositiveInfinity);
                 var measuredSize = listItem.MeasureOverride(availableSize);
                 listItem.Arrange(new RectangleF(PointF.Empty, measuredSize));
-                ThreadPool.QueueUserWorkItem(o => DisableTouch((View)listItem.NativeUIElement.Parent));
-                // Need to use AbsListView.LayoutParams to prevent Java.CastException
-                reusableView.LayoutParameters = new AbsListView.LayoutParams((int)width, (int)ScreenProperties.ConvertDPIToPixels(listItem.measuredSize.Height));
-                //if (position == this.SelectedItemPosition)
-                //{
-                //    listItem.NativeUIElement.SetBackgroundColor(Android.Graphics.Color.ParseColor("#33b5e5"));
-                //    lastSelectedView = listItem.NativeUIElement;
-                //}
-                //else
-                //{
-                //    listItem.NativeUIElement.SetBackgroundColor(Android.Graphics.Color.Transparent);
-                //}
 
-                return reusableView;
+                // TODO: do not use ThreadPool directly
+                ThreadPool.QueueUserWorkItem(o => DisableTouch((View)listItem.NativeUIElement.Parent));
+
+                // Need to use AbsListView.LayoutParams to prevent Java.CastException
+                resultView.LayoutParameters = new AbsListView.LayoutParams((int)width, (int)ScreenProperties.ConvertDPIToPixels(listItem.measuredSize.Height));
+                return resultView;
             }
 
             private void DisableTouch(View view)

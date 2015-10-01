@@ -435,7 +435,7 @@ namespace Appercode.UI.Controls
                 var localValue = this.GetValue(DataContextProperty);
                 if (this.ReadLocalValue(DataContextProperty) == DependencyProperty.UnsetValue)
                 {
-                    var parent = (UIElement)LogicalTreeHelper.GetParent(this);
+                    var parent = this.Parent;
                     if (parent != null)
                     {
                         return parent.DataContext;

@@ -28,16 +28,13 @@ namespace Appercode.UI.Controls
         {
             if (this.NativeUIElement != null)
             {
-                if (oldValue != null)
-                {
-                    oldValue.NativeUIElement.RemoveFromSuperview();
-                }
-                LogicalTreeHelper.AddLogicalChild(this, newValue);
+                oldValue?.NativeUIElement.RemoveFromSuperview();
+                this.AddLogicalChild(newValue);
                 this.NativeUIElement.AddSubview(newValue.NativeUIElement);
             }
             else
             {
-                LogicalTreeHelper.AddLogicalChild(this, newValue);
+                this.AddLogicalChild(newValue);
             }
         }
     }

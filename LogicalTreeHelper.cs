@@ -1,6 +1,7 @@
 ﻿using Appercode.UI.Controls;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Windows;
 
 namespace Appercode.UI
@@ -11,40 +12,45 @@ namespace Appercode.UI
         {
             if (logicalTreeNode == null)
             {
-                throw new ArgumentNullException("logicalTreeNode");
+                throw new ArgumentNullException(nameof(logicalTreeNode));
             }
+
             if (elementName == null)
             {
-                throw new ArgumentNullException("elementName");
+                throw new ArgumentNullException(nameof(elementName));
             }
+
             if (elementName == string.Empty)
             {
-                throw new ArgumentException("Parameter cannot be a zero-length string.", "elementName");
+                throw new ArgumentException("Parameter cannot be a zero-length string.", nameof(elementName));
             }
 
             DependencyObject logicalNode = null;
-            Appercode.UI.Controls.UIElement logicalTreeNodeUIElement = logicalTreeNode as Appercode.UI.Controls.UIElement;
+            var logicalTreeNodeUIElement = logicalTreeNode as UIElement;
             if (logicalTreeNodeUIElement != null && logicalTreeNodeUIElement.Name == elementName)
             {
                 logicalNode = logicalTreeNode;
             }
+
             if (logicalNode == null)
             {
-                IEnumerator logicalChildren = LogicalTreeHelper.GetLogicalChildren(logicalTreeNode);
+                var logicalChildren = GetLogicalChildren(logicalTreeNode);
                 if (logicalChildren != null)
                 {
                     logicalChildren.Reset();
                     while (logicalNode == null && logicalChildren.MoveNext())
                     {
-                        DependencyObject current = logicalChildren.Current as DependencyObject;
+                        var current = logicalChildren.Current as DependencyObject;
                         if (current == null)
                         {
                             continue;
                         }
-                        logicalNode = LogicalTreeHelper.FindLogicalNode(current, elementName);
+
+                        logicalNode = FindLogicalNode(current, elementName);
                     }
                 }
             }
+
             return logicalNode;
         }
 
@@ -52,14 +58,15 @@ namespace Appercode.UI
         {
             if (current == null)
             {
-                throw new ArgumentNullException("current");
+                throw new ArgumentNullException(nameof(current));
             }
 
-            Appercode.UI.Controls.UIElement currentUIElement = current as Appercode.UI.Controls.UIElement;
+            var currentUIElement = current as UIElement;
             if (currentUIElement != null)
             {
-                return new LogicalTreeHelper.EnumeratorWrapper(currentUIElement.LogicalChildren);
+                return new EnumeratorWrapper(currentUIElement.LogicalChildren);
             }
+
             return EnumeratorWrapper.Empty;
         }
 
@@ -67,123 +74,55 @@ namespace Appercode.UI
         {
             if (current == null)
             {
-                throw new ArgumentNullException("current");
+                throw new ArgumentNullException(nameof(current));
             }
 
-            Appercode.UI.Controls.UIElement currentUIElement = current as Appercode.UI.Controls.UIElement;
-            if (currentUIElement != null)
-            {
-                return currentUIElement.Parent;
-            }
-            return null;
+            return (current as UIElement)?.Parent;
         }
 
-#warning was internal, conflicted with maps
-        public static void AddLogicalChild(DependencyObject parent, object child)
+        internal static void AddLogicalChild(DependencyObject parent, object child)
         {
-            if (child != null && parent != null)
+            if (child != null)
             {
-                Appercode.UI.Controls.UIElement parentUIElement = parent as Appercode.UI.Controls.UIElement;
-                if (parentUIElement != null)
-                {
-                    parentUIElement.AddLogicalChild(child);
-                    return;
-                }
+                (parent as UIElement)?.AddLogicalChild(child);
             }
         }
-        
+
         internal static IEnumerator GetLogicalChildren(DependencyObject current)
         {
-            Appercode.UI.Controls.UIElement currentUIElement = current as Appercode.UI.Controls.UIElement;
-            if (currentUIElement != null)
-            {
-                return currentUIElement.LogicalChildren;
-            }
-            return null;
+            return (current as UIElement)?.LogicalChildren;
         }
 
         internal static void RemoveLogicalChild(DependencyObject parent, object child)
         {
-            if (child != null && parent != null)
+            if (child != null)
             {
-                Appercode.UI.Controls.UIElement parentUIElement = parent as Appercode.UI.Controls.UIElement;
-                if (parentUIElement != null)
-                {
-                    parentUIElement.RemoveLogicalChild(child);
-                    return;
-                }                
+                (parent as UIElement)?.RemoveLogicalChild(child);
             }
         }
 
-        public class EnumeratorWrapper : IEnumerable
+        internal class EnumeratorWrapper : IEnumerable
         {
-            private static LogicalTreeHelper.EnumeratorWrapper emptyInstance;
-            
-            private IEnumerator enumerator;
+            private static readonly Lazy<EnumeratorWrapper> EmptyInstance =
+                new Lazy<EnumeratorWrapper>(CreateEmptyInstance);
+
+            private readonly IEnumerator enumerator;
 
             public EnumeratorWrapper(IEnumerator enumerator)
             {
-                if (enumerator != null)
-                {
-                    this.enumerator = enumerator;
-                    return;
-                }
-                this.enumerator = EmptyEnumerator.Instance;
+                this.enumerator = enumerator ?? Enumerable.Empty<object>().GetEnumerator();
             }
 
-            internal static LogicalTreeHelper.EnumeratorWrapper Empty
+            internal static EnumeratorWrapper Empty => EmptyInstance.Value;
+
+            private static EnumeratorWrapper CreateEmptyInstance()
             {
-                get
-                {
-                    if (LogicalTreeHelper.EnumeratorWrapper.emptyInstance == null)
-                    {
-                        LogicalTreeHelper.EnumeratorWrapper.emptyInstance = new LogicalTreeHelper.EnumeratorWrapper(null);
-                    }
-                    return LogicalTreeHelper.EnumeratorWrapper.emptyInstance;
-                }
+                return new EnumeratorWrapper(null);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return this.enumerator;
-            }
-        }
-
-        private class EmptyEnumerator : IEnumerator
-        {
-            private static IEnumerator instance;
-
-            public EmptyEnumerator()
-            {
-            }
-
-            public static IEnumerator Instance
-            {
-                get
-                {
-                    if (instance == null)
-                    {
-                        instance = new EmptyEnumerator();
-                    }
-                    return instance;
-                }
-            }
-
-            public object Current
-            {
-                get
-                {
-                    throw new InvalidOperationException();
-                }
-            }
-
-            public void Reset()
-            {
-            }
-
-            public bool MoveNext()
-            {
-                return false;
             }
         }
     }
