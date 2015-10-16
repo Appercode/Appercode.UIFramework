@@ -3,7 +3,6 @@ using CoreGraphics;
 using Foundation;
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using UIKit;
@@ -25,6 +24,7 @@ namespace Appercode.UI.Controls
         private nint nativeSelectionStart;
         private UITextView textView;
         private UITextField textField;
+        private bool selectOnEditing;
 
         internal override bool IsFocused
         {
@@ -42,7 +42,7 @@ namespace Appercode.UI.Controls
                 this.nativeText = value ?? string.Empty;
                 if (this.NativeUIElement != null)
                 {
-                    if (this.TextWrapping == TextWrapping.Wrap || this.AcceptsReturn)
+                    if (this.IsMultiLine)
                     {
                         this.textView.Text = this.nativeText;
                     }
@@ -207,6 +207,11 @@ namespace Appercode.UI.Controls
             }
         }
 
+        private bool IsMultiLine
+        {
+            get { return this.nativeTextWrapping == TextWrapping.Wrap || this.nativeAcceptsReturn; }
+        }
+
         protected internal override void NativeInit()
         {
             if (this.NativeUIElement == null)
@@ -215,6 +220,8 @@ namespace Appercode.UI.Controls
                 this.textField = new MyTextField();
                 this.textField.Frame = new CGRect(0, 0, 300, 60);
                 this.textField.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+                this.textField.EditingDidBegin += this.OnBeginEditing;
+                this.textField.EditingDidEnd += this.OnEndEditing;
 
                 this.textView = new UITextView();
                 this.textView.BackgroundColor = UIColor.Clear; // FromRGBA(255, 0, 0, 50);
@@ -223,6 +230,8 @@ namespace Appercode.UI.Controls
                 this.textView.ContentInset = new UIEdgeInsets(-8, 0, -8, 0);
                 this.textView.ScrollIndicatorInsets = new UIEdgeInsets(8, 0, 8, 0);
                 this.textView.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+                this.textView.Started += this.OnBeginEditing;
+                this.textView.Ended += this.OnEndEditing;
                 this.textView.Changed += (s, e) =>
                 {
                     this.ChangeSizeToContent();
@@ -337,22 +346,20 @@ namespace Appercode.UI.Controls
                 return;
             }
 
-            if (this.TextWrapping == TextWrapping.Wrap || this.AcceptsReturn)
+            if (this.IsMultiLine)
             {
                 this.textView.SelectedRange = new NSRange(start, length);
             }
             else
             {
-                // First of all TextBox must come in edeting mode
+                // First of all TextBox might come in editing mode
                 if (this.textField.IsEditing)
                 {
-                    this.SelectOnEditing(this.textField, EventArgs.Empty);
+                    this.ApplySelectionToTextField();
                 }
                 else
                 {
-                    // there will be crash if there is two same handlers added
-                    this.textField.EditingDidBegin -= this.SelectOnEditing;
-                    this.textField.EditingDidBegin += this.SelectOnEditing;
+                    this.selectOnEditing = true;
                 }
             }
         }
@@ -399,9 +406,8 @@ namespace Appercode.UI.Controls
             return false;
         }
 
-        private void SelectOnEditing(object sender, EventArgs e)
+        private async void ApplySelectionToTextField()
         {
-            this.textField.EditingDidBegin -= this.SelectOnEditing;
             var startPosition = this.textField.GetPosition(this.textField.BeginningOfDocument, this.nativeSelectionStart);
             var endPosition = this.textField.GetPosition(this.textField.BeginningOfDocument, this.nativeSelectionStart + this.nativeSelectionLength);
             if (startPosition == null || endPosition == null)
@@ -411,26 +417,21 @@ namespace Appercode.UI.Controls
                 return;
             }
 
-            // if TextBox just come to editing mode, it selects last position after calling this event
-            // So we need to select text after it
-            var t = new Task(() =>
+            // If UITextField just switched to editing mode, it selects last position after calling of EditingDidBegin event
+            // So, we need to apply selection after native selection is finished
+            await Task.Delay(1);
+            var textRange = this.textField.GetTextRange(startPosition, endPosition);
+            if (textRange != null)
             {
-                Thread.Sleep(1);
-                this.textField.InvokeOnMainThread(() =>
-                {
-                    var tr = this.textField.GetTextRange(startPosition, endPosition);
-                    if (tr != null)
-                    {
-                        this.textField.SelectedTextRange = tr;
-                    }
-                });
-            });
-            t.Start();
+                this.textField.SelectedTextRange = textRange;
+            }
+
+            this.selectOnEditing = false;
         }
 
         private void ChangeText()
         {
-            if (this.nativeAcceptsReturn || this.TextWrapping == TextWrapping.Wrap)
+            if (this.IsMultiLine)
             {
                 this.nativeText = this.textView.Text;
             }
@@ -442,7 +443,7 @@ namespace Appercode.UI.Controls
 
         private void ChangeVisualControl()
         {
-            if (this.nativeAcceptsReturn || this.TextWrapping == TextWrapping.Wrap)
+            if (this.IsMultiLine)
             {
                 this.textField.Text = null;
                 this.textView.Text = this.Text;
@@ -470,11 +471,24 @@ namespace Appercode.UI.Controls
         {
         }
 
+        private void OnBeginEditing(object sender, EventArgs e)
+        {
+            if (this.selectOnEditing && this.IsMultiLine == false)
+            {
+                this.ApplySelectionToTextField();
+            }
+
+            this.OnGotFocus(new RoutedEventArgs());
+        }
+
+        private void OnEndEditing(object sender, EventArgs e)
+        {
+            this.OnLostFocus(new RoutedEventArgs());
+        }
+
         private UIView GetCurrentTextControl()
         {
-            return this.TextWrapping == TextWrapping.Wrap || this.AcceptsReturn
-                ? (UIView)this.textView
-                : this.textField;
+            return IsMultiLine ? (UIView)this.textView : this.textField;
         }
 
         protected class MyTextField : UITextField

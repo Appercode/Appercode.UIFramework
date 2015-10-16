@@ -239,8 +239,9 @@ namespace Appercode.UI.Controls
         public event RoutedEventHandler Loaded;
         public event EventHandler LayoutUpdated = delegate { };
         public event EventHandler ResourcesChanged = delegate { };
+        public event RoutedEventHandler GotFocus;
         public event RoutedEventHandler LostFocus;
-        internal event Internals.DataContextChangedEventHandler DataContextChanged = delegate { };
+        internal event DataContextChangedEventHandler DataContextChanged = delegate { };
         internal event EventHandler ParentChanged;
 
         #endregion Events
@@ -837,6 +838,15 @@ namespace Appercode.UI.Controls
         protected virtual void OnLayoutUpdated()
         {
             this.LayoutUpdated(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnGotFocus(RoutedEventArgs e)
+        {
+            var gotFocus = this.GotFocus;
+            if (gotFocus != null)
+            {
+                gotFocus(this, e);
+            }
         }
 
         protected virtual void OnLostFocus(RoutedEventArgs e)

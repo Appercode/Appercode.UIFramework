@@ -52,6 +52,7 @@ namespace Appercode.UI.Controls
                 {
                     return this.NativeMaxLength == 0 || textField.Text.Length + txt.Length <= this.NativeMaxLength;
                 };
+                textField.EditingDidBegin += (sender, e) => this.OnGotFocus(new RoutedEventArgs());
                 textField.EditingChanged += this.OnEditingChanged;
                 textField.EditingDidEnd += (sender, e) => this.OnLostFocus(new RoutedEventArgs());
                 this.NativeUIElement = textField;
