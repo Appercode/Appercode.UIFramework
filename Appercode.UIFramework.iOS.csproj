@@ -320,7 +320,6 @@
     <Compile Include="System.Windows\Expression.cs" />
     <Compile Include="System.Windows\GetReadOnlyValueCallback.cs" />
     <Compile Include="System.Windows\Input\FocusManager.cs" />
-    <Compile Include="System.Windows\Input\FocusManager.iOS.cs" />
     <Compile Include="Controls\Media\ImageSource.iOS.cs" />
     <Compile Include="System.Windows\Media\Color.iOS.cs" />
     <Compile Include="System.Windows\Media\MediaElementState.cs" />

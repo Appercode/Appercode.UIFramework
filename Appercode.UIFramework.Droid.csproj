@@ -329,7 +329,6 @@
     <Compile Include="System.Windows\Duration.cs" />
     <Compile Include="System.Windows\ExceptionRoutedEventArgs.cs" />
     <Compile Include="System.Windows\Input\FocusManager.cs" />
-    <Compile Include="System.Windows\Input\FocusManager.Droid.cs" />
     <Compile Include="System.Windows\Media\Brush.Droid.cs" />
     <Compile Include="System.Windows\Media\BrushMappingMode.cs" />
     <Compile Include="System.Windows\Media\ColorInterpolationMode.cs" />

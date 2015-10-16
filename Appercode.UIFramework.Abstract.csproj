@@ -383,9 +383,6 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="System.Windows\Input\FocusManager.Abstract.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Controls\ProgressBar.Abstract.cs" />
     <None Include="Key.snk" />
   </ItemGroup>

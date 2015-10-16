@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Windows;
+﻿using System.Drawing;
 using System.Windows.Markup;
 
 namespace Appercode.UI.Controls
@@ -10,12 +8,17 @@ namespace Appercode.UI.Controls
     {
         protected internal object NativeUIElement { get; set; }
 
+        internal virtual bool IsFocused
+        {
+            get { return false; }
+        }
+
         private Visibility NativeVisibility { get; set; }
 
         private double NativeWidth { get; set; }
 
         private double NativeHeight { get; set; }
-        
+
         /// <summary>
         /// Measure <seealso cref="NativeUIElement"/>
         /// </summary>
@@ -39,7 +42,6 @@ namespace Appercode.UI.Controls
         /// </summary>
         protected internal virtual void NativeInit()
         {
-
         }
     }
 }

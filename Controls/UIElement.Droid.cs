@@ -1,9 +1,6 @@
-using System.Diagnostics;
 using Android.Content;
 using Android.Views;
-using Android.Widget;
 using Appercode.UI.Controls.NativeControl.Wrapers;
-using Appercode.UI.Controls.Navigation;
 using Appercode.UI.Device;
 using System;
 using System.Drawing;
@@ -25,8 +22,13 @@ namespace Appercode.UI.Controls
             }
         }
 
-        protected virtual double NativeWidth 
-        { 
+        internal virtual bool IsFocused
+        {
+            get { return false; }
+        }
+
+        protected virtual double NativeWidth
+        {
             get
             {
                 return this.Width;
@@ -99,7 +101,7 @@ namespace Appercode.UI.Controls
 
             int measuredWidth;
             int measuredHeight;
-            
+
             int availableWidth;
             int availableHeight;
 
@@ -112,7 +114,7 @@ namespace Appercode.UI.Controls
             {
                 availableWidth = (int)(absoluteAvailableSize.Width - absoluteMargin.Left - absoluteMargin.Right);
             }
-            if(availableWidth < 0)
+            if (availableWidth < 0)
             {
                 availableWidth = 0;
             }
@@ -198,7 +200,7 @@ namespace Appercode.UI.Controls
             this.NativeVisibility = this.Visibility;
 
             if (this.NativeUIElement != null)
-            {                
+            {
                 ((ITapableView)this.NativeUIElement).NativeTap -= this.UIElementNativeTap;
                 ((ITapableView)this.NativeUIElement).NativeTap += this.UIElementNativeTap;
                 ((IJavaFinalizable)this.NativeUIElement).JavaFinalized -= this.UIElement_JavaFinalized;

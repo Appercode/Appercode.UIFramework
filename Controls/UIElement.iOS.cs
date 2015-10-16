@@ -23,6 +23,16 @@ namespace Appercode.UI.Controls
             protected internal set;
         }
 
+        internal virtual bool IsFocused
+        {
+            get
+            {
+                // NativeUIElement might be null even after initialization,
+                // because the control is not presented by a descendant of UIView.
+                return this.NativeUIElement != null && this.NativeUIElement.IsFirstResponder;
+            }
+        }
+
         protected double NativeWidth
         {
             get
