@@ -3,7 +3,6 @@ using CoreGraphics;
 using Foundation;
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,6 +26,11 @@ namespace Appercode.UI.Controls
         private UITextView textView;
         private UITextField textField;
 
+        internal override bool IsFocused
+        {
+            get { return this.GetCurrentTextControl().IsFirstResponder; }
+        }
+
         private string NativeText
         {
             get
@@ -35,19 +39,19 @@ namespace Appercode.UI.Controls
             }
             set
             {
-                this.nativeText = value??string.Empty;
+                this.nativeText = value ?? string.Empty;
                 if (this.NativeUIElement != null)
                 {
-                    if (this.TextWrapping == Controls.TextWrapping.Wrap || this.AcceptsReturn)
+                    if (this.TextWrapping == TextWrapping.Wrap || this.AcceptsReturn)
                     {
                         this.textView.Text = this.nativeText;
-                        this.ChangeSizeToContent();
                     }
                     else
                     {
                         this.textField.Text = this.nativeText;
-                        this.ChangeSizeToContent();
                     }
+
+                    this.ChangeSizeToContent();
                 }
             }
         }
@@ -196,13 +200,9 @@ namespace Appercode.UI.Controls
                     this.textField.UserInteractionEnabled = false;
                     this.textView.UserInteractionEnabled = false;
                 }
-                else if (this.nativeAcceptsReturn || this.TextWrapping == TextWrapping.Wrap)
-                {
-                    this.textView.UserInteractionEnabled = true;
-                }
                 else
                 {
-                    this.textField.UserInteractionEnabled = true;
+                    this.GetCurrentTextControl().UserInteractionEnabled = true;
                 }
             }
         }
@@ -301,8 +301,8 @@ namespace Appercode.UI.Controls
                 width = needSize.Width;
             }
 
-            height = this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue ? height + this.Margin.VerticalThickness() : this.Height;
-            width = this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue ? width + this.Margin.HorizontalThicknessF() : this.Width;
+            height = this.ReadLocalValue(HeightProperty) == DependencyProperty.UnsetValue ? height + this.Margin.VerticalThickness() : this.Height;
+            width = this.ReadLocalValue(WidthProperty) == DependencyProperty.UnsetValue ? width + this.Margin.HorizontalThicknessF() : this.Width;
 
             return new CGSize(width, height);
         }
@@ -311,8 +311,9 @@ namespace Appercode.UI.Controls
         {
             if (this.NativeUIElement != null)
             {
-                return (this.TextWrapping == Controls.TextWrapping.Wrap || this.AcceptsReturn) ? this.textView.BecomeFirstResponder() : this.textField.BecomeFirstResponder();
+                return this.GetCurrentTextControl().BecomeFirstResponder();
             }
+
             return false;
         }
 
@@ -336,7 +337,7 @@ namespace Appercode.UI.Controls
                 return;
             }
 
-            if (this.TextWrapping == Controls.TextWrapping.Wrap || this.AcceptsReturn)
+            if (this.TextWrapping == TextWrapping.Wrap || this.AcceptsReturn)
             {
                 this.textView.SelectedRange = new NSRange(start, length);
             }
@@ -418,7 +419,7 @@ namespace Appercode.UI.Controls
                 this.textField.InvokeOnMainThread(() =>
                 {
                     var tr = this.textField.GetTextRange(startPosition, endPosition);
-                    if(tr != null)
+                    if (tr != null)
                     {
                         this.textField.SelectedTextRange = tr;
                     }
@@ -429,7 +430,7 @@ namespace Appercode.UI.Controls
 
         private void ChangeText()
         {
-            if (this.nativeAcceptsReturn || this.TextWrapping == Controls.TextWrapping.Wrap)
+            if (this.nativeAcceptsReturn || this.TextWrapping == TextWrapping.Wrap)
             {
                 this.nativeText = this.textView.Text;
             }
@@ -441,7 +442,7 @@ namespace Appercode.UI.Controls
 
         private void ChangeVisualControl()
         {
-            if (this.nativeAcceptsReturn || this.TextWrapping == Controls.TextWrapping.Wrap)
+            if (this.nativeAcceptsReturn || this.TextWrapping == TextWrapping.Wrap)
             {
                 this.textField.Text = null;
                 this.textView.Text = this.Text;
@@ -467,6 +468,13 @@ namespace Appercode.UI.Controls
 
         private void ChangeSizeToContent()
         {
+        }
+
+        private UIView GetCurrentTextControl()
+        {
+            return this.TextWrapping == TextWrapping.Wrap || this.AcceptsReturn
+                ? (UIView)this.textView
+                : this.textField;
         }
 
         protected class MyTextField : UITextField
