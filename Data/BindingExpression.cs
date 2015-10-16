@@ -352,9 +352,12 @@ namespace Appercode.UI.Data
             return false;
         }
 
-        internal bool IsTargetFocussed()
+        internal bool IsTargetFocused()
         {
-            return FocusManager.GetFocusedElement() == this.targetDO;
+            var targetUIElement = this.targetDO as UIElement;
+            return targetUIElement != null
+                ? targetUIElement.IsFocused
+                : FocusManager.GetFocusedElement() == this.targetDO;
         }
 
         internal void AddErrorToTarget(ValidationError error, bool isNotifyDataErrorInfo)
@@ -1419,12 +1422,13 @@ namespace Appercode.UI.Data
         {
             if (this.listeningToLostFocus)
             {
-                this.targetPropertyState = BindingExpression.TargetPropertyState.Dirty;
-                if (this.IsTargetFocussed())
+                this.targetPropertyState = TargetPropertyState.Dirty;
+                if (this.IsTargetFocused())
                 {
                     return;
                 }
             }
+
             this.UpdateValue();
         }
     }  
