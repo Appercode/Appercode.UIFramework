@@ -73,7 +73,7 @@ namespace Appercode.UI.Controls
         /// <summary>
         /// Gets a value indicating whether the slider control has focus.
         /// </summary>
-        public bool IsFocused
+        public new bool IsFocused
         {
             get { return (bool)this.GetValue(IsFocusedProperty); }
             internal set { this.SetValue(IsFocusedProperty, value); }
