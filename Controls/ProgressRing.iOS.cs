@@ -19,6 +19,7 @@ namespace Appercode.UI.Controls
                         ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge,
                         HidesWhenStopped = true
                     };
+                    this.IsActiveChanged(this.IsActive);
                 }
 
                 base.NativeInit();
