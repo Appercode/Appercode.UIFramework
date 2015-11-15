@@ -714,11 +714,11 @@ namespace Appercode.UI.Data
             {
                 if (this.TargetFE == null)
                 {
-                    WeakDataContextChangedListener.CreateIfNecessary(mentor, this);
+                    this.dataContextChangedListener = new WeakDataContextChangedListener(mentor, this);
                 }
                 else
                 {
-                    this.TargetFE.DataContextChanged += new DataContextChangedEventHandler(this.DataContextChanged);
+                    this.TargetFE.DataContextChanged += this.DataContextChanged;
                 }
                 this.SourceForBinding = this.GetDataContext(mentor);
             }
@@ -851,9 +851,11 @@ namespace Appercode.UI.Data
                 {
                     this.dataContextChangedListener.Disconnect();
                     this.dataContextChangedListener = null;
-                    return;
                 }
-                mentor.DataContextChanged -= new DataContextChangedEventHandler(this.DataContextChanged);
+                else
+                {
+                    mentor.DataContextChanged -= this.DataContextChanged;
+                }
             }
         }
 

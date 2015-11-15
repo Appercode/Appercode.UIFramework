@@ -161,12 +161,7 @@ namespace Appercode.UI.Controls
         /// Identifies the <seealso cref="DataContext"/> dependency property. 
         /// </summary>
         public static readonly DependencyProperty DataContextProperty =
-            DependencyProperty.Register("DataContext", typeof(object), typeof(UIElement), new PropertyMetadata(null, (d, e) =>
-                {
-                    var ea = new Internals.DataContextChangedEventArgs(Internals.DataContextChangedReason.NewDataContext);
-                    ((UIElement)d).OnDataContextChanged(ea);
-                    ((UIElement)d).NotifyDataContextChanged(ea);
-                }));
+            DependencyProperty.Register("DataContext", typeof(object), typeof(UIElement), new PropertyMetadata(OnDataContextChanged));
 
         /// <summary>
         /// Identifies the <seealso cref="Opacity"/> dependency property. 
@@ -241,7 +236,7 @@ namespace Appercode.UI.Controls
         public event EventHandler ResourcesChanged = delegate { };
         public event RoutedEventHandler GotFocus;
         public event RoutedEventHandler LostFocus;
-        internal event DataContextChangedEventHandler DataContextChanged = delegate { };
+        internal event DataContextChangedEventHandler DataContextChanged;
         internal event EventHandler ParentChanged;
 
         #endregion Events
@@ -862,6 +857,14 @@ namespace Appercode.UI.Controls
         {
         }
 
+        private static void OnDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var args = new DataContextChangedEventArgs(DataContextChangedReason.NewDataContext);
+            var uiElement = (UIElement)d;
+            uiElement.OnDataContextChanged(args);
+            uiElement.NotifyDataContextChanged(args);
+        }
+
         private static void OnVisibilityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var uiElement = d as UIElement;
@@ -953,11 +956,11 @@ namespace Appercode.UI.Controls
             }
         }
 
-        private void OnDataContextChanged(Internals.DataContextChangedEventArgs ea)
+        private void OnDataContextChanged(DataContextChangedEventArgs ea)
         {
-            if (this.DataContextChanged != null && this.IsInLiveTree)
+            if (this.IsInLiveTree)
             {
-                this.DataContextChanged(this, ea);
+                this.DataContextChanged?.Invoke(this, ea);
             }
         }
 
