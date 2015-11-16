@@ -1,9 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Reflection;
-using System.Security;
 using System.Threading;
 using System.Windows;
 
@@ -12,15 +10,11 @@ namespace Appercode.UI.Internals.PathParser
     internal class PropertyAccessPathStep : PropertyPathStep, IRaisePropertyPathStepChanged
     {
         private readonly string propertyName;
-
         private readonly DependencyProperty property;
-
         private readonly bool listenToChanges;
 
         private object source;
-
         private ICollectionView collectionView;
-
         private PropertyListener propertyListener;
 
         internal PropertyAccessPathStep(PropertyPathListener listener, object source, string propertyName, bool listenToChanges)
@@ -29,7 +23,7 @@ namespace Appercode.UI.Internals.PathParser
             this.source = source;
             this.propertyName = propertyName;
             this.listenToChanges = listenToChanges;
-            this.ConnectToProperty();
+            this.ConnectToPropertyInSource(false);
         }
 
         internal PropertyAccessPathStep(PropertyPathListener listener, object source, DependencyProperty property, bool listenToChanges)
@@ -39,7 +33,7 @@ namespace Appercode.UI.Internals.PathParser
             this.property = property;
             this.propertyName = property.Name;
             this.listenToChanges = listenToChanges;
-            this.ConnectToProperty();
+            this.ConnectToPropertyInSource(false);
         }
 
         internal override bool IsConnected
@@ -121,7 +115,7 @@ namespace Appercode.UI.Internals.PathParser
         {
             this.Disconnect();
             this.source = newSource;
-            this.ConnectToProperty();
+            this.ConnectToPropertyInSource(false);
         }
 
         internal override void Disconnect()
@@ -129,25 +123,11 @@ namespace Appercode.UI.Internals.PathParser
             this.DisconnectListener();
             if (this.collectionView != null)
             {
-                this.collectionView.CurrentChanged -= new EventHandler(this.CurrentItemChanged);
+                this.collectionView.CurrentChanged -= this.CurrentItemChanged;
             }
+
             this.collectionView = null;
             this.source = null;
-        }
-
-        [SecuritySafeCritical]
-        private static DependencyProperty GetRegisteredDependencyProperty(DependencyObject d, string propertyName)
-        {
-            return DependencyProperty.GetRegisteredDependencyProperty(d, propertyName, null, null);
-        }
-
-        private void ConnectToProperty()
-        {
-            if (this.source == null || this.source == DependencyProperty.UnsetValue)
-            {
-                return;
-            }
-            this.ConnectToPropertyInSource(false);
         }
 
         private bool ConnectToPropertyInSource(bool isSourceCollectionViewCurrentItem)
@@ -156,49 +136,44 @@ namespace Appercode.UI.Internals.PathParser
             {
                 return false;
             }
-            if (this.propertyListener == null || this.propertyListener.SourceType != this.source.GetType())
+
+            var sourceType = this.source.GetType();
+            if (this.propertyListener == null || this.propertyListener.SourceType != sourceType)
             {
                 this.propertyListener = null;
-                if (this.property != null && this.source is DependencyObject)
+                var dependencyObject = this.source as DependencyObject;
+                if (dependencyObject != null)
                 {
-                    this.propertyListener = new DependencyPropertyListener(this, this.source.GetType(), this.property, this.listenToChanges);
-                }
-                else if (this.source is DependencyObject)
-                {
-                    DependencyObject dependencyObject = (DependencyObject)this.source;
-                    DependencyProperty dependencyProperty = PropertyAccessPathStep.GetRegisteredDependencyProperty(dependencyObject, this.propertyName);
+                    var dependencyProperty = this.property ?? DependencyProperty.GetRegisteredDependencyProperty(dependencyObject, this.propertyName);
                     if (dependencyProperty != null)
                     {
-                        this.propertyListener = new DependencyPropertyListener(this, this.source.GetType(), dependencyProperty, this.listenToChanges);
+                        this.propertyListener = new DependencyPropertyListener(this, sourceType, dependencyProperty, this.listenToChanges);
                     }
                 }
+
                 if (this.propertyListener == null && this.propertyName != null)
                 {
-                    PropertyInfo property = this.source.GetType().GetProperty(this.propertyName);
+                    var property = sourceType.GetProperty(this.propertyName);
                     if (property != null)
                     {
-                        this.propertyListener = new CLRPropertyListener(this, this.source.GetType(), property, this.listenToChanges);
+                        this.propertyListener = new CLRPropertyListener(this, sourceType, property, this.listenToChanges);
                     }
                 }
             }
+
             if (this.propertyListener == null)
             {
                 if (!isSourceCollectionViewCurrentItem)
                 {
-                    ICollectionView collectionViews = this.source as ICollectionView;
+                    var collectionViews = this.source as ICollectionView;
                     if (collectionViews != null)
                     {
                         this.source = collectionViews.CurrentItem;
                         this.collectionView = collectionViews;
-                        this.collectionView.CurrentChanged += new EventHandler(this.CurrentItemChanged);
+                        this.collectionView.CurrentChanged += this.CurrentItemChanged;
                         return this.ConnectToPropertyInSource(true);
                     }
                 }
-                string str = this.propertyName;
-                string str1 = this.source != null ? this.source.ToString() : "null";
-                string str2 = this.source != null ? this.source.GetType().ToString() : "null";
-                string str3 = this.source != null ? this.source.GetHashCode().ToString() : "0";
-                CultureInfo currentCulture = CultureInfo.CurrentCulture;
             }
             else
             {
@@ -209,19 +184,16 @@ namespace Appercode.UI.Internals.PathParser
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e.ToString());
+                    Debug.WriteLine(e);
                     if (e is OutOfMemoryException || e is StackOverflowException || e is AccessViolationException || e is ThreadAbortException)
                     {
                         throw;
                     }
-                    string propertyName = this.propertyListener.PropertyName;
-                    string str5 = this.propertyListener.PropertyType.ToString();
-                    string str6 = this.source != null ? this.source.ToString() : "null";
-                    string str7 = this.source != null ? this.source.GetType().ToString() : "null";
+
                     this.Disconnect();
-                    CultureInfo cultureInfo = CultureInfo.CurrentCulture;
                 }
             }
+
             return this.propertyListener != null;
         }
 
