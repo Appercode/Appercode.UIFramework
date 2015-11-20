@@ -1,7 +1,5 @@
 using CoreGraphics;
 using Foundation;
-using System;
-using System.Linq;
 using System.Windows;
 using UIKit;
 
@@ -11,7 +9,8 @@ namespace Appercode.UI.Controls
     {
         private double nativeWidth = double.NaN;
         private double nativeHeight = double.NaN;
-        private TapRecognizer tapGestureRecognizer;
+        private UIView nativeUIElement;
+        private UIGestureRecognizer touchGestureRecognizer;
 
         /// <summary>
         /// Gets or sets the native user interface element.
@@ -19,8 +18,28 @@ namespace Appercode.UI.Controls
         /// <value>The native user interface element.</value>
         public virtual UIView NativeUIElement
         {
-            get;
-            protected internal set;
+            get { return this.nativeUIElement; }
+            protected internal set
+            {
+                if (this.nativeUIElement != value)
+                {
+                    if (this.nativeUIElement != null && this.touchGestureRecognizer != null)
+                    {
+                        this.nativeUIElement.RemoveGestureRecognizer(this.touchGestureRecognizer);
+                    }
+
+                    this.nativeUIElement = value;
+                    if (this.touchGestureRecognizer != null)
+                    {
+                        this.nativeUIElement.AddGestureRecognizer(this.touchGestureRecognizer);
+                    }
+                }
+            }
+        }
+
+        internal virtual bool ChildrenShouldForwardTouch
+        {
+            get { return false;}
         }
 
         internal virtual bool IsFocused
@@ -98,25 +117,22 @@ namespace Appercode.UI.Controls
             return string.Format("{0}\n{1}", base.ToString(), this.NativeUIElement == null ? "(null)" : this.NativeUIElement.ToString());
         }
 
+        internal virtual void OnTouchDown() { }
+
+        internal virtual void OnTouchUp()
+        {
+            this.RaiseTap();
+        }
+
         protected internal virtual void NativeInit()
         {
             this.NativeVisibility = this.Visibility;
-            if (this.tapGestureRecognizer != null && this.NativeUIElement.GestureRecognizers != null && this.NativeUIElement.GestureRecognizers.Contains(this.tapGestureRecognizer))
+            if (this.touchGestureRecognizer == null)
             {
-                return;
+                this.touchGestureRecognizer = new TouchRecognizer(this);
+                this.NativeUIElement.AddGestureRecognizer(this.touchGestureRecognizer);
+                this.NativeUIElement.UserInteractionEnabled = true;
             }
-
-            WeakReference wr = new WeakReference(this);
-            this.tapGestureRecognizer = new TapRecognizer(() =>
-            {
-                if (wr.IsAlive)
-                {
-                    ((UIElement)wr.Target).RaiseTap();
-                }
-            }, this.NativeUIElement);
-            this.tapGestureRecognizer.CancelsTouchesInView = false;
-            this.NativeUIElement.AddGestureRecognizer(this.tapGestureRecognizer);
-            this.NativeUIElement.UserInteractionEnabled = true;
         }
 
         protected virtual CGSize NativeMeasureOverride(CGSize availableSize)
@@ -141,44 +157,66 @@ namespace Appercode.UI.Controls
                 MathF.Max(0, finalRect.Height - margin.VerticalThicknessF()));
         }
 
-        private class TapRecognizer : UIGestureRecognizer
+        private class TouchRecognizer : UIGestureRecognizer
         {
-            public TapRecognizer(Action tapAction, UIView ownerNativeView)
-            {
-                this.TapAction = tapAction;
-                this.OvnerNativeView = ownerNativeView;
-            }
+            private readonly UIElement owner;
 
-            public Action TapAction
+            public TouchRecognizer(UIElement owner)
             {
-                get;
-                set;
-            }
-
-            public UIView OvnerNativeView
-            {
-                get;
-                set;
+                this.owner = owner;
+                this.CancelsTouchesInView = false;
+                this.ShouldReceiveTouch = this.ShouldRecieveTouchHandler;
             }
 
             public override void TouchesBegan(NSSet touches, UIEvent evt)
             {
                 base.TouchesBegan(touches, evt);
+                var childrenShouldForwardTouch = this.owner.ChildrenShouldForwardTouch;
+                foreach (UITouch touch in touches)
+                {
+                    if (childrenShouldForwardTouch || touch.View == this.owner.NativeUIElement)
+                    {
+                        this.owner.OnTouchDown();
+                    }
+                }
+
                 this.State = UIGestureRecognizerState.Possible;
             }
 
             public override void TouchesEnded(NSSet touches, UIEvent evt)
             {
                 base.TouchesEnded(touches, evt);
-                foreach (UITouch t in touches)
+                var childrenShouldForwardTouch = this.owner.ChildrenShouldForwardTouch;
+                foreach (UITouch touch in touches)
                 {
-                    var l = t.LocationInView(t.View);
-                    if (t.View != null && t.View == this.OvnerNativeView && l.X >= 0 && l.Y >= 0 && l.X <= t.View.Frame.Width && l.Y <= t.View.Frame.Height)
+                    if (childrenShouldForwardTouch || touch.View == this.owner.NativeUIElement)
                     {
-                        this.TapAction.Invoke();
+                        this.owner.OnTouchUp();
                     }
                 }
+
                 this.State = UIGestureRecognizerState.Failed;
+            }
+
+            private bool ShouldRecieveTouchHandler(UIGestureRecognizer recognizer, UITouch touch)
+            {
+                if (touch.View != this.owner.NativeUIElement && this.owner.ChildrenShouldForwardTouch == false)
+                {
+                    return false;
+                }
+
+                var parent = this.owner.Parent;
+                while (parent != null)
+                {
+                    if (parent.ChildrenShouldForwardTouch)
+                    {
+                        return false;
+                    }
+
+                    parent = parent.Parent;
+                }
+
+                return true;
             }
         }
     }
