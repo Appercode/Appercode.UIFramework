@@ -213,54 +213,40 @@ namespace Appercode.UI.Controls
 
             protected virtual void KeyboardWillShowNotification(NSNotification notification)
             {
-                UIView activeView = this.KeyboardGetActiveView();
-
-                if (this.Scroll == null)
-                {
-                    return;
-                }
-
                 this.Scroll.ScrollEnabled = true;
-
-                var keyboardBounds = UIKeyboard.FrameEndFromNotification(notification);
-                if (UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeLeft | UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeRight)
-                {
-                    keyboardBounds = new CGRect(keyboardBounds.Y, keyboardBounds.X, keyboardBounds.Height, keyboardBounds.Width);
-                }
-
                 var scroll = this.GetScrollView();
-                if (defaultInsetsAreSet == false)
+                if (this.defaultInsetsAreSet == false)
                 {
-                    defaultInsetsAreSet = true;
+                    this.defaultInsetsAreSet = true;
                     this.defaultContentInsets = scroll.ContentInset;
                     this.defaultIndicatorsInsets = scroll.ScrollIndicatorInsets;
                 }
 
-                UIEdgeInsets contentInsets = new UIEdgeInsets(scroll.ContentInset.Top, 0.0f, keyboardBounds.Size.Height, 0.0f);
+                var keyboardBounds = UIKeyboard.FrameEndFromNotification(notification);
+                var contentBottomInset =
+                    UIApplication.SharedApplication.StatusBarOrientation.IsLandscape() ? keyboardBounds.Width : keyboardBounds.Height;
+                var contentInsets = new UIEdgeInsets(scroll.ContentInset.Top, default(nfloat), contentBottomInset, default(nfloat));
                 scroll.ScrollIndicatorInsets = contentInsets;
                 scroll.ContentInset = contentInsets;
+                var activeView = this.KeyboardGetActiveView();
                 if (activeView != null)
                 {
                     this.ignoreScroling = true;
-                    UIView.Animate(0.3, () =>
-                        {
-                            scroll.ScrollRectToVisible(scroll.Subviews[0].ConvertRectFromView(activeView.Frame, activeView.Superview), false);
-                        },
+                    UIView.Animate(
+                        UIKeyboard.AnimationDurationFromNotification(notification),
+                        () => scroll.ScrollRectToVisible(scroll.ConvertRectFromView(activeView.Frame, activeView.Superview), false),
                         () => this.ignoreScroling = false);
                 }
             }
 
             protected virtual void KeyboardWillHideNotification(NSNotification notification)
             {
-                UIView activeView = this.KeyboardGetActiveView();
-                if (this.Scroll != null)
-                {
-                    this.Scroll.ScrollEnabled = false;
+                this.Scroll.ScrollEnabled = false;
+                var activeView = this.KeyboardGetActiveView();
 
-                    // Reset the content inset of the ScrollView and animate using the current keyboard animation duration
-                    var animationDuration = activeView == null ? 0 : UIKeyboard.AnimationDurationFromNotification(notification);
-                    UIView.Animate(animationDuration, this.ResetScrollView);
-                }
+                // Reset the content inset of the ScrollView and animate using the current keyboard animation duration
+                var animationDuration = activeView == null ? 0 : UIKeyboard.AnimationDurationFromNotification(notification);
+                UIView.Animate(animationDuration, this.ResetScrollView);
             }
 
             private static UIView FindFirstResponder(UIView view)
@@ -285,12 +271,14 @@ namespace Appercode.UI.Controls
                 var scroll = this.GetScrollView();
                 scroll.ScrollIndicatorInsets = this.defaultContentInsets;
                 scroll.ContentInset = this.defaultIndicatorsInsets;
-                defaultInsetsAreSet = false;
+                this.defaultInsetsAreSet = false;
             }
 
             private UIScrollView GetScrollView()
             {
-                return this.Scroll.Subviews.FirstOrDefault() as UIScrollView ?? this.Scroll;
+                // UIScrollView contains two UIImageView subviews for scroll indicators: http://stackoverflow.com/a/5664311
+                // They might be found earlier than the page subview and affect the returned result
+                return this.Scroll.Subviews.OfType<UIScrollView>().FirstOrDefault() ?? this.Scroll;
             }
 
             #endregion
