@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONOTOUCH;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -33,7 +33,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;MONOTOUCH;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -290,15 +290,11 @@
     <Compile Include="Markup\StaticResource.cs" />
     <Compile Include="Markup\TemplateBindingExtension.cs" />
     <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\Point.cs" />
-    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\PointConverter.cs" />
     <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\PointF.cs" />
     <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\Rectangle.cs" />
-    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\RectangleConverter.cs" />
     <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\RectangleF.cs" />
     <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\Size.cs" />
-    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\SizeConverter.cs" />
     <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\SizeF.cs" />
-    <Compile Include="mono\mcs\class\System.Drawing\System.Drawing\SizeFConverter.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventArgs.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\CurrentChangingEventHandler.cs" />
     <Compile Include="mono\mcs\class\WindowsBase\System.ComponentModel\GroupDescription.cs" />
