@@ -212,6 +212,7 @@
     <Compile Include="Internals\DependencyPropertyChangedWeakListener.cs" />
     <Compile Include="Internals\DynamicValueConverter.cs" />
     <Compile Include="Internals\Helpers\MathF.cs" />
+    <Compile Include="System.Windows\Thickness.iOS.cs" />
     <Compile Include="Internals\IDataContextChangedListener.cs" />
     <Compile Include="Internals\IErrorsChangedListener.cs" />
     <Compile Include="Internals\InterfaceConverter.cs" />

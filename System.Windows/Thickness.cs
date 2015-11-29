@@ -1,10 +1,9 @@
-using System;
 using System.ComponentModel;
 
 namespace System.Windows
 {
     [TypeConverterAttribute(typeof(ThicknessConverter))]
-    public struct Thickness
+    public partial struct Thickness
     {
         public Thickness(double uniformLength)
             : this()

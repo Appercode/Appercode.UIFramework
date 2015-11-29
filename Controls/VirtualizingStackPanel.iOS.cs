@@ -3,6 +3,7 @@ using Foundation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using UIKit;
 
 namespace Appercode.UI.Controls
@@ -86,12 +87,12 @@ namespace Appercode.UI.Controls
             return false;
         }
 
-        partial void ApplyPadding(System.Windows.Thickness padding)
+        partial void ApplyPadding(Thickness padding)
         {
-            var inset = new UIEdgeInsets(padding.TopF(), padding.LeftF(), padding.BottomF(), padding.RightF());
+            var insets = (UIEdgeInsets)padding;
             var tableView = (UITableView)this.NativeUIElement;
-            tableView.ContentInset = inset;
-            tableView.ScrollIndicatorInsets = inset;
+            tableView.ContentInset = insets;
+            tableView.ScrollIndicatorInsets = insets;
         }
 
         protected class VirtualizingStackPanelSource : UITableViewSource
