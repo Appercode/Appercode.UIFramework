@@ -449,12 +449,8 @@ namespace Appercode.UI.Controls
             // normally it uses full size of the control - we change this 
             public override void DrawText(CGRect rect)
             {
-                rect = new CGRect(
-                    rect.X + this.Padding.LeftF(),
-                    rect.Y + this.Padding.TopF(),
-                    rect.Width - this.Padding.HorizontalThicknessF(),
-                    rect.Height - this.Padding.VerticalThicknessF());
-                base.DrawText(this.TextRectForBounds(rect, this.Lines));
+                var insets = (UIEdgeInsets)this.Padding;
+                base.DrawText(insets.InsetRect(rect));
             }
         }
     }
