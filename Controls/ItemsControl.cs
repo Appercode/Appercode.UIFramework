@@ -24,9 +24,6 @@ namespace Appercode.UI.Controls
                     ((ItemsControl)d).OnItemsSourceChanged(e.OldValue, e.NewValue);
                 }));
 
-        public static readonly DependencyProperty ItemTemplateProperty =
-            DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(ItemsControl), new PropertyMetadata(null, (d, e) => ((ItemsControl)d).OnItemTemplateChanged()));
-
         public static readonly DependencyProperty ItemsProperty =
             DependencyProperty.Register("Items", typeof(ItemCollection), typeof(ItemsControl), new PropertyMetadata(null));
 
@@ -37,6 +34,18 @@ namespace Appercode.UI.Controls
                     ((ItemsControl)d).GeneratePanel();
                     ((ItemsControl)d).OnLayoutUpdated();
                 }));
+
+        /// <summary>
+        /// Identifies the <seealso cref="ItemTemplate"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ItemTemplateProperty =
+            DependencyProperty.Register(nameof(ItemTemplate), typeof(DataTemplate), typeof(ItemsControl), new PropertyMetadata(OnItemTemplatePropertyChanged));
+
+        /// <summary>
+        /// Identifies the <seealso cref="ItemTemplateSelector"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ItemTemplateSelectorProperty =
+            DependencyProperty.Register(nameof(ItemTemplateSelector), typeof(DataTemplateSelector), typeof(ItemsControl), new PropertyMetadata(OnItemTemplatePropertyChanged));
 
         protected Panel panel;
         private ItemContainerGenerator itemContainerGenerator;
@@ -97,27 +106,30 @@ namespace Appercode.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="DataTemplate"/> used to display each item. 
-        /// </summary>
-        public DataTemplate ItemTemplate
-        {
-            get
-            {
-                return (DataTemplate)this.GetValue(ItemsControl.ItemTemplateProperty);
-            }
-            set
-            {
-                this.SetValue(ItemsControl.ItemTemplateProperty, value);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the template that defines the panel that controls the layout of items. 
         /// </summary>
         public ItemsPanelTemplate ItemsPanel
         {
             get { return (ItemsPanelTemplate)this.GetValue(ItemsPanelProperty); }
             set { this.SetValue(ItemsPanelProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="DataTemplate" /> used to display each item. 
+        /// </summary>
+        public DataTemplate ItemTemplate
+        {
+            get { return (DataTemplate)this.GetValue(ItemTemplateProperty); }
+            set { this.SetValue(ItemTemplateProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="DataTemplateSelector" />, which provides custom logic for choosing the <see cref="DataTemplate" /> for each item.
+        /// </summary>
+        public DataTemplateSelector ItemTemplateSelector
+        {
+            get { return (DataTemplateSelector)this.GetValue(ItemTemplateSelectorProperty); }
+            set { this.SetValue(ItemTemplateSelectorProperty, value); }
         }
 
         protected internal virtual ItemContainerGenerator ItemContainerGenerator
@@ -275,18 +287,6 @@ namespace Appercode.UI.Controls
         {
         }
 
-        private void OnItemTemplateChanged()
-        {
-            if (this.ItemContainerGenerator.ContainerFactory.Type == typeof(ContentPresenter))
-            {
-                this.ItemContainerGenerator.ContainerFactory.SetValue(ContentPresenter.ContentTemplateProperty, this.ItemTemplate);
-            }
-            else
-            {
-                this.ItemContainerGenerator.ContainerFactory.SetValue(ContentControl.ContentTemplateProperty, this.ItemTemplate);
-            }
-        }
-
         protected virtual void OnItemsSourceChanged(object oldValue, object newValue)
         {
             if (this.itemsWasSetByUser && this.Items.Count > 0)
@@ -339,6 +339,31 @@ namespace Appercode.UI.Controls
             {
                 this.panel.Children.InsertRange(newStartingIndex, childrens);
             }
+        }
+
+        private static void OnItemTemplatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var itemsControl = (ItemsControl)d;
+            var containerFactory = itemsControl.ItemContainerGenerator.ContainerFactory;
+            DependencyProperty templateProperty;
+            DependencyProperty templateSelectorProperty;
+            if (containerFactory.Type == typeof(ContentPresenter))
+            {
+                templateProperty = ContentPresenter.ContentTemplateProperty;
+                templateSelectorProperty = ContentPresenter.ContentTemplateSelectorProperty;
+            }
+            else
+            {
+                templateProperty = ContentControl.ContentTemplateProperty;
+                templateSelectorProperty = ContentControl.ContentTemplateSelectorProperty;
+            }
+
+            // TODO: Investigate if exception should be thrown if both Template and TemplateSelector are set
+            var templateSelectorValue = itemsControl.ItemTemplateSelector;
+            var templateValue = templateSelectorValue == null ? itemsControl.ItemTemplate : null;
+
+            containerFactory.SetValue(templateProperty, templateValue);
+            containerFactory.SetValue(templateSelectorProperty, templateSelectorValue);
         }
 
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
