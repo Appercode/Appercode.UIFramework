@@ -1,9 +1,9 @@
+using System;
 using System.Collections;
 using System.Windows;
 using System.Windows.Markup;
 
 #if __IOS__
-using System;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 #else
@@ -15,30 +15,38 @@ namespace Appercode.UI.Controls
 {
     public partial class ContentControl : Control, IAddChild
     {
-        public static readonly DependencyProperty ContentProperty =
-                    DependencyProperty.Register("Content", typeof(object), typeof(ContentControl),
-                                                new PropertyMetadata(null, new PropertyChangedCallback(ContentControl.OnContentChanged)));
+        /// <summary>
+        /// Identifies the <see cref="Content" /> dependency property.
+        /// </summary>
+        /// <returns>The identifier for the <see cref="Content" /> dependency property.</returns>
+        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(
+            nameof(Content), typeof(object), typeof(ContentControl), new PropertyMetadata(OnContentChanged));
 
-        public static readonly DependencyProperty ContentTemplateProperty =
-                    DependencyProperty.Register("ContentTemplate", typeof(DataTemplate), typeof(ContentControl),
-                                                new PropertyMetadata(null, new PropertyChangedCallback(ContentControl.OnContentTemplateChanged)));
+        /// <summary>
+        /// Identifies the <see cref="ContentTemplate" /> dependency property.
+        /// </summary>
+        /// <returns>The identifier for the <see cref="ContentTemplate" /> dependency property.</returns>
+        public static readonly DependencyProperty ContentTemplateProperty = DependencyProperty.Register(
+            nameof(ContentTemplate), typeof(DataTemplate), typeof(ContentControl), new PropertyMetadata(OnContentTemplateChanged));
 
-        public static readonly DependencyProperty ContentTemplateSelectorProperty =
-            DependencyProperty.Register("ContentTemplateSelector", typeof(DataTemplateSelector), typeof(ContentControl), new PropertyMetadata(null));
+        /// <summary>
+        /// Identifies the <see cref="ContentTemplateSelector" /> dependency property.
+        /// </summary>
+        /// <returns>The identifier for the <see cref="ContentTemplateSelector" /> dependency property.</returns>
+        public static readonly DependencyProperty ContentTemplateSelectorProperty = DependencyProperty.Register(
+            nameof(ContentTemplateSelector), typeof(DataTemplateSelector), typeof(ContentControl), new PropertyMetadata(OnContentTemplateSelectorChanged));
 
         protected SizeF contentSize;
         protected UIElement contentTemplateInstance;
 
+        /// <summary>
+        /// Gets or sets the content of a <see cref="ContentControl" />. This is a dependency property.
+        /// </summary>
+        /// <returns>An object that contains the control's content. The default is null.</returns>
         public object Content
         {
-            get
-            {
-                return (object)this.GetValue(ContentControl.ContentProperty);
-            }
-            set
-            {
-                this.SetValue(ContentControl.ContentProperty, value);
-            }
+            get { return this.GetValue(ContentProperty); }
+            set { this.SetValue(ContentProperty, value); }
         }
 
         public DataTemplate ContentTemplate
@@ -162,31 +170,43 @@ namespace Appercode.UI.Controls
             this.Content = text;
         }
 
+        /// <summary>
+        /// Invoked when the <see cref="Content" /> property changes.
+        /// </summary>
+        /// <param name="oldContent">The old value of the <see cref="Content" /> property.</param>
+        /// <param name="newContent">The new value of the <see cref="Content" /> property.</param>
         protected virtual void OnContentChanged(object oldContent, object newContent)
         {
-            if (oldContent != null && oldContent is UIElement)
+            var oldElement = oldContent as UIElement;
+            if (oldElement != null)
             {
-                ((UIElement)oldContent).LayoutUpdated -= this.ContentControl_LayoutUpdated;
+                oldElement.LayoutUpdated -= this.OnContentLayoutUpdated;
             }
 
-            DependencyObject newContentDO = newContent as DependencyObject;
+            var newContentDO = newContent as DependencyObject;
             if (newContentDO != null)
             {
-                if (newContentDO is UIElement)
+                var newElement = newContent as UIElement;
+                if (newElement != null)
                 {
-                    ((UIElement)newContentDO).LayoutUpdated += this.ContentControl_LayoutUpdated;
+                    newElement.LayoutUpdated += this.OnContentLayoutUpdated;
                 }
 
-                DependencyObject parent = LogicalTreeHelper.GetParent(newContentDO);
+                var parent = LogicalTreeHelper.GetParent(newContentDO);
                 if (parent != null)
                 {
                     LogicalTreeHelper.RemoveLogicalChild(parent, newContent);
                 }
             }
 
+            DataTemplateSelector templateSelector;
             if (this.contentTemplateInstance != null)
             {
-                this.contentTemplateInstance.DataContext = this.Content;
+                this.contentTemplateInstance.DataContext = newContent;
+            }
+            else if (newContent != null && (templateSelector = this.ContentTemplateSelector) != null)
+            {
+                this.ApplyContentTemplate(templateSelector.SelectTemplate(newContent, this));
             }
             else
             {
@@ -198,38 +218,14 @@ namespace Appercode.UI.Controls
             this.InvalidateMeasure();
         }
 
+        /// <summary>
+        /// Invoked when the <see cref="ContentTemplate" /> property changes.
+        /// </summary>
+        /// <param name="oldContentTemplate">The old value of the <see cref="ContentTemplate" /> property.</param>
+        /// <param name="newContentTemplate">The new value of the <see cref="ContentTemplate" /> property.</param>
         protected virtual void OnContentTemplateChanged(DataTemplate oldContentTemplate, DataTemplate newContentTemplate)
         {
-            if (this.contentTemplateInstance != null)
-            {
-                this.contentTemplateInstance.LayoutUpdated -= this.ContentControl_LayoutUpdated;
-                this.RemoveContentTemplateInstance();
-                this.RemoveLogicalChild(this.contentTemplateInstance);
-            }
-
-            if (newContentTemplate != null)
-            {
-                this.contentTemplateInstance = (UIElement)newContentTemplate.LoadContent();
-                this.contentTemplateInstance.LayoutUpdated += this.ContentControl_LayoutUpdated;
-                this.AddLogicalChild(this.contentTemplateInstance);
-                if (this.Content is UIElement)
-                {
-                    this.RemoveContentNativeView();
-                }
-                this.contentTemplateInstance.DataContext = this.Content;
-                this.AddContentTemplateInstance();
-            }
-            else
-            {
-                if (this.Content is UIElement)
-                {
-                    this.RemoveContentNativeView();
-                }
-                this.contentTemplateInstance = null;
-            }
-
-            this.OnNativeContentChanged(null, this.Content);
-            this.OnLayoutUpdated();
+            this.ApplyContentTemplate(newContentTemplate);
         }
 
         protected virtual void ArrangeContent(SizeF finalSize)
@@ -300,11 +296,59 @@ namespace Appercode.UI.Controls
 
         private static void OnContentTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ContentControl contentControl = (ContentControl)d;
+            var contentControl = (ContentControl)d;
             contentControl.OnContentTemplateChanged((DataTemplate)e.OldValue, (DataTemplate)e.NewValue);
         }
 
-        private void ContentControl_LayoutUpdated(object sender, System.EventArgs e)
+        private static void OnContentTemplateSelectorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var contentControl = (ContentControl)d;
+            var content = contentControl.Content;
+            var newValue = e.NewValue as DataTemplateSelector;
+            if (newValue != null && content != null)
+            {
+                var newTemplateValue = newValue.SelectTemplate(content, contentControl);
+                contentControl.ApplyContentTemplate(newTemplateValue);
+            }
+        }
+
+        private void ApplyContentTemplate(DataTemplate value)
+        {
+            if (this.contentTemplateInstance != null)
+            {
+                this.contentTemplateInstance.LayoutUpdated -= this.OnContentLayoutUpdated;
+                this.RemoveContentTemplateInstance();
+                this.RemoveLogicalChild(this.contentTemplateInstance);
+            }
+
+            if (value != null)
+            {
+                this.contentTemplateInstance = (UIElement)value.LoadContent();
+                this.contentTemplateInstance.LayoutUpdated += this.OnContentLayoutUpdated;
+                this.AddLogicalChild(this.contentTemplateInstance);
+                if (this.Content is UIElement)
+                {
+                    this.RemoveContentNativeView();
+                }
+
+                this.contentTemplateInstance.DataContext = this.Content;
+                this.AddContentTemplateInstance();
+            }
+            else
+            {
+                if (this.Content is UIElement)
+                {
+                    this.RemoveContentNativeView();
+                }
+
+                this.contentTemplateInstance = null;
+            }
+
+            this.OnNativeContentChanged(null, this.Content);
+            this.OnLayoutUpdated();
+        }
+
+        private void OnContentLayoutUpdated(object sender, EventArgs e)
         {
             if (this.Parent != null)
             {
