@@ -3,7 +3,6 @@ using Appercode.UI.Internals;
 using Appercode.UI.Markup;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 
@@ -11,16 +10,22 @@ namespace Appercode.UI.Controls
 {
     public partial class ContentPresenter : UIElement
     {
-        /// <summary>Identifies the <see cref="P:System.Windows.Controls.ContentPresenter.Content" /> dependency property. </summary>
-        /// <returns>The identifier for the <see cref="P:System.Windows.Controls.ContentPresenter.Content" /> dependency property.</returns>
+        /// <summary>
+        /// Identifies the <see cref="Content" /> dependency property.
+        /// </summary>
+        /// <returns>The identifier for the <see cref="Content" /> dependency property.</returns>
         public static readonly DependencyProperty ContentProperty;
 
-        /// <summary>Identifies the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplate" /> dependency property. </summary>
-        /// <returns>The identifier for the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplate" /> dependency property.</returns>
+        /// <summary>
+        /// Identifies the <see cref="ContentTemplate" /> dependency property.
+        /// </summary>
+        /// <returns>The identifier for the <see cref="ContentTemplate" /> dependency property.</returns>
         public static readonly DependencyProperty ContentTemplateProperty;
 
-        /// <summary>Identifies the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplateSelector" /> dependency property. </summary>
-        /// <returns>The identifier for the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplateSelector" /> dependency property.</returns>
+        /// <summary>
+        /// Identifies the <see cref="ContentTemplateSelector" /> dependency property.
+        /// </summary>
+        /// <returns>The identifier for the <see cref="ContentTemplateSelector" /> dependency property.</returns>
         public static readonly DependencyProperty ContentTemplateSelectorProperty;
 
         /// <summary>
@@ -31,9 +36,9 @@ namespace Appercode.UI.Controls
 
         internal static readonly DependencyProperty TemplateProperty;
 
-        private static DataTemplate uiElementTemplate;
-        private static DataTemplate defaultTemplate;
-        private static ContentPresenter.DefaultSelector defaultTemplateSelector;
+        private static readonly DataTemplate UIElementContentTemplate;
+        private static readonly Lazy<DefaultTemplate> DefaultContentTemplate = new Lazy<DefaultTemplate>();
+        private static readonly Lazy<DefaultSelector> DefaultTemplateSelector = new Lazy<DefaultSelector>();
 
         private readonly Lazy<DataTemplate> stringTemplate;
         private DataTemplate stringFormattingTemplate;
@@ -42,27 +47,21 @@ namespace Appercode.UI.Controls
 
         static ContentPresenter()
         {
-            ContentPresenter.ContentTemplateProperty = ContentControl.ContentTemplateProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(new ContentPresenter.DefaultTemplate(), new PropertyChangedCallback(ContentPresenter.OnContentTemplateChanged)));
-            ContentPresenter.ContentProperty = ContentControl.ContentProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(null, new PropertyChangedCallback(ContentPresenter.OnContentChanged)));
-            ContentPresenter.ContentTemplateSelectorProperty = ContentControl.ContentTemplateSelectorProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(null, new PropertyChangedCallback(ContentPresenter.OnContentTemplateSelectorChanged)));
+            ContentTemplateProperty = ContentControl.ContentTemplateProperty.AddOwner(
+                typeof(ContentPresenter), new PropertyMetadata(new DefaultTemplate(), OnContentTemplateChanged));
+            ContentProperty = ContentControl.ContentProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(OnContentChanged));
+            ContentTemplateSelectorProperty = ContentControl.ContentTemplateSelectorProperty.AddOwner(
+                typeof(ContentPresenter), new PropertyMetadata(OnContentTemplateSelectorChanged));
             ContentStringFormatProperty = DependencyProperty.Register(
                 nameof(ContentStringFormat), typeof(string), typeof(ContentPresenter), new PropertyMetadata(OnContentStringFormatChanged));
-            ContentPresenter.TemplateProperty = DependencyProperty.Register("Template", typeof(DataTemplate), typeof(ContentPresenter), new PropertyMetadata(null, new PropertyChangedCallback(ContentPresenter.OnTemplateChanged)));
+            TemplateProperty = DependencyProperty.Register(
+                nameof(Template), typeof(DataTemplate), typeof(ContentPresenter), new PropertyMetadata(OnTemplateChanged));
 
-            DataTemplate dataTemplate;
-            FrameworkElementFactory frameworkElementFactory;
-            //dataTemplate = new ContentPresenter.UseContentTemplate();
-            //dataTemplate.Seal();
-            frameworkElementFactory = new FrameworkElementFactory(typeof(ContentControl));
-            frameworkElementFactory.SetValue(ContentControl.ContentProperty, new TemplateBindingExtension(ContentPresenter.ContentProperty));
-            dataTemplate = new DataTemplate();
-            dataTemplate.VisualTree = frameworkElementFactory;
-
-            ContentPresenter.uiElementTemplate = dataTemplate;
-            dataTemplate = new ContentPresenter.DefaultTemplate();
-            dataTemplate.Seal();
-            ContentPresenter.defaultTemplate = dataTemplate;
-            ContentPresenter.defaultTemplateSelector = new ContentPresenter.DefaultSelector();
+            // TODO: Check if current implementation of UIElementContentTemplate works
+            // UIElementContentTemplate = new UseContentTemplate();
+            var frameworkElementFactory = new FrameworkElementFactory(typeof(ContentControl));
+            frameworkElementFactory.SetValue(ContentControl.ContentProperty, new TemplateBindingExtension(ContentProperty));
+            UIElementContentTemplate = new DataTemplate { VisualTree = frameworkElementFactory };
         }
 
         /// <summary>
@@ -74,18 +73,14 @@ namespace Appercode.UI.Controls
             this.Initialize();
         }
 
-        /// <summary>Gets or sets the data used to generate the child elements of a <see cref="T:System.Windows.Controls.ContentPresenter" />. This is a dependency property. </summary>
+        /// <summary>
+        /// Gets or sets the data used to generate the child elements of a <see cref="ContentPresenter" />. This is a dependency property.
+        /// </summary>
         /// <returns>The data used to generate the child elements. The default is null.</returns>
         public object Content
         {
-            get
-            {
-                return this.GetValue(ContentControl.ContentProperty);
-            }
-            set
-            {
-                this.SetValue(ContentControl.ContentProperty, value);
-            }
+            get { return this.GetValue(ContentControl.ContentProperty); }
+            set { this.SetValue(ContentControl.ContentProperty, value); }
         }
 
         /// <summary>
@@ -98,63 +93,43 @@ namespace Appercode.UI.Controls
             set { this.SetValue(ContentStringFormatProperty, value); }
         }
 
-        /// <summary>Gets or sets the template used to display the content of the control.  This is a dependency property. </summary>
-        /// <returns>A <see cref="T:System.Windows.DataTemplate" /> that defines the visualization of the content. The default is null.</returns>
+        /// <summary>
+        /// Gets or sets the template used to display the content of the control. This is a dependency property.
+        /// </summary>
+        /// <returns>A <see cref="DataTemplate" /> that defines the visualization of the content. The default is null.</returns>
         public DataTemplate ContentTemplate
         {
-            get
-            {
-                return (DataTemplate)this.GetValue(ContentControl.ContentTemplateProperty);
-            }
-            set
-            {
-                this.SetValue(ContentControl.ContentTemplateProperty, value);
-            }
+            get { return (DataTemplate)this.GetValue(ContentControl.ContentTemplateProperty); }
+            set { this.SetValue(ContentControl.ContentTemplateProperty, value); }
         }
 
-        /// <summary>Gets or sets the <see cref="T:System.Windows.Controls.DataTemplateSelector" />, which allows the application writer to provide custom logic for choosing the template that is used to display the content of the control. This is a dependency property. </summary>
-        /// <returns>A <see cref="T:System.Windows.Controls.DataTemplateSelector" /> object that supplies logic to return a <see cref="T:System.Windows.DataTemplate" /> to apply. The default is null.</returns>
+        /// <summary>
+        /// Gets or sets the <see cref="DataTemplateSelector" />, which allows the application writer to provide custom logic
+        /// for choosing the template that is used to display the content of the control. This is a dependency property.
+        /// </summary>
+        /// <returns>A <see cref="DataTemplateSelector" /> object that supplies logic to return a <see cref="DataTemplate" /> to apply. The default is null.</returns>
         public DataTemplateSelector ContentTemplateSelector
         {
-            get
-            {
-                return (DataTemplateSelector)this.GetValue(ContentControl.ContentTemplateSelectorProperty);
-            }
-            set
-            {
-                this.SetValue(ContentControl.ContentTemplateSelectorProperty, value);
-            }
+            get { return (DataTemplateSelector)this.GetValue(ContentControl.ContentTemplateSelectorProperty); }
+            set { this.SetValue(ContentControl.ContentTemplateSelectorProperty, value); }
         }
 
-        internal bool TemplateIsCurrent
+        /// <summary>
+        /// Gets an enumerator for logical children of this element.
+        /// </summary>
+        protected internal override IEnumerator LogicalChildren
         {
             get
             {
-                return this.templateIsCurrent;
-            }
-        }
+                if (this.Content != null)
+                {
+                    yield return this.Content;
+                }
 
-        private static DataTemplate DefaultContentTemplate
-        {
-            get
-            {
-                return ContentPresenter.defaultTemplate;
-            }
-        }
-
-        private static ContentPresenter.DefaultSelector DefaultTemplateSelector
-        {
-            get
-            {
-                return ContentPresenter.defaultTemplateSelector;
-            }
-        }
-
-        private static DataTemplate UIElementContentTemplate
-        {
-            get
-            {
-                return ContentPresenter.uiElementTemplate;
+                if (this.TemplateInstance != null)
+                {
+                    yield return this.TemplateInstance;
+                }
             }
         }
 
@@ -170,13 +145,14 @@ namespace Appercode.UI.Controls
                 {
                     return;
                 }
+
                 var oldValue = this.templateInstance;
                 if (oldValue != null)
                 {
                     LogicalTreeHelper.RemoveLogicalChild(this, oldValue);
                 }
 
-                this.templateInstance = value; 
+                this.templateInstance = value;
                 this.AddLogicalChild(this.templateInstance);
                 this.NativeTemplateUpdate(oldValue, value);
             }
@@ -202,72 +178,18 @@ namespace Appercode.UI.Controls
 
         private DataTemplate Template
         {
-            get
-            {
-                return (DataTemplate)this.GetValue(ContentPresenter.TemplateProperty);
-            }
-            set
-            {
-                this.SetValue(ContentPresenter.TemplateProperty, value);
-            }
+            get { return (DataTemplate)this.GetValue(TemplateProperty); }
+            set { this.SetValue(TemplateProperty, value); }
         }
 
-        protected internal override IEnumerator LogicalChildren
+        internal override void ApplyTemplate()
         {
-            get
-            {
-                var children = new List<object>();
-                if (this.Content != null)
-                {
-                    children.Add(this.Content);
-                }
-                if (this.templateInstance != null)
-                {
-                    children.Add(this.templateInstance);
-                }
-                return children.GetEnumerator();
-            }
-        }
-
-        internal static FrameworkElementFactory CreateTextBlockFactory()
-        {
-            var tf = new FrameworkElementFactory(typeof(TextBlock));
-            tf.SetBinding(TextBlock.TextProperty, new Binding());
-            return tf;
-        }        
-
-        /*
-        internal override void OnPreApplyTemplate()
-        {
-            base.OnPreApplyTemplate();
-            if (base.TemplatedParent == null)
-            {
-                base.InvalidateProperty(ContentPresenter.ContentProperty);
-            }
-            if (!this._templateIsCurrent)
+            base.ApplyTemplate();
+            if (this.templateIsCurrent == false)
             {
                 this.EnsureTemplate();
-                this._templateIsCurrent = true;
+                this.templateIsCurrent = true;
             }
-        }
-        */
-        
-        /// <summary>Returns the template to use. This may depend on the content or other properties.</summary>
-        /// <returns>The <see cref="T:System.Windows.DataTemplate" /> to use.</returns>
-        protected virtual DataTemplate ChooseTemplate()
-        {
-            DataTemplate contentTemplate = null;
-            object content = this.Content;
-            contentTemplate = this.ContentTemplate;
-            if (contentTemplate == null && this.ContentTemplateSelector != null)
-            {
-                contentTemplate = this.ContentTemplateSelector.SelectTemplate(content, this);
-            }
-            if (contentTemplate == null)
-            {
-                contentTemplate = ContentPresenter.DefaultTemplateSelector.SelectTemplate(content, this);
-            }
-            return contentTemplate;
         }
 
         /// <summary>
@@ -280,82 +202,69 @@ namespace Appercode.UI.Controls
             this.stringFormattingTemplate = null;
         }
 
-        /// <summary>Invoked when the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplateSelector" /> property changes. </summary>
-        /// <param name="oldContentTemplateSelector">The old value of the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplateSelector" /> property.</param>
-        /// <param name="newContentTemplateSelector">The new value of the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplateSelector" /> property.</param>
+        /// <summary>
+        /// Invoked when the <see cref="ContentTemplateSelector" /> property changes.
+        /// </summary>
+        /// <param name="oldContentTemplateSelector">The old value of the <see cref="ContentTemplateSelector" /> property.</param>
+        /// <param name="newContentTemplateSelector">The new value of the <see cref="ContentTemplateSelector" /> property.</param>
         protected virtual void OnContentTemplateSelectorChanged(DataTemplateSelector oldContentTemplateSelector, DataTemplateSelector newContentTemplateSelector)
         {
-            ////Helper.CheckTemplateAndTemplateSelector("Content", ContentPresenter.ContentTemplateProperty, ContentPresenter.ContentTemplateSelectorProperty, this);
             this.Template = null;
         }
 
-        /// <summary>Invoked when the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplate" /> changes. </summary>
-        /// <param name="oldContentTemplate">The old value of the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplate" /> property.</param>
-        /// <param name="newContentTemplate">The new value of the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplate" /> property.</param>
+        /// <summary>
+        /// Invoked when the <see cref="ContentTemplate" /> property changes.
+        /// </summary>
+        /// <param name="oldContentTemplate">The old value of the <see cref="ContentTemplate" /> property.</param>
+        /// <param name="newContentTemplate">The new value of the <see cref="ContentTemplate" /> property.</param>
         protected virtual void OnContentTemplateChanged(DataTemplate oldContentTemplate, DataTemplate newContentTemplate)
         {
-            ////Helper.CheckTemplateAndTemplateSelector("Content", ContentPresenter.ContentTemplateProperty, ContentPresenter.ContentTemplateSelectorProperty, this);
             this.Template = newContentTemplate;
-        }
-
-        /// <summary>Invoked when the <see cref="P:System.Windows.Controls.ContentPresenter.ContentTemplate" /> changes </summary>
-        /// <param name="oldTemplate">The old <see cref="T:System.Windows.DataTemplate" /> object value.</param>
-        /// <param name="newTemplate">The new <see cref="T:System.Windows.DataTemplate" /> object value.</param>
-        protected virtual void OnTemplateChanged(DataTemplate oldTemplate, DataTemplate newTemplate)
-        {
         }
 
         private static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            bool flag;
-            Type oldType;
-            Type newType;
-            ContentPresenter contentPresenter = (ContentPresenter)d;
-            if (!contentPresenter.templateIsCurrent)
+            var contentPresenter = (ContentPresenter)d;
+            if (contentPresenter.templateIsCurrent == false)
             {
                 return;
             }
+
+            bool templateIsChanged;
             if (contentPresenter.ContentTemplate != null)
             {
-                flag = false;
+                templateIsChanged = false;
             }
-            else if (contentPresenter.Template == ContentPresenter.UIElementContentTemplate)
+            else if (contentPresenter.ContentTemplateSelector != null)
             {
-                flag = true;
+                templateIsChanged = true;
+            }
+            else if (contentPresenter.Template == UIElementContentTemplate)
+            {
+                templateIsChanged = true;
                 contentPresenter.Template = null;
             }
-            else if (contentPresenter.Template != ContentPresenter.DefaultContentTemplate)
+            else if (contentPresenter.Template != DefaultContentTemplate.Value)
             {
-                if (e.OldValue != null)
-                {
-                    oldType = e.OldValue.GetType();
-                }
-                else
-                {
-                    oldType = null;
-                }
-                if (e.NewValue != null)
-                {
-                    newType = e.NewValue.GetType();
-                }
-                else
-                {
-                    newType = null;
-                }
-                flag = oldType != newType;
+                var oldValueType = e.OldValue?.GetType();
+                var newValueType = e.NewValue?.GetType();
+                templateIsChanged = oldValueType != newValueType;
             }
             else
             {
-                flag = true;
+                templateIsChanged = true;
             }
-            if (flag)
+
+            if (templateIsChanged)
             {
                 contentPresenter.templateIsCurrent = false;
             }
-            if (contentPresenter.templateIsCurrent && contentPresenter.Template != ContentPresenter.UIElementContentTemplate)
+
+            if (contentPresenter.templateIsCurrent && contentPresenter.Template != UIElementContentTemplate)
             {
                 contentPresenter.DataContext = e.NewValue;
             }
+
             if (contentPresenter.TemplateInstance != null)
             {
                 contentPresenter.TemplateInstance.DataContext = contentPresenter.Content;
@@ -384,61 +293,76 @@ namespace Appercode.UI.Controls
 
         private static void OnTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ContentPresenter contentPresenter = (ContentPresenter)d;
-            StyleHelper.UpdateTemplateCache(contentPresenter, (FrameworkTemplate)e.OldValue, (FrameworkTemplate)e.NewValue, ContentPresenter.TemplateProperty);
-            contentPresenter.EnsureTemplate();
-            ////if (contentPresenter.TemplateInstance == null)
-            ////{
-            ////contentPresenter.Template.VisualTree.SetBinding(UIElement.DataContextProperty, new Binding("") { Source = ((ContentPresenter)d).Content });
-            contentPresenter.TemplateInstance = (UIElement)contentPresenter.Template.LoadContent();
-            ////contentPresenter.TemplateInstance.SetBinding(UIElement.DataContextProperty, new Binding());
-            ////contentPresenter.TemplateInstance.DataContext = contentPresenter.Content;
-            ////}
+            var newValue = e.NewValue as FrameworkTemplate;
+            if (newValue != null)
+            {
+                var contentPresenter = (ContentPresenter)d;
+                contentPresenter.TemplateInstance = (UIElement)newValue.LoadContent();
+            }
         }
 
         private void EnsureTemplate()
         {
-            DataTemplate template = this.Template;
-            DataTemplate dataTemplate = null;
+            var oldTemplate = this.Template;
+            DataTemplate newTemplate = null;
             this.templateIsCurrent = false;
-            while (!this.templateIsCurrent)
+            while (this.templateIsCurrent == false)
             {
                 this.templateIsCurrent = true;
-                dataTemplate = this.ChooseTemplate();
-                if (template != dataTemplate)
+                newTemplate = this.ChooseTemplate();
+                if (oldTemplate != newTemplate)
                 {
                     this.Template = null;
                 }
-                if (dataTemplate == ContentPresenter.UIElementContentTemplate)
+
+                if (newTemplate == UIElementContentTemplate)
                 {
-                    this.ClearValue(UIElement.DataContextProperty);
+                    this.ClearValue(DataContextProperty);
                 }
                 else
                 {
                     this.DataContext = this.Content;
                 }
             }
-            this.Template = dataTemplate;
-            if (template == dataTemplate)
+
+            this.Template = newTemplate;
+        }
+
+        private DataTemplate ChooseTemplate()
+        {
+            var content = this.Content;
+            var contentTemplate = this.ContentTemplate;
+
+            DataTemplateSelector templateSelector;
+            if (contentTemplate == null && (templateSelector = this.ContentTemplateSelector) != null)
             {
-                StyleHelper.DoTemplateInvalidations(this, template);
+                contentTemplate = templateSelector.SelectTemplate(content, this);
             }
+
+            if (contentTemplate == null)
+            {
+                contentTemplate = DefaultTemplateSelector.Value.SelectTemplate(content, this);
+            }
+
+            return contentTemplate;
         }
 
         private void Initialize()
         {
-            PropertyMetadata metadata = ContentPresenter.TemplateProperty.GetMetadata(this.DependencyObjectType);
-            DataTemplate defaultValue = (DataTemplate)metadata.DefaultValue;
+            var metadata = TemplateProperty.GetMetadata(this.DependencyObjectType);
+            var defaultValue = (DataTemplate)metadata.DefaultValue;
             if (defaultValue != null)
             {
-                ContentPresenter.OnTemplateChanged(this, new DependencyPropertyChangedEventArgs(ContentPresenter.TemplateProperty, null, defaultValue));
+                OnTemplateChanged(this, new DependencyPropertyChangedEventArgs(TemplateProperty, null, defaultValue));
             }
-            metadata = ContentPresenter.ContentTemplateProperty.GetMetadata(this.DependencyObjectType);
+
+            metadata = ContentTemplateProperty.GetMetadata(this.DependencyObjectType);
             defaultValue = (DataTemplate)metadata.DefaultValue;
             if (defaultValue != null)
             {
-                ContentPresenter.OnContentTemplateChanged(this, new DependencyPropertyChangedEventArgs(ContentPresenter.TemplateProperty, null, defaultValue));
+                OnContentTemplateChanged(this, new DependencyPropertyChangedEventArgs(ContentTemplateProperty, null, defaultValue));
             }
+
             this.DataContext = null;
         }
 
@@ -481,7 +405,7 @@ namespace Appercode.UI.Controls
                 }
                 else
                 {
-                    return DefaultContentTemplate;
+                    return DefaultContentTemplate.Value;
                 }
             }
         }
@@ -490,23 +414,28 @@ namespace Appercode.UI.Controls
         {
             public DefaultTemplate()
             {
-                this.CanBuildVisualTree = true;                
-                var frameworkElementFactory = ContentPresenter.CreateTextBlockFactory();
-                this.VisualTree = frameworkElementFactory;
+                this.CanBuildVisualTree = true;
+                var textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
+                textBlockFactory.SetBinding(TextBlock.TextProperty, new Binding());
+                this.VisualTree = textBlockFactory;
+                this.Seal();
             }
 
+            // TODO: Check if this override can be safely removed
             internal override bool BuildVisualTree(UIElement container)
-            {                
-                this.VisualTree.SetValue(TextBlock.TextProperty, new TemplateBindingExtension(ContentPresenter.ContentProperty));
+            {
+                this.VisualTree.SetValue(TextBlock.TextProperty, new TemplateBindingExtension(ContentProperty));
                 return true;
             }
         }
 
+        // TODO: Check if this class can be safely removed
         private class UseContentTemplate : DataTemplate
         {
             public UseContentTemplate()
             {
                 this.CanBuildVisualTree = true;
+                this.Seal();
             }
 
             internal override bool BuildVisualTree(UIElement container)
