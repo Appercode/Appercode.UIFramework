@@ -546,12 +546,9 @@ namespace Appercode.UI.Controls
         #endregion Properties
 
         /// <summary>
-        /// Not used now
+        /// Invoked whenever <see cref="ApplyTemplate"/> is called. In current implementation it is called on measuring.
         /// </summary>
-        public virtual void OnApplyTemplate()
-        {
-            // TODO template working
-        }
+        public virtual void OnApplyTemplate() { }
 
         public override object GetValue(DependencyProperty dp)
         {
@@ -597,6 +594,7 @@ namespace Appercode.UI.Controls
                 !this.IsMeasureValid || this.measuredFor == null || this.measuredFor.Value != availableSize;
             if (isMeasureNotActual && availableSize.Width != 0 && availableSize.Height != 0)
             {
+                this.ApplyTemplate();
                 this.measuredFor = availableSize;
                 this.measuredSize = this.SizeThatFitsMaxAndMin(this.NativeMeasureOverride(this.SizeThatFitsMaxAndMin(availableSize)));
                 this.IsMeasureValid = true;
@@ -654,6 +652,11 @@ namespace Appercode.UI.Controls
                     parentChanged(this, EventArgs.Empty);
                 }
             }
+        }
+
+        internal virtual void ApplyTemplate()
+        {
+            this.OnApplyTemplate();
         }
 
         internal virtual SizeF MeasureContentViewPort(SizeF availableSize)
