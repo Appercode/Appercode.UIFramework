@@ -1,6 +1,5 @@
 ﻿using Appercode.UI.Data;
 using Appercode.UI.Internals;
-using Appercode.UI.Internals.Boxes;
 using Appercode.UI.Markup;
 using System;
 using System.Collections;
@@ -12,10 +11,6 @@ namespace Appercode.UI.Controls
 {
     public partial class ContentPresenter : UIElement
     {
-        /// <summary>Identifies the <see cref="P:System.Windows.Controls.ContentPresenter.RecognizesAccessKey" /> dependency property. </summary>
-        /// <returns>The identifier for the <see cref="P:System.Windows.Controls.ContentPresenter.RecognizesAccessKey" /> dependency property.</returns>
-        public static readonly DependencyProperty RecognizesAccessKeyProperty;
-
         /// <summary>Identifies the <see cref="P:System.Windows.Controls.ContentPresenter.Content" /> dependency property. </summary>
         /// <returns>The identifier for the <see cref="P:System.Windows.Controls.ContentPresenter.Content" /> dependency property.</returns>
         public static readonly DependencyProperty ContentProperty;
@@ -32,10 +27,6 @@ namespace Appercode.UI.Controls
         /// <returns>The identifier for the <see cref="P:System.Windows.Controls.ContentPresenter.ContentStringFormat" /> dependency property.</returns>
         public static readonly DependencyProperty ContentStringFormatProperty;
 
-        /// <summary>Identifies the <see cref="P:System.Windows.Controls.ContentPresenter.ContentSource" /> dependency property. </summary>
-        /// <returns>The identifier for the <see cref="P:System.Windows.Controls.ContentPresenter.ContentSource" /> dependency property.</returns>
-        public static readonly DependencyProperty ContentSourceProperty;
-
         internal static readonly DependencyProperty TemplateProperty;
 
         private static DataTemplate stringTemplate;
@@ -46,43 +37,22 @@ namespace Appercode.UI.Controls
 
         private static ContentPresenter.DefaultSelector defaultTemplateSelector;
 
-        ////private static readonly  UncommonField<DataTemplate> XMLFormattingTemplateField;
-
         ////private static readonly  UncommonField<DataTemplate> StringFormattingTemplateField;
 
-        ////private static readonly  UncommonField<DataTemplate> AccessTextFormattingTemplateField;
-
         private bool templateIsCurrent;
-
-        private bool contentIsItem = true;
-
         private UIElement templateInstance;
 
         static ContentPresenter()
         {
             ContentPresenter.ContentTemplateProperty = ContentControl.ContentTemplateProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(new ContentPresenter.DefaultTemplate(), new PropertyChangedCallback(ContentPresenter.OnContentTemplateChanged)));
-            ContentPresenter.RecognizesAccessKeyProperty = DependencyProperty.Register("RecognizesAccessKey", typeof(bool), typeof(ContentPresenter), new PropertyMetadata(BooleanBoxes.FalseBox));
             ContentPresenter.ContentProperty = ContentControl.ContentProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(null, new PropertyChangedCallback(ContentPresenter.OnContentChanged)));
             ContentPresenter.ContentTemplateSelectorProperty = ContentControl.ContentTemplateSelectorProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(null, new PropertyChangedCallback(ContentPresenter.OnContentTemplateSelectorChanged)));
             ContentPresenter.ContentStringFormatProperty = DependencyProperty.Register("ContentStringFormat", typeof(string), typeof(ContentPresenter), new PropertyMetadata(null, new PropertyChangedCallback(ContentPresenter.OnContentStringFormatChanged)));
-            ContentPresenter.ContentSourceProperty = DependencyProperty.Register("ContentSource", typeof(string), typeof(ContentPresenter), new PropertyMetadata("Content"));
             ContentPresenter.TemplateProperty = DependencyProperty.Register("Template", typeof(DataTemplate), typeof(ContentPresenter), new PropertyMetadata(null, new PropertyChangedCallback(ContentPresenter.OnTemplateChanged)));
-            /*
-            //ContentPresenter.XMLFormattingTemplateField = new UncommonField<DataTemplate>();
             //ContentPresenter.StringFormattingTemplateField = new UncommonField<DataTemplate>();
-            //ContentPresenter.AccessTextFormattingTemplateField = new UncommonField<DataTemplate>();
-            */
+
             DataTemplate dataTemplate = new DataTemplate();
             FrameworkElementFactory frameworkElementFactory;
-
-            /*
-            //FrameworkElementFactory frameworkElementFactory = ContentPresenter.CreateAccessTextFactory();
-            //frameworkElementFactory.SetValue(AccessText.TextProperty, new TemplateBindingExtension(ContentPresenter.ContentProperty));
-            //dataTemplate.VisualTree = frameworkElementFactory;
-            //dataTemplate.Seal();
-            //ContentPresenter.s_AccessTextTemplate = dataTemplate;
-            //dataTemplate = new DataTemplate();
-            */
 
             frameworkElementFactory = ContentPresenter.CreateTextBlockFactory();
             frameworkElementFactory.SetValue(TextBlock.TextProperty, new TemplateBindingExtension(ContentPresenter.ContentProperty));
@@ -90,19 +60,8 @@ namespace Appercode.UI.Controls
             dataTemplate.Seal();
             ContentPresenter.stringTemplate = dataTemplate;
 
-            /*
-            //dataTemplate = new DataTemplate();
-            //frameworkElementFactory = ContentPresenter.CreateTextBlockFactory();
-            //Binding binding = new Binding();
-            //binding.XPath = ".";
-            //frameworkElementFactory.SetBinding(TextBlock.TextProperty, binding);
-            //dataTemplate.VisualTree = frameworkElementFactory;
-            //dataTemplate.Seal();
-            //ContentPresenter.s_XmlNodeTemplate = dataTemplate;
             //dataTemplate = new ContentPresenter.UseContentTemplate();
             //dataTemplate.Seal();
-            */ 
-
             frameworkElementFactory = new FrameworkElementFactory(typeof(ContentControl));
             frameworkElementFactory.SetValue(ContentControl.ContentProperty, new TemplateBindingExtension(ContentPresenter.ContentProperty));
             dataTemplate = new DataTemplate();
@@ -132,20 +91,6 @@ namespace Appercode.UI.Controls
             set
             {
                 this.SetValue(ContentControl.ContentProperty, value);
-            }
-        }
-
-        /// <summary>Gets or sets the base name to use during automatic aliasing. This is a dependency property. </summary>
-        /// <returns>The base name to use during automatic aliasing. The default is "Content".</returns>
-        public string ContentSource
-        {
-            get
-            {
-                return this.GetValue(ContentPresenter.ContentSourceProperty) as string;
-            }
-            set
-            {
-                this.SetValue(ContentPresenter.ContentSourceProperty, value);
             }
         }
 
@@ -188,20 +133,6 @@ namespace Appercode.UI.Controls
             set
             {
                 this.SetValue(ContentControl.ContentTemplateSelectorProperty, value);
-            }
-        }
-
-        /// <summary>Gets or sets a value that indicates whether the <see cref="T:System.Windows.Controls.ContentPresenter" /> should use <see cref="T:System.Windows.Controls.AccessText" /> in its style.  This is a dependency property. </summary>
-        /// <returns>true if the <see cref="T:System.Windows.Controls.ContentPresenter" /> should use <see cref="T:System.Windows.Controls.AccessText" /> in its style; otherwise, false. The default is false.</returns>
-        public bool RecognizesAccessKey
-        {
-            get
-            {
-                return (bool)this.GetValue(ContentPresenter.RecognizesAccessKeyProperty);
-            }
-            set
-            {
-                this.SetValue(ContentPresenter.RecognizesAccessKeyProperty, BooleanBoxes.Box(value));
             }
         }
 
@@ -269,26 +200,6 @@ namespace Appercode.UI.Controls
             }
         }
 
-        /*private DataTemplate FormattingAccessTextContentTemplate
-        //{
-        //    get
-        //    {
-        //        DataTemplate value = ContentPresenter.AccessTextFormattingTemplateField.GetValue(this);
-        //        if (value == null)
-        //        {
-        //            Binding binding = new Binding();
-        //            binding.StringFormat = this.ContentStringFormat;
-        //            FrameworkElementFactory frameworkElementFactory = ContentPresenter.CreateAccessTextFactory();
-        //            frameworkElementFactory.SetBinding(AccessText.TextProperty, binding);
-        //            value = new DataTemplate();
-        //            value.VisualTree = frameworkElementFactory;
-        //            value.Seal();
-        //            ContentPresenter.AccessTextFormattingTemplateField.SetValue(this, value);
-        //        }
-        //        return value;
-        //    }
-        //}
-
         //private DataTemplate FormattingStringContentTemplate
         //{
         //    get
@@ -308,28 +219,6 @@ namespace Appercode.UI.Controls
         //        return value;
         //    }
         //}
-
-        //private DataTemplate FormattingXmlNodeContentTemplate
-        //{
-        //    get
-        //    {
-        //        DataTemplate value = ContentPresenter.XMLFormattingTemplateField.GetValue(this);
-        //        if (value == null)
-        //        {
-        //            Binding binding = new Binding();
-        //            binding.XPath = ".";
-        //            binding.StringFormat = this.ContentStringFormat;
-        //            FrameworkElementFactory frameworkElementFactory = ContentPresenter.CreateTextBlockFactory();
-        //            frameworkElementFactory.SetBinding(TextBlock.TextProperty, binding);
-        //            value = new DataTemplate();
-        //            value.VisualTree = frameworkElementFactory;
-        //            value.Seal();
-        //            ContentPresenter.XMLFormattingTemplateField.SetValue(this, value);
-        //        }
-        //        return value;
-        //    }
-        //}
-        */
 
         private DataTemplate Template
         {
@@ -366,30 +255,6 @@ namespace Appercode.UI.Controls
             tf.SetBinding(TextBlock.TextProperty, new Binding());
             return tf;
         }        
-
-        internal void PrepareContentPresenter(object item, DataTemplate itemTemplate, DataTemplateSelector itemTemplateSelector, string stringFormat)
-        {
-            if (item != this)
-            {
-                if (this.contentIsItem || !this.HasNonDefaultValue(ContentPresenter.ContentProperty))
-                {
-                    this.Content = item;
-                    this.contentIsItem = true;
-                }
-                if (itemTemplate != null)
-                {
-                    this.SetValue(ContentPresenter.ContentTemplateProperty, itemTemplate);
-                }
-                if (itemTemplateSelector != null)
-                {
-                    this.SetValue(ContentPresenter.ContentTemplateSelectorProperty, itemTemplateSelector);
-                }
-                if (stringFormat != null)
-                {
-                    this.SetValue(ContentPresenter.ContentStringFormatProperty, stringFormat);
-                }
-            }
-        }
 
         /*
         internal override void OnPreApplyTemplate()
