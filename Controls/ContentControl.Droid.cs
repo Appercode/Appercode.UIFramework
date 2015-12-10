@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
+﻿using Android.Views;
 using Android.Widget;
 using Appercode.UI.Controls.NativeControl;
-using Appercode.UI.Controls.NativeControl.Wrapers;
 using Appercode.UI.Device;
+using System.Drawing;
+using System.Windows;
 
 namespace Appercode.UI.Controls
 {
@@ -128,14 +119,6 @@ namespace Appercode.UI.Controls
                     ((ViewGroup)this.NativeUIElement).AddView(this.ContentNativeUIElement);
                 }
             }
-        }
-
-        protected virtual void NativeChangeUIContentParent()
-        {
-            ((ViewGroup)this.NativeUIElement).RemoveAllViews();
-            ((ViewGroup)((UIElement)this.Content).Parent.NativeUIElement).RemoveAllViews();
-            ((UIElement)this.Content).ChangeLogicalParent(null);
-            this.ContentNativeUIElement = null;
         }
 
         protected virtual void ApplyNativeContentForDefaultControl(string value)
@@ -265,6 +248,15 @@ namespace Appercode.UI.Controls
 
         private void RemoveContentTemplateInstance()
         {
+        }
+
+        partial void RemoveContentNativeView()
+        {
+            ((ViewGroup)this.NativeUIElement).RemoveAllViews();
+            var contentElement = (UIElement)this.Content;
+            ((ViewGroup)contentElement.Parent.NativeUIElement).RemoveAllViews();
+            this.RemoveLogicalChild(contentElement);
+            this.ContentNativeUIElement = null;
         }
     }
 }

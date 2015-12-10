@@ -625,35 +625,6 @@ namespace Appercode.UI.Controls
             this.IsArrangeValid = true;
         }
 
-#warning was internal, conflicted with maps
-        public void ChangeLogicalParent(UIElement newParent)
-        {
-            if (this.parent != null && newParent != null && this.parent != newParent)
-            {
-                throw new InvalidOperationException("Specified element is already the logical child of another element. Disconnect it first.");
-            }
-
-            if (newParent == this)
-            {
-                throw new InvalidOperationException("Element can not be selfparent.");
-            }
-
-            if (this.parent != newParent)
-            {
-                this.parent = newParent;
-                if (this.parent != null)
-                {
-                    this.NativeInit();
-                }
-
-                var parentChanged = this.ParentChanged;
-                if (parentChanged != null)
-                {
-                    parentChanged(this, EventArgs.Empty);
-                }
-            }
-        }
-
         internal virtual void ApplyTemplate()
         {
             this.OnApplyTemplate();
@@ -921,6 +892,30 @@ namespace Appercode.UI.Controls
             {
                 source = BaseValueSourceInternal.Default;
                 return default(double);
+            }
+        }
+
+        private void ChangeLogicalParent(UIElement newParent)
+        {
+            if (this.parent != null && newParent != null && this.parent != newParent)
+            {
+                throw new InvalidOperationException("Specified element is already the logical child of another element.");
+            }
+
+            if (newParent == this)
+            {
+                throw new InvalidOperationException("Element cannot be parent of self.");
+            }
+
+            if (this.parent != newParent)
+            {
+                this.parent = newParent;
+                if (newParent != null)
+                {
+                    this.NativeInit();
+                }
+
+                this.ParentChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

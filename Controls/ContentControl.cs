@@ -206,6 +206,7 @@ namespace Appercode.UI.Controls
                 this.RemoveContentTemplateInstance();
                 this.RemoveLogicalChild(this.contentTemplateInstance);
             }
+
             if (newContentTemplate != null)
             {
                 this.contentTemplateInstance = (UIElement)newContentTemplate.LoadContent();
@@ -213,7 +214,7 @@ namespace Appercode.UI.Controls
                 this.AddLogicalChild(this.contentTemplateInstance);
                 if (this.Content is UIElement)
                 {
-                    this.NativeChangeUIContentParent();
+                    this.RemoveContentNativeView();
                 }
                 this.contentTemplateInstance.DataContext = this.Content;
                 this.AddContentTemplateInstance();
@@ -222,10 +223,11 @@ namespace Appercode.UI.Controls
             {
                 if (this.Content is UIElement)
                 {
-                    this.NativeChangeUIContentParent();
+                    this.RemoveContentNativeView();
                 }
                 this.contentTemplateInstance = null;
             }
+
             this.OnNativeContentChanged(null, this.Content);
             this.OnLayoutUpdated();
         }
@@ -319,5 +321,7 @@ namespace Appercode.UI.Controls
                 this.InvalidateMeasure();
             }
         }
+
+        partial void RemoveContentNativeView();
     }
 }

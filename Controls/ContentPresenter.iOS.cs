@@ -1,4 +1,3 @@
-using Appercode.UI.Internals;
 using CoreGraphics;
 using System.Windows;
 using UIKit;
@@ -20,9 +19,6 @@ namespace Appercode.UI.Controls
                 this.templateInstance.NativeUIElement.Frame = this.NativeUIElement.Frame;
                 this.NativeUIElement.AddSubview(this.templateInstance.NativeUIElement);
             }
-
-            // for properly DataContext update
-            this.OnAncestorDataContextChanged(new DataContextChangedEventArgs(DataContextChangedReason.EnteringLiveTree));
         }
 
         protected override CGSize NativeMeasureOverride(CGSize availableSize)

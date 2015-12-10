@@ -31,11 +31,13 @@ namespace Appercode.UI.Controls
                     this.RemoveLogicalChild(this.textContent);
                     this.textContent.NativeUIElement.RemoveFromSuperview();
                 }
-                return;
             }
-            this.textContent = new TextBlock { Text = text };
-            this.textContent.ChangeLogicalParent(this);
-            this.NativeUIElement.AddSubview(this.textContent.NativeUIElement);
+            else
+            {
+                this.textContent = new TextBlock { Text = text };
+                this.AddLogicalChild(textContent);
+                this.NativeUIElement.AddSubview(this.textContent.NativeUIElement); 
+            }
         }
 
         protected virtual Thickness GetNativePadding()
@@ -80,13 +82,6 @@ namespace Appercode.UI.Controls
             {
                 this.textContent.Arrange(contentFrame);
             }
-        }
-
-        protected virtual void NativeChangeUIContentParent()
-        {
-            // this.templateInstance.NativeUIElement.RemoveFromSuperview();
-            ((UIElement)this.Content).NativeUIElement.RemoveFromSuperview();
-            ((UIElement)this.Content).ChangeLogicalParent(null);
         }
 
         private void OnNativeContentChanged(object oldContent, object newContent)
@@ -138,6 +133,13 @@ namespace Appercode.UI.Controls
         private void AddContentTemplateInstance()
         {
             this.contentTemplateInstance.NativeUIElement.RemoveFromSuperview();
+        }
+
+        partial void RemoveContentNativeView()
+        {
+            var contentElement = (UIElement)this.Content;
+            contentElement.NativeUIElement.RemoveFromSuperview();
+            this.RemoveLogicalChild(contentElement);
         }
     }
 }

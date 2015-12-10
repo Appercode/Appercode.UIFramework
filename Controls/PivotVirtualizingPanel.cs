@@ -59,10 +59,10 @@ namespace Appercode.UI.Controls
 
         UIElement IPivotItemProvider.CreateItemElement(int position)
         {
-            var res = (UIElement)this.Generator.Generate(position);
-            res.ChangeLogicalParent(this);
-            this.ArrangeItemAtPosition(res, position);
-            return res;
+            var element = (UIElement)this.Generator.Generate(position);
+            this.AddLogicalChild(element);
+            this.ArrangeItemAtPosition(element, position);
+            return element;
         }
 
         public object GetHeader(int position)

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Media;
@@ -34,10 +32,9 @@ namespace Appercode.UI.Controls
             {
                 if (e.NewItems != null)
                 {
-                    foreach (var item in e.NewItems)
+                    foreach (UIElement child in e.NewItems)
                     {
-                        var child = item as UIElement;
-                        child.ChangeLogicalParent(this);
+                        this.AddLogicalChild(child);
                         this.AddNativeChildView(child);
                     }
                 }
@@ -50,10 +47,9 @@ namespace Appercode.UI.Controls
 
                 if (oldItems != null)
                 {
-                    foreach (var item in oldItems)
+                    foreach (UIElement child in oldItems)
                     {
-                        var child = item as UIElement;
-                        child.ChangeLogicalParent(null);
+                        this.RemoveLogicalChild(child);
                         this.RemoveNativeChildView(child);
                     }
                 }

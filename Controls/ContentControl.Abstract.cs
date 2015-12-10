@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows;
 using System.Windows.Markup;
 
@@ -10,12 +9,7 @@ namespace Appercode.UI.Controls
     {
         public object NativeContent { get; set; }
 
-
         protected virtual void NativeArrangeContent(RectangleF contentFrame)
-        {
-        }
-
-        protected virtual void NativeChangeUIContentParent()
         {
         }
 
