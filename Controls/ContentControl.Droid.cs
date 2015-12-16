@@ -242,14 +242,6 @@ namespace Appercode.UI.Controls
             return dpiNativePadding;
         }
 
-        private void AddContentTemplateInstance()
-        {
-        }
-
-        private void RemoveContentTemplateInstance()
-        {
-        }
-
         partial void RemoveContentNativeView()
         {
             var contentElement = this.Content as UIElement;

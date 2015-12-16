@@ -36,8 +36,8 @@ namespace Appercode.UI.Controls
         public static readonly DependencyProperty ContentTemplateSelectorProperty = DependencyProperty.Register(
             nameof(ContentTemplateSelector), typeof(DataTemplateSelector), typeof(ContentControl), new PropertyMetadata(OnContentTemplateSelectorChanged));
 
-        protected SizeF contentSize;
-        protected UIElement contentTemplateInstance;
+        private SizeF contentSize;
+        private UIElement contentTemplateInstance;
 
         /// <summary>
         /// Gets or sets the content of a <see cref="ContentControl" />. This is a dependency property.
@@ -317,7 +317,7 @@ namespace Appercode.UI.Controls
             if (this.contentTemplateInstance != null)
             {
                 this.contentTemplateInstance.LayoutUpdated -= this.OnContentLayoutUpdated;
-                this.RemoveContentTemplateInstance();
+                this.RemoveContentTemplateNativeView();
                 this.RemoveLogicalChild(this.contentTemplateInstance);
             }
 
@@ -328,7 +328,6 @@ namespace Appercode.UI.Controls
                 this.AddLogicalChild(this.contentTemplateInstance);
                 this.RemoveContentNativeView();
                 this.contentTemplateInstance.DataContext = this.Content;
-                this.AddContentTemplateInstance();
             }
             else
             {
@@ -359,5 +358,7 @@ namespace Appercode.UI.Controls
         }
 
         partial void RemoveContentNativeView();
+
+        partial void RemoveContentTemplateNativeView();
     }
 }

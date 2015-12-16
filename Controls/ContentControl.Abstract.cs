@@ -31,13 +31,5 @@ namespace Appercode.UI.Controls
         {
             return new Thickness();
         }
-
-        private void AddContentTemplateInstance()
-        {
-        }
-
-        private void RemoveContentTemplateInstance()
-        {
-        }
     }
 }

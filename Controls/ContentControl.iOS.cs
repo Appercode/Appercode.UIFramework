@@ -125,12 +125,7 @@ namespace Appercode.UI.Controls
             this.SetTextContent(this.Content == null ? "" : this.Content.ToString());
         }
 
-        private void RemoveContentTemplateInstance()
-        {
-            this.contentTemplateInstance.NativeUIElement.RemoveFromSuperview();
-        }
-
-        private void AddContentTemplateInstance()
+        partial void RemoveContentTemplateNativeView()
         {
             this.contentTemplateInstance.NativeUIElement.RemoveFromSuperview();
         }
