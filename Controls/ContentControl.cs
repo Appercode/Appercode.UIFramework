@@ -326,21 +326,13 @@ namespace Appercode.UI.Controls
                 this.contentTemplateInstance = (UIElement)value.LoadContent();
                 this.contentTemplateInstance.LayoutUpdated += this.OnContentLayoutUpdated;
                 this.AddLogicalChild(this.contentTemplateInstance);
-                if (this.Content is UIElement)
-                {
-                    this.RemoveContentNativeView();
-                }
-
+                this.RemoveContentNativeView();
                 this.contentTemplateInstance.DataContext = this.Content;
                 this.AddContentTemplateInstance();
             }
             else
             {
-                if (this.Content is UIElement)
-                {
-                    this.RemoveContentNativeView();
-                }
-
+                this.RemoveContentNativeView();
                 this.contentTemplateInstance = null;
             }
 

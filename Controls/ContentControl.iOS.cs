@@ -137,9 +137,12 @@ namespace Appercode.UI.Controls
 
         partial void RemoveContentNativeView()
         {
-            var contentElement = (UIElement)this.Content;
-            contentElement.NativeUIElement.RemoveFromSuperview();
-            this.RemoveLogicalChild(contentElement);
+            var contentElement = this.Content as UIElement;
+            if (contentElement != null)
+            {
+                contentElement.NativeUIElement.RemoveFromSuperview();
+                this.RemoveLogicalChild(contentElement);
+            }
         }
     }
 }
