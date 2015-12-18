@@ -15,6 +15,9 @@ namespace Appercode.UI.Controls
 
     public partial class PivotHeadersControl : ListBox, IPivotHeaderControl
     {
+        // TODO: Move to resources
+        private static readonly Brush SelectedItemBackgroundBrush = new SolidColorBrush(AppercodeColors.LightGray);
+
         static PivotHeadersControl()
         {
             PivotHeadersControl.ItemsPanelProperty.AddOwner(
@@ -42,6 +45,25 @@ namespace Appercode.UI.Controls
         public PivotHeadersControl()
         {
             this.SelectionMode = SelectionMode.Single;
+        }
+
+        internal override ItemContainerGenerator CreateItemContainerGenerator()
+        {
+            var pivotHeaderItemFactory = new FrameworkElementFactory(typeof(PivotHeaderItem));
+            if (this.ItemTemplate == null)
+            {
+                pivotHeaderItemFactory.SetBinding(
+                    BackgroundProperty,
+                    new Binding(nameof(PivotHeaderItem.IsSelected))
+                    {
+                        RelativeSource = new RelativeSource(RelativeSourceMode.Self),
+                        Converter = ValueConverterFactory.Make<bool, Brush>(x => x ? SelectedItemBackgroundBrush : null),
+                    });
+                pivotHeaderItemFactory.SetBinding(ContentControl.ContentProperty, new Binding(nameof(PivotItem.Header)));
+                // TODO: listBoxItemFactory.SetValue(TextBlock.FontSizeProperty, 20);
+            }
+
+            return new ItemContainerGenerator(pivotHeaderItemFactory, this.Items);
         }
 
         internal void NotifyItemSelectionChanged(PivotHeaderItem item, bool oldValue, bool newValue)
@@ -72,37 +94,6 @@ namespace Appercode.UI.Controls
             if (this.SelectedItem != null)
             {
                 ScrollIntoView(this.SelectedItem);
-            }
-        }
-
-        // TODO: Move to resources
-        static Brush _SelectedItemBackgroundBrush = new SolidColorBrush(AppercodeColors.LightGray);
-
-        protected internal override ItemContainerGenerator ItemContainerGenerator
-        {
-            get
-            {
-                if (this.itemContainerGenerator == null)
-                {
-                    var listBoxItemFactory = new FrameworkElementFactory(typeof(PivotHeaderItem));
-                    listBoxItemFactory.SetValue(ListBoxItem.ContentTemplateProperty, this.ItemTemplate);
-                    listBoxItemFactory.SetBinding(ListBoxItem.StyleProperty, new Binding("ItemContainerStyle") { Source = this });
-                    if (this.ItemTemplate == null)
-                    {
-                        listBoxItemFactory.SetBinding(
-                            ListBoxItem.BackgroundProperty,
-                            new Binding("IsSelected")
-                                {
-                                    RelativeSource = new RelativeSource(RelativeSourceMode.Self),
-                                    Converter = ValueConverterFactory.Make<bool, Brush>(x => x ? _SelectedItemBackgroundBrush : null),
-                                });
-                        listBoxItemFactory.SetBinding(ListBoxItem.ContentProperty, new Binding("Header"));
-                        // TODO: listBoxItemFactory.SetValue(TextBlock.FontSizeProperty, 20);
-                    }
-                    this.itemContainerGenerator = new ItemContainerGenerator(listBoxItemFactory, this.Items);
-                }
-
-                return this.itemContainerGenerator;
             }
         }
     }

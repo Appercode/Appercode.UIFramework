@@ -92,15 +92,6 @@ namespace Appercode.UI.Controls
         public event SelectionChangedEventHandler SelectionChanged = delegate { };
         #endregion
 
-        #region Fields
-
-
-        private ItemContainerGenerator itemContainerGenerator;
-
-        #endregion //Fields
-
-        #region Properties
-
         public IPivotHeaderControl PivotHeader { get; private set; }
 
         public int SelectedIndex
@@ -108,27 +99,6 @@ namespace Appercode.UI.Controls
             get { return (int)GetValue(SelectedIndexProperty); }
             set { this.SetValue(SelectedIndexProperty, value); }
         }
-
-        protected internal override ItemContainerGenerator ItemContainerGenerator
-        {
-            get
-            {
-                if (this.itemContainerGenerator == null)
-                {
-                    var listBoxItemFactory = new FrameworkElementFactory(typeof(PivotItem));
-
-                    listBoxItemFactory.SetValue(PivotItem.ContentTemplateProperty, this.ItemTemplate);
-                    listBoxItemFactory.SetBinding(PivotItem.StyleProperty, new Binding("ItemContainerStyle") { Source = this });
-                    listBoxItemFactory.SetBinding(PivotItem.ContentProperty, new Binding());
-                    // listBoxItemFactory.AddHandler(ListBoxItem.TapEvent, new EventHandler<GestureEventArgs>(this.ListBoxItem_Tap));
-                    this.itemContainerGenerator = new PivotItemContainerGenerator(listBoxItemFactory, this.Items);
-                }
-
-                return this.itemContainerGenerator;
-            }
-        }
-
-        #endregion // Properties
 
         private SizeF pivotHeaderSize = SizeF.Empty;
         public override SizeF MeasureOverride(SizeF availableSize)
@@ -201,6 +171,13 @@ namespace Appercode.UI.Controls
         public override void UpdateLayout()
         {
             this.Parent.UpdateLayout();
+        }
+
+        internal override ItemContainerGenerator CreateItemContainerGenerator()
+        {
+            var pivotItemFactory = new FrameworkElementFactory(typeof(PivotItem));
+            pivotItemFactory.SetBinding(ContentControl.ContentProperty, new Binding());
+            return new PivotItemContainerGenerator(pivotItemFactory, this.Items);
         }
 
         protected override void FillPanel(System.Collections.IEnumerable newItems, int newStartingIndex = -1)

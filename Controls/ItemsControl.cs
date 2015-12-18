@@ -48,15 +48,16 @@ namespace Appercode.UI.Controls
             DependencyProperty.Register(nameof(ItemTemplateSelector), typeof(DataTemplateSelector), typeof(ItemsControl), new PropertyMetadata(OnItemTemplatePropertyChanged));
 
         protected Panel panel;
-        private ItemContainerGenerator itemContainerGenerator;
+        private readonly Lazy<ItemContainerGenerator> itemContainerGenerator;
 
         private WeakEventHandler<NotifyCollectionChangedEventArgs> itemsSourceCollectionChangedHandler;
 
-        protected bool isItemsCollectionChangeFromCode = false;
+        private bool isItemsCollectionChangeFromCode = false;
         private bool itemsWasSetByUser = false;
 
         public ItemsControl()
         {
+            this.itemContainerGenerator = new Lazy<ItemContainerGenerator>(this.CreateItemContainerGenerator);
             this.itemsSourceCollectionChangedHandler = new WeakEventHandler<NotifyCollectionChangedEventArgs>(this.ItemsSourceCollectionChanged);
             this.Items.CollectionChanged += (s, e) =>
                 {
@@ -132,19 +133,12 @@ namespace Appercode.UI.Controls
             set { this.SetValue(ItemTemplateSelectorProperty, value); }
         }
 
-        protected internal virtual ItemContainerGenerator ItemContainerGenerator
+        /// <summary>
+        /// Gets the <see cref="ItemContainerGenerator" /> associated with this <see cref="ItemsControl"/>.
+        /// </summary>
+        public ItemContainerGenerator ItemContainerGenerator
         {
-            get
-            {
-                if (this.itemContainerGenerator == null)
-                {
-                    var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
-                    contentPresenterFactory.SetValue(ContentPresenter.ContentTemplateProperty, this.ItemTemplate);
-                    contentPresenterFactory.SetBinding(ContentPresenter.ContentProperty, new Binding());
-                    this.itemContainerGenerator = new ItemContainerGenerator(contentPresenterFactory, this.Items);
-                }
-                return this.itemContainerGenerator;
-            }
+            get { return this.itemContainerGenerator.Value; }
         }
 
         protected internal override IEnumerator LogicalChildren
@@ -183,6 +177,13 @@ namespace Appercode.UI.Controls
             this.measuredSize.Height += this.Margin.VerticalThicknessF();
 
             return this.measuredSize;
+        }
+
+        internal virtual ItemContainerGenerator CreateItemContainerGenerator()
+        {
+            var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
+            contentPresenterFactory.SetBinding(ContentPresenter.ContentProperty, new Binding());
+            return new ItemContainerGenerator(contentPresenterFactory, this.Items);
         }
 
         protected virtual void GeneratePanel()

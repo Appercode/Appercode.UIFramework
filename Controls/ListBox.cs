@@ -33,10 +33,7 @@ namespace Appercode.UI.Controls
         public static readonly DependencyProperty ItemContainerStyleProperty =
             DependencyProperty.Register("ItemContainerStyle", typeof(Style), typeof(ListBox), new PropertyMetadata(null));
 
-        protected ItemContainerGenerator itemContainerGenerator;
-
         private ScrollViewer scrollViewer;
-
         private bool isSelectedItemsChange = false;
 
         static ListBox()
@@ -78,24 +75,6 @@ namespace Appercode.UI.Controls
         {
             get { return (Style)GetValue(ItemContainerStyleProperty); }
             set { this.SetValue(ItemContainerStyleProperty, value); }
-        }
-
-        protected internal override ItemContainerGenerator ItemContainerGenerator
-        {
-            get
-            {
-                if (this.itemContainerGenerator == null)
-                {
-                    var listBoxItemFactory = new FrameworkElementFactory(typeof(ListBoxItem));
-                    listBoxItemFactory.SetValue(ListBoxItem.ContentTemplateProperty, this.ItemTemplate);
-                    listBoxItemFactory.SetBinding(ListBoxItem.StyleProperty, new Binding("ItemContainerStyle") { Source = this });
-                    listBoxItemFactory.SetBinding(ListBoxItem.ContentProperty, new Binding());
-                    listBoxItemFactory.AddHandler(ListBoxItem.TapEvent, new EventHandler<GestureEventArgs>(this.ListBoxItem_Tap));
-                    this.itemContainerGenerator = new ItemContainerGenerator(listBoxItemFactory, this.Items);
-                }
-
-                return this.itemContainerGenerator;
-            }
         }
 
         public void SelectAll()
@@ -232,6 +211,15 @@ namespace Appercode.UI.Controls
                 finalRect.Height - margin.VerticalThicknessF());
             this.scrollViewer.Arrange(finalRect);
             this.IsArrangeValid = true;
+        }
+
+        internal override ItemContainerGenerator CreateItemContainerGenerator()
+        {
+            var listBoxItemFactory = new FrameworkElementFactory(typeof(ListBoxItem));
+            listBoxItemFactory.SetBinding(StyleProperty, new Binding(nameof(ItemContainerStyle)) { Source = this });
+            listBoxItemFactory.SetBinding(ContentControl.ContentProperty, new Binding());
+            listBoxItemFactory.AddHandler(TapEvent, new EventHandler<GestureEventArgs>(this.ListBoxItem_Tap));
+            return new ItemContainerGenerator(listBoxItemFactory, this.Items);
         }
 
         protected virtual void SetupScrollViewer(ScrollViewer scrollViewer)
