@@ -69,12 +69,9 @@ namespace Appercode.UI.Controls
                 this.owner = owner;
             }
 
-            private IList ItemsCollection
+            private IReadOnlyCollection<object> ItemsCollection
             {
-                get
-                {
-                    return this.owner.ItemContainerGenerator.Collection;
-                }
+                get { return this.owner.ItemContainerGenerator.Items; }
             }
 
             public override nint GetRowsInComponent(UIPickerView picker, nint component)
@@ -95,7 +92,7 @@ namespace Appercode.UI.Controls
                 }
                 if (this.items.Count == 0)
                 {
-                    var item = (UIElement)this.owner.ItemContainerGenerator.Generate(0);
+                    var item = (UIElement)this.owner.ItemContainerGenerator.ContainerFromIndex(0);
                     this.owner.AddLogicalChild(item);
                     var size = item.MeasureOverride(new CGSize(picker.Frame.Width, nfloat.PositiveInfinity));
                     item.Arrange(new CGRect(CGPoint.Empty, size));
@@ -109,13 +106,13 @@ namespace Appercode.UI.Controls
             {
                 var intRow = (int)row;
                 var i = this.items.Count;
-                var item = (UIElement)this.owner.ItemContainerGenerator.Generate(intRow);
+                var item = (UIElement)this.owner.ItemContainerGenerator.ContainerFromIndex(intRow);
                 this.owner.AddLogicalChild(item);
                 var size = item.MeasureOverride(new CGSize(picker.Frame.Width / this.GetComponentCount(picker), nfloat.PositiveInfinity));
                 item.Arrange(new CGRect(CGPoint.Empty, size));
 
                 var v = new UIView(new CGRect(0, 0, 30.33f, 30.33f));
-                v.AddSubview(new UILabel(new CGRect(0, 0, 29.9f, 29.7f)) { Text = this.owner.ItemContainerGenerator.Collection[intRow].ToString() });
+                v.AddSubview(new UILabel(new CGRect(0, 0, 29.9f, 29.7f)) { Text = this.owner.ItemContainerGenerator.Items[intRow].ToString() });
 
                 return item.NativeUIElement;
             }

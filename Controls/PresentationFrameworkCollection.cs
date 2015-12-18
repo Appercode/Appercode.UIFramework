@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Appercode.UI.Controls
 {
-    public abstract class PresentationFrameworkCollection<T> : DependencyObject, IList<T>, ICollection<T>, IEnumerable<T>, IList, ICollection, IEnumerable
+    public abstract class PresentationFrameworkCollection<T> : DependencyObject, IReadOnlyList<T>, IReadOnlyCollection<T>, IList<T>, ICollection<T>, IEnumerable<T>, IList, ICollection, IEnumerable
     {
         private List<T> internalCollection = new List<T>();
 

@@ -59,7 +59,7 @@ namespace Appercode.UI.Controls
 
         UIElement IPivotItemProvider.CreateItemElement(int position)
         {
-            var element = (UIElement)this.Generator.Generate(position);
+            var element = (UIElement)this.Generator.ContainerFromIndex(position);
             this.AddLogicalChild(element);
             this.ArrangeItemAtPosition(element, position);
             return element;
@@ -67,7 +67,7 @@ namespace Appercode.UI.Controls
 
         public object GetHeader(int position)
         {
-            var res = this.Generator.Generate(position) as PivotItem;
+            var res = this.Generator.ContainerFromIndex(position) as PivotItem;
 
             // TODO: Prevent duplicated instances
             return res == null ? null : res.Header;

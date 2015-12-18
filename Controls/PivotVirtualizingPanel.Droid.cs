@@ -315,7 +315,8 @@ namespace Appercode.UI.Controls
 
         private class PageChangeListener : ViewPager.SimpleOnPageChangeListener
         {
-            PivotVirtualizingPanel owner;
+            private static readonly object[] EmptyArray = new object[0];
+            private readonly PivotVirtualizingPanel owner;
             private int currentSelectedIndex = 0;
 
             public PageChangeListener(PivotVirtualizingPanel owner)
@@ -325,8 +326,8 @@ namespace Appercode.UI.Controls
 
             public override void OnPageSelected(int position)
             {
-                var oldItems = this.currentSelectedIndex >= 0 ? new List<object> { this.owner.Generator.Collection[this.currentSelectedIndex] } : new List<object>();
-                var newItems = position >= 0 ? new List<object> { this.owner.Generator.Collection[position] } : new List<object>();
+                var oldItems = this.currentSelectedIndex >= 0 ? new[] { this.owner.Generator.Items[this.currentSelectedIndex] } : EmptyArray;
+                var newItems = position >= 0 ? new[] { this.owner.Generator.Items[position] } : EmptyArray;
                 this.owner.OnSelectionChanged(new SelectionChangedEventArgs(oldItems, newItems));
                 this.currentSelectedIndex = position;
             }

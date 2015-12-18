@@ -268,7 +268,7 @@ namespace Appercode.UI.Controls
                     this.isItemsCollectionChangeFromCode = false;
                     if (!(this.panel is IVirtualizingPanel))
                     {
-                        this.panel.Children[e.OldStartingIndex] = (UIElement)this.ItemContainerGenerator.Generate(e.OldStartingIndex);
+                        this.panel.Children[e.OldStartingIndex] = (UIElement)this.ItemContainerGenerator.ContainerFromIndex(e.OldStartingIndex);
                     }
                     break;
 
@@ -328,7 +328,7 @@ namespace Appercode.UI.Controls
                 this.isItemsCollectionChangeFromCode = false;
                 if (!(this.panel is IVirtualizingPanel))
                 {
-                    var container = (UIElement)this.ItemContainerGenerator.Generate(ind);
+                    var container = (UIElement)this.ItemContainerGenerator.ContainerFromIndex(ind);
                     childrens.Add(container);
                     //this.panel.Children.Insert(newStartingIndex, container);
                 }

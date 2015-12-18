@@ -1,25 +1,17 @@
 using Appercode.UI.Controls.Primitives;
-using System.Collections;
 using System.Windows;
 
 namespace Appercode.UI.Controls
 {
     public class PivotItemContainerGenerator : ItemContainerGenerator
     {
-        public PivotItemContainerGenerator(FrameworkElementFactory containerFactory, IList collection = null)
-            : base(containerFactory, collection)
-        {
-        }
+        internal PivotItemContainerGenerator(FrameworkElementFactory containerFactory, ItemCollection collection)
+            : base(containerFactory, collection) { }
 
-        protected override DependencyObject FillElementWithData(int index, UIElement element)
+        internal override DependencyObject LinkContainerToItem(int index, DependencyObject container)
         {
-            var itemData = this.Collection[index];
-            if (itemData is PivotItem)
-            {
-                return (PivotItem) itemData;
-            }
-
-            return base.FillElementWithData(index, element);
+            var itemData = this.collection[index] as PivotItem;
+            return itemData ?? base.LinkContainerToItem(index, container);
         }
     }
 }

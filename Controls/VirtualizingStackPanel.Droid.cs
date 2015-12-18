@@ -159,16 +159,16 @@ namespace Appercode.UI.Controls
 
             public override int Count
             {
-                get { return this.Generator == null ? 0 : this.Generator.Collection.Count; }
+                get { return this.Generator == null ? 0 : this.Generator.Items.Count; }
             }
 
             public override View GetView(int position, View reusableView, ViewGroup parent)
             {
-                UIElement listItem = null;
+                UIElement listItem;
                 if (reusableView == null)
                 {
                     reusableView = new WrapedViewGroup(parent.Context);
-                    listItem = ((UIElement)this.Generator.Generate(position));
+                    listItem = (UIElement)this.Generator.ContainerFromIndex(position);
                     LogicalTreeHelper.AddLogicalChild(this.VirtualizingStackPanel, listItem);
                     this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
                     ((WrapedViewGroup)reusableView).AddView(listItem.NativeUIElement);
@@ -185,7 +185,7 @@ namespace Appercode.UI.Controls
                     else
                     {
                         ((WrapedViewGroup)reusableView).RemoveAllViews();
-                        listItem = ((UIElement)this.Generator.Generate(position));
+                        listItem = (UIElement)this.Generator.ContainerFromIndex(position);
                         LogicalTreeHelper.AddLogicalChild(this.VirtualizingStackPanel, listItem);
                         this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
                         ((WrapedViewGroup)reusableView).AddView(listItem.NativeUIElement);

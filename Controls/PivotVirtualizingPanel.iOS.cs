@@ -9,6 +9,7 @@ namespace Appercode.UI.Controls
 {
     public partial class PivotVirtualizingPanel
     {
+        private static readonly object[] EmptyArray = new object[0];
         private const int ChildrenCount = 3;
         private Dictionary<int, PivotItem> children;
         private int currentPage = -1;
@@ -173,7 +174,7 @@ namespace Appercode.UI.Controls
             {
                 for (int i = this.children.Count; i < count; i++)
                 {
-                    var child = (PivotItem)this.Generator.Generate(i);
+                    var child = (PivotItem)this.Generator.ContainerFromIndex(i);
                     this.AddLogicalChild(child);
                     this.NativeUIElement.AddSubview(child.NativeUIElement);
                     this.children[-i] = child;      // generate item as hidden, correct position will be determined in RefreshChildren method
@@ -301,8 +302,8 @@ namespace Appercode.UI.Controls
 
         private void OnSelectionChanged(int oldPageIndex, int newPageIndex)
         {
-            var oldItems = oldPageIndex >= 0 ? new[] { this.Generator.Collection[oldPageIndex] } : new object[0];
-            var newItems = newPageIndex >= 0 ? new[] { this.Generator.Collection[newPageIndex] } : new object[0];
+            var oldItems = oldPageIndex >= 0 ? new[] { this.Generator.Items[oldPageIndex] } : EmptyArray;
+            var newItems = newPageIndex >= 0 ? new[] { this.Generator.Items[newPageIndex] } : EmptyArray;
             this.SelectionChanged(this, new SelectionChangedEventArgs(oldItems, newItems));
         }
 
