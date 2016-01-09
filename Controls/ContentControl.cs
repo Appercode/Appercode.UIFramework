@@ -38,6 +38,7 @@ namespace Appercode.UI.Controls
 
         private SizeF contentSize;
         private UIElement contentTemplateInstance;
+        private DataTemplate appliedContentTemplate;
 
         /// <summary>
         /// Gets or sets the content of a <see cref="ContentControl" />. This is a dependency property.
@@ -200,13 +201,14 @@ namespace Appercode.UI.Controls
             }
 
             DataTemplateSelector templateSelector;
+            if (newContent != null && (templateSelector = this.ContentTemplateSelector) != null)
+            {
+                this.ApplyContentTemplate(templateSelector.SelectTemplate(newContent, this));
+            }
+
             if (this.contentTemplateInstance != null)
             {
                 this.contentTemplateInstance.DataContext = newContent;
-            }
-            else if (newContent != null && (templateSelector = this.ContentTemplateSelector) != null)
-            {
-                this.ApplyContentTemplate(templateSelector.SelectTemplate(newContent, this));
             }
             else
             {
@@ -314,29 +316,33 @@ namespace Appercode.UI.Controls
 
         private void ApplyContentTemplate(DataTemplate value)
         {
-            if (this.contentTemplateInstance != null)
+            if (appliedContentTemplate != value)
             {
-                this.contentTemplateInstance.LayoutUpdated -= this.OnContentLayoutUpdated;
-                this.RemoveContentTemplateNativeView();
-                this.RemoveLogicalChild(this.contentTemplateInstance);
-            }
+                appliedContentTemplate = value;
+                if (this.contentTemplateInstance != null)
+                {
+                    this.contentTemplateInstance.LayoutUpdated -= this.OnContentLayoutUpdated;
+                    this.RemoveContentTemplateNativeView();
+                    this.RemoveLogicalChild(this.contentTemplateInstance);
+                }
 
-            if (value != null)
-            {
-                this.contentTemplateInstance = (UIElement)value.LoadContent();
-                this.contentTemplateInstance.LayoutUpdated += this.OnContentLayoutUpdated;
-                this.AddLogicalChild(this.contentTemplateInstance);
-                this.RemoveContentNativeView();
-                this.contentTemplateInstance.DataContext = this.Content;
-            }
-            else
-            {
-                this.RemoveContentNativeView();
-                this.contentTemplateInstance = null;
-            }
+                if (value != null)
+                {
+                    this.contentTemplateInstance = (UIElement)value.LoadContent();
+                    this.contentTemplateInstance.LayoutUpdated += this.OnContentLayoutUpdated;
+                    this.AddLogicalChild(this.contentTemplateInstance);
+                    this.RemoveContentNativeView();
+                    this.contentTemplateInstance.DataContext = this.Content;
+                }
+                else
+                {
+                    this.RemoveContentNativeView();
+                    this.contentTemplateInstance = null;
+                }
 
-            this.OnNativeContentChanged(null, this.Content);
-            this.OnLayoutUpdated();
+                this.OnNativeContentChanged(null, this.Content);
+                this.OnLayoutUpdated();
+            }
         }
 
         private void OnContentLayoutUpdated(object sender, EventArgs e)
