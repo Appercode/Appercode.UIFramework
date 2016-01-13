@@ -36,6 +36,8 @@ namespace Appercode.UI.Controls.Primitives
         /// </summary>
         public ICollection<int> SelectedIndexes { get; } = new HashSet<int>();
 
+        internal DataTemplateSelector ItemTemplateSelector { get; set; }
+
         /// <summary>
         /// Returns the container for the item at the specified <paramref name="index" /> within the <see cref="Items" /> collection.
         /// </summary>

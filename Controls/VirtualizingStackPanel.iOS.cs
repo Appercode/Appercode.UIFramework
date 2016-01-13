@@ -10,16 +10,6 @@ namespace Appercode.UI.Controls
 {
     public partial class VirtualizingStackPanel
     {
-        private nfloat rowHeight = -1;
-
-        private VirtualizingStackPanelSource TableViewSource 
-        {
-            get
-            {
-                return (VirtualizingStackPanelSource)((UITableView)this.NativeUIElement).Source;
-            }
-        }
-
         protected internal override void NativeInit()
         {
             if (this.Parent != null)
@@ -46,15 +36,8 @@ namespace Appercode.UI.Controls
 
         protected override CGSize NativeMeasureOverride(CGSize availableSize)
         {
-            var height = base.NativeMeasureOverride(availableSize).Height;
-            int i = 0;
-            var avalibleItemSize = new CGSize(availableSize.Width, nfloat.PositiveInfinity);
-            while (height < availableSize.Height && i < this.Generator.Items.Count)
-            {
-                var measuredSize = this.TableViewSource.MeasureItemAt(i++, avalibleItemSize);
-                height += measuredSize.Height;
-            }
-            return new CGSize(availableSize.Width, Math.Min(availableSize.Height, height));
+            var tableViewSource = (VirtualizingStackPanelSource)((UITableView)this.NativeUIElement).Source;
+            return tableViewSource.MeasureAllItems(base.NativeMeasureOverride(availableSize), availableSize);
         }
 
         private void ReloadNativeItems()
@@ -62,19 +45,6 @@ namespace Appercode.UI.Controls
             if (this.measuredSize.IsEmpty)
             {
                 return;
-            }
-
-            if (rowHeight == -1 && this.Generator.Items.Count > 0)
-            {
-                var listItem = (UIElement)this.Generator.ContainerFromIndex(0);
-                LogicalTreeHelper.AddLogicalChild(this, listItem);
-
-                var availableSize = this.Orientation == Orientation.Horizontal
-                    ? new CGSize(nfloat.PositiveInfinity, this.measuredSize.Height)
-                    : new CGSize(this.measuredSize.Width, nfloat.PositiveInfinity);
-
-                rowHeight = listItem.MeasureOverride(availableSize).Height;
-                ((UITableView)this.NativeUIElement).RowHeight = rowHeight;
             }
 
             UIView.AnimationsEnabled = false;
@@ -97,166 +67,186 @@ namespace Appercode.UI.Controls
 
         protected class VirtualizingStackPanelSource : UITableViewSource
         {
-            public Dictionary<UIView, UIElement> NativeViewContainers = new Dictionary<UIView, UIElement>();
-
             private static readonly NSString CellIdentifier = new NSString("cell");
+
+            private readonly Lazy<Dictionary<DataTemplate, NSString>> cellIdentifiers;
+            private readonly Lazy<Dictionary<DataTemplate, DependencyObject>> measurementContainers;
+            private readonly Dictionary<UIView, UIElement> nativeViewContainers;
             private readonly VirtualizingStackPanel panel;
-            private UIElement measurementListItem = null;
-            private List<UIElement> listItems = new List<UIElement>();
+            private DependencyObject defaultContainer;
 
             public VirtualizingStackPanelSource(VirtualizingStackPanel panel)
             {
+                this.cellIdentifiers = new Lazy<Dictionary<DataTemplate, NSString>>();
+                this.measurementContainers = new Lazy<Dictionary<DataTemplate, DependencyObject>>();
+                this.nativeViewContainers = new Dictionary<UIView, UIElement>();
                 this.panel = panel;
+            }
+
+            public virtual CGSize MeasureItemAt(int index, CGSize availableSize)
+            {
+                var measurementContainer = (UIElement)this.GetMeasurementContainer(index);
+                return measurementContainer.MeasureOverride(availableSize);
             }
 
             public override nint RowsInSection(UITableView tableView, nint section)
             {
-                var count = this.panel.Generator != null ? this.panel.Generator.Items.Count : 0;
-                return count;
+                return this.panel.Generator.Items.Count;
             }
 
-            // float rowHeight = -1;
-
-//            public override float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
-//            {
-////                if (indexPath.Row >= this.listItems.Count)
-////                {
-////                    var listItem = (UIElement)this.panel.Generator.Generate(indexPath.Row);
-////                    LogicalTreeHelper.AddLogicalChild(this.panel, listItem);
-////                
-////                    var availableSize = this.panel.Orientation == Orientation.Horizontal
-////                        ? new SizeF(float.PositiveInfinity, this.panel.measuredSize.Height)
-////                        : new SizeF(this.panel.measuredSize.Width, float.PositiveInfinity);
-////
-////                    listItem.MeasureOverride(availableSize);
-////                    this.listItems.Add(listItem);
-////                }
-////                else
-////                {
-////                    this.listItems[indexPath.Row] = this.panel.Generator.Reuse(indexPath.Row, this.listItems[indexPath.Row]);
-////                }
-////
-////                return this.listItems[indexPath.Row].measuredSize.Height;
-//
-//                if(rowHeight == -1)
-//                {
-//                    var listItem = (UIElement)this.panel.Generator.Generate(indexPath.Row);
-//                    LogicalTreeHelper.AddLogicalChild(this.panel, listItem);
-//                
-//                    var availableSize = this.panel.Orientation == Orientation.Horizontal
-//                        ? new SizeF(float.PositiveInfinity, this.panel.measuredSize.Height)
-//                        : new SizeF(this.panel.measuredSize.Width, float.PositiveInfinity);
-//
-//                    rowHeight = listItem.MeasureOverride(availableSize).Height;
-//                    this.listItems.Add(listItem);
-//                }
-//
-//                return rowHeight;
-//            }
-
-            public virtual CGSize MeasureItemAt(int index, CGSize availableSize)
+            public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
             {
-                if (measurementListItem == null)
-                {
-                    measurementListItem = (UIElement)this.panel.Generator.ContainerFromIndex(index);
-                    LogicalTreeHelper.AddLogicalChild(this.panel, measurementListItem);
-                }
-                else
-                {
-                    measurementListItem = (UIElement)this.panel.Generator.Reuse(index, measurementListItem);
-                }
-
-                return measurementListItem.MeasureOverride(availableSize);
+                // TODO: Add support of Horizontal orientation
+                var availableSize = this.GetItemAvailableSize(this.panel.measuredSize);
+                return this.MeasureItemAt(indexPath.Row, availableSize).Height;
             }
 
             public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
             {
-                UIElement listItem;
-
-                // if (indexPath.Row >= this.listItems.Count)
-                // {
-                //     listItem = (UIElement)this.panel.Generator.ContainerFromIndex(indexPath.Row);
-                //     LogicalTreeHelper.AddLogicalChild(this.panel, listItem);
-
-                //     var availableSize = this.panel.Orientation == Orientation.Horizontal
-                //         ? new SizeF(float.PositiveInfinity, this.panel.measuredSize.Height)
-                //         : new SizeF(this.panel.measuredSize.Width, float.PositiveInfinity);
-
-                //     listItem.MeasureOverride(availableSize);
-                //     this.listItems.Add(listItem);
-                // }
-                // else
-                // {
-                //     listItem = this.listItems[indexPath.Row];
-                // }
-
-                var cell = tableView.DequeueReusableCell(CellIdentifier);
+                var cellIdentifier = this.GetCellIdentifier(indexPath.Row);
+                var cell = tableView.DequeueReusableCell(cellIdentifier);
                 if (cell == null)
                 {
-                    int ind = Array.IndexOf(tableView.IndexPathsForVisibleRows, indexPath);
-                    if (ind >= 0 && ind < tableView.VisibleCells.Length)
+                    var visibleRowIndex = Array.IndexOf(tableView.IndexPathsForVisibleRows, indexPath);
+                    if (visibleRowIndex >= 0 && visibleRowIndex < tableView.VisibleCells.Length)
                     {
-                        cell = tableView.VisibleCells[ind];
+                        cell = tableView.VisibleCells[visibleRowIndex];
                         cell.RemoveFromSuperview();
                     }
                     else
                     {
-                        cell = new UITableViewCell(UITableViewCellStyle.Default, CellIdentifier);
-
-                        listItem = (UIElement)this.panel.Generator.ContainerFromIndex(indexPath.Row);
-                        LogicalTreeHelper.AddLogicalChild(this.panel, listItem);
-                        this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
-                        cell.ContentView.AddSubview(listItem.NativeUIElement);
-                        var availableSize = this.panel.Orientation == Orientation.Horizontal
-                            ? new CGSize(nfloat.PositiveInfinity, this.panel.measuredSize.Height)
-                            : new CGSize(this.panel.measuredSize.Width, nfloat.PositiveInfinity);
-
-                        listItem.MeasureOverride(availableSize);
-                        listItem.Arrange(new CGRect(CGPoint.Empty, listItem.measuredSize));
-                        listItem.LayoutUpdated += this.panel.Child_LayoutUpdated;
-
-                        cell.BackgroundColor = UIColor.Clear;
-
-                        return cell;
+                        cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier)
+                        {
+                            BackgroundColor = UIColor.Clear
+                        };
                     }
                 }
 
-                var nativeItem = cell.ContentView.Subviews[0];
-                if (nativeItem != null && this.NativeViewContainers.ContainsKey(nativeItem))
+                return cell;
+            }
+
+            public override void WillDisplay(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
+            {
+                UIElement container = null;
+                var nativeView = cell.ContentView.Subviews.FirstOrDefault();
+                if (nativeView != null)
                 {
-                    listItem = this.NativeViewContainers[nativeItem];
-                    this.panel.Generator.Reuse(indexPath.Row, listItem);
+                    if (this.nativeViewContainers.TryGetValue(nativeView, out container) == false)
+                    {
+                        nativeView.RemoveFromSuperview();
+                    }
+                }
+
+                if (container == null)
+                {
+                    container = (UIElement)this.panel.Generator.ContainerFromIndex(indexPath.Row);
+                    this.panel.AddLogicalChild(container);
+                    this.nativeViewContainers.Add(container.NativeUIElement, container);
+                    cell.ContentView.AddSubview(container.NativeUIElement);
                 }
                 else
                 {
-                    nativeItem.RemoveFromSuperview();
-                    listItem = (UIElement)this.panel.Generator.ContainerFromIndex(indexPath.Row);
-                    LogicalTreeHelper.AddLogicalChild(this.panel, listItem);
-                    this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);
-                    cell.AddSubview(listItem.NativeUIElement);
+                    this.panel.Generator.Reuse(indexPath.Row, container);
                 }
 
-                // var availableSize = this.panel.Orientation == Orientation.Horizontal
-                //     ? new SizeF(float.PositiveInfinity, this.panel.measuredSize.Height)
-                //     : new SizeF(this.panel.measuredSize.Width, float.PositiveInfinity);
-
-                // this.itemSizes[indexPath.Row] = listItem.MeasureOverride(availableSize);
-
-                // if(cell.ContentView.Subviews.Length > 0)
-                // {
-                //     cell.ContentView.Subviews[0].RemoveFromSuperview();
-                // }
-
-                // cell.ContentView.AddSubview(listItem.NativeUIElement);
-
-                // listItem.Arrange(new RectangleF(PointF.Empty, listItem.measuredSize));
-
-                return cell;
+                container.MeasureOverride(this.GetItemAvailableSize(this.panel.measuredSize));
+                container.Arrange(new CGRect(CGPoint.Empty, container.measuredSize));
+                container.LayoutUpdated += this.panel.Child_LayoutUpdated;
             }
 
             public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
             {
                 tableView.DeselectRow(indexPath, true);
+            }
+
+            internal CGSize MeasureAllItems(CGSize baseSize, CGSize availableSize)
+            {
+                // TODO: Add support of Horizontal orientation
+                var height = baseSize.Height;
+                var itemAvailableSize = this.GetItemAvailableSize(availableSize);
+                var index = 0;
+                while (height < availableSize.Height && index < this.panel.Generator.Items.Count)
+                {
+                    height += this.MeasureItemAt(index++, itemAvailableSize).Height;
+                }
+
+                return new CGSize(availableSize.Width, NMath.Min(availableSize.Height, height));
+            }
+
+            private NSString GetCellIdentifier(int index)
+            {
+                var itemTemplateSelector = this.panel.Generator.ItemTemplateSelector;
+                if (itemTemplateSelector == null)
+                {
+                    return CellIdentifier; 
+                }
+
+                var container = this.defaultContainer ?? this.InitDefaultContainer(index);
+                var dataTemplate = itemTemplateSelector.SelectTemplate(this.panel.Generator.Items[index], container);
+                NSString identifier;
+                if (this.cellIdentifiers.Value.TryGetValue(dataTemplate, out identifier) == false)
+                {
+                    identifier = new NSString("cell" + dataTemplate.GetHashCode());
+                    this.cellIdentifiers.Value.Add(dataTemplate, identifier);
+                }
+
+                return identifier;
+            }
+
+            private CGSize GetItemAvailableSize(CGSize panelAvailableSize)
+            {
+                return this.panel.Orientation == Orientation.Horizontal
+                    ? new CGSize(nfloat.PositiveInfinity, panelAvailableSize.Height)
+                    : new CGSize(panelAvailableSize.Width, nfloat.PositiveInfinity);
+            }
+
+            private DependencyObject GetMeasurementContainer(int index)
+            {
+                var itemTemplateSelector = this.panel.Generator.ItemTemplateSelector;
+                if (itemTemplateSelector == null)
+                {
+                    return this.InitDefaultContainer(index);
+                }
+
+                var defaultContainerIsCreatedForCurrentIndex = false;
+                if (this.defaultContainer == null)
+                {
+                    this.InitDefaultContainer(index);
+                    defaultContainerIsCreatedForCurrentIndex = true;
+                }
+
+                var dataTemplate = itemTemplateSelector.SelectTemplate(this.panel.Generator.Items[index], this.defaultContainer);
+                DependencyObject measurementContainer;
+                if (this.measurementContainers.Value.TryGetValue(dataTemplate, out measurementContainer) == false)
+                {
+                    if (defaultContainerIsCreatedForCurrentIndex)
+                    {
+                        measurementContainer = this.defaultContainer;
+                    }
+                    else
+                    {
+                        measurementContainer = this.panel.Generator.ContainerFromIndex(index);
+                        this.panel.AddLogicalChild(measurementContainer);
+                    }
+
+                    this.measurementContainers.Value.Add(dataTemplate, measurementContainer);
+                }
+
+                return measurementContainer;
+            }
+
+            // This methods calls Reuse unconditionally, which might lead to data template reaplying.
+            // Do not use it if the defaultContainer is already initialized and the data template is calculated with a DataTemplateSelector.
+            private DependencyObject InitDefaultContainer(int index)
+            {
+                var containerIsNew = this.defaultContainer == null;
+                this.defaultContainer = this.panel.Generator.Reuse(index, this.defaultContainer);
+                if (containerIsNew)
+                {
+                    this.panel.AddLogicalChild(this.defaultContainer);
+                }
+
+                return this.defaultContainer;
             }
         }
     }

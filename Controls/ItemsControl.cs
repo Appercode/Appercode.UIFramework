@@ -365,6 +365,7 @@ namespace Appercode.UI.Controls
 
             containerFactory.SetValue(templateProperty, templateValue);
             containerFactory.SetValue(templateSelectorProperty, templateSelectorValue);
+            itemsControl.ItemContainerGenerator.ItemTemplateSelector = templateSelectorValue;
         }
 
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
