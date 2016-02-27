@@ -183,8 +183,8 @@ namespace Appercode.UI.Controls
             var widthBorder = this.BorderThickness.HorizontalThicknessF();
             var heightBorder = this.BorderThickness.VerticalThicknessF();
 
-            bool isWidthSetByUser = this.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue || this.ReadValueFromStyle(UIElement.WidthProperty) != DependencyProperty.UnsetValue;
-            bool isHeightSetByUser = this.ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue || this.ReadValueFromStyle(UIElement.HeightProperty) != DependencyProperty.UnsetValue;
+            var isWidthSetByUser = this.ContainsValue(WidthProperty);
+            var isHeightSetByUser = this.ContainsValue(HeightProperty);
 
             var availableContentWidth = !isWidthSetByUser ? availableSize.Width - widthReduce : (nfloat)this.Width - padding.HorizontalThicknessF();
             availableContentWidth -= widthBorder;
@@ -203,17 +203,12 @@ namespace Appercode.UI.Controls
 
         public override void Arrange(RectangleF finalRect)
         {
-            bool isWidthSetByUser = this.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue
-                || this.ReadValueFromStyle(UIElement.WidthProperty) != DependencyProperty.UnsetValue;
-
-            bool isHeightSetByUser = this.ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue
-                || this.ReadValueFromStyle(UIElement.HeightProperty) != DependencyProperty.UnsetValue;
-
-            if (isHeightSetByUser)
+            if (this.ContainsValue(HeightProperty))
             {
                 finalRect.Height = finalRect.Height + this.Margin.VerticalThicknessF();
             }
-            if (isWidthSetByUser)
+
+            if (this.ContainsValue(WidthProperty))
             {
                 finalRect.Width = finalRect.Width + this.Margin.HorizontalThicknessF();
             }
@@ -226,12 +221,13 @@ namespace Appercode.UI.Controls
             }
 
             if (this.Child.HorizontalAlignment == HorizontalAlignment.Stretch
-                && this.Child.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+                && this.Child.ContainsValue(WidthProperty) == false)
             {
                 this.contentSize.Width = finalRect.Width;
             }
+
             if (this.Child.VerticalAlignment == VerticalAlignment.Stretch
-                && this.Child.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+                && this.Child.ContainsValue(HeightProperty) == false)
             {
                 this.contentSize.Height = finalRect.Height;
             }

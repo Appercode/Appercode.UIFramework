@@ -1,5 +1,4 @@
-﻿using Appercode.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -446,9 +445,11 @@ namespace Appercode.UI.Controls
             this.CellsStructureDirty = true;
             availableSize = this.SizeThatFitsMaxAndMin(availableSize);
 
-            var height = this.ReadLocalValue(Grid.HeightProperty) != DependencyProperty.UnsetValue ? (nfloat)this.Height : 0;
-            var width = this.ReadLocalValue(Grid.WidthProperty) != DependencyProperty.UnsetValue ? (nfloat)this.Width : 0;
+            var heightIsSet = this.ContainsValue(HeightProperty);
+            var widthIsSet = this.ContainsValue(WidthProperty);
 
+            var height = heightIsSet ? (nfloat)this.Height : 0;
+            var width = widthIsSet ? (nfloat)this.Width : 0;
             if ((availableSize.Width == 0 && width == 0) || (availableSize.Height == 0 && height == 0) || this.Width == 0 || this.Height == 0)
             {
                 this.measuredSize = this.SizeThatFitsMaxAndMin(new SizeF(width, height));
@@ -471,11 +472,12 @@ namespace Appercode.UI.Controls
 
             this.InitCellsCacheIfNeeded(ref availableContentSize);
 
-            if (this.ReadLocalValue(Grid.HeightProperty) != DependencyProperty.UnsetValue)
+            if (heightIsSet)
             {
                 availableContentSize.Height = (nfloat)this.Height;
             }
-            if (this.ReadLocalValue(Grid.WidthProperty) != DependencyProperty.UnsetValue)
+
+            if (widthIsSet)
             {
                 availableContentSize.Width = (nfloat)this.Width;
             }
@@ -816,9 +818,9 @@ namespace Appercode.UI.Controls
                 height = 0;
             }
 
-            RectangleF contentRectangle = new RectangleF(left, top, width, height);
+            var contentRectangle = new RectangleF(left, top, width, height);
 
-            if (cell.Element.ReadLocalValue(UIElement.VerticalAlignmentProperty) != DependencyProperty.UnsetValue)
+            if (cell.Element.ContainsValue(VerticalAlignmentProperty))
             {
                 switch (cell.Element.VerticalAlignment)
                 {
@@ -827,67 +829,43 @@ namespace Appercode.UI.Controls
                         contentRectangle.Height = cell.MeasuredSize.Height;
                         break;
                     case VerticalAlignment.Center:
-                        contentRectangle.Y = top + height / 2f - cell.MeasuredSize.Height / 2f;
+                        contentRectangle.Y = top + (height - cell.MeasuredSize.Height) / 2;
                         contentRectangle.Height = cell.MeasuredSize.Height;
-                        break;
-                    case VerticalAlignment.Stretch:
-                        contentRectangle.Y = top;
-                        contentRectangle.Height = height;
                         break;
                     case VerticalAlignment.Top:
-                        contentRectangle.Y = top;
                         contentRectangle.Height = cell.MeasuredSize.Height;
                         break;
                 }
             }
-            else
+            else if (cell.Element.ContainsValue(HeightProperty))
             {
-                if (cell.Element.ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue || cell.Element.ReadValueFromStyle(UIElement.HeightProperty) != DependencyProperty.UnsetValue)
-                {
-                    contentRectangle.Y = top + height / 2f - (nfloat)cell.Element.Height / 2f;
-                    contentRectangle.Height = (nfloat)cell.Element.Height;
-                }
-                else
-                {
-                    contentRectangle.Y = top;
-                    contentRectangle.Height = height;
-                }
+                var elementHeight = (nfloat)cell.Element.Height;
+                contentRectangle.Y = top + (height - elementHeight) / 2;
+                contentRectangle.Height = elementHeight;
             }
 
-            if (cell.Element.ReadLocalValue(UIElement.HorizontalAlignmentProperty) != DependencyProperty.UnsetValue)
+            if (cell.Element.ContainsValue(HorizontalAlignmentProperty))
             {
                 switch (cell.Element.HorizontalAlignment)
                 {
                     case HorizontalAlignment.Center:
-                        contentRectangle.X = left + width / 2f - cell.MeasuredSize.Width / 2f;
+                        contentRectangle.X = left + (width - cell.MeasuredSize.Width) / 2;
                         contentRectangle.Width = cell.MeasuredSize.Width;
                         break;
                     case HorizontalAlignment.Left:
-                        contentRectangle.X = left;
                         contentRectangle.Width = cell.MeasuredSize.Width;
                         break;
                     case HorizontalAlignment.Right:
                         contentRectangle.X = left + width - cell.MeasuredSize.Width;
                         contentRectangle.Width = cell.MeasuredSize.Width;
                         break;
-                    case HorizontalAlignment.Stretch:
-                        contentRectangle.X = left;
-                        contentRectangle.Width = width;
-                        break;
                 }
             }
-            else
+            else if (cell.Element.ContainsValue(WidthProperty))
             {
-                if (cell.Element.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue || cell.Element.ReadValueFromStyle(UIElement.WidthProperty) != DependencyProperty.UnsetValue)
-                {
-                    contentRectangle.X = left + width / 2f - (nfloat)cell.Element.Width / 2f;
-                    contentRectangle.Width = (nfloat)cell.Element.Width;
-                }
-                else
-                {
-                    contentRectangle.X = left;
-                    contentRectangle.Width = width;
-                }
+                var elementWidth = (nfloat)cell.Element.Width;
+                contentRectangle.X = left + (width - elementWidth) / 2;
+                contentRectangle.Width = elementWidth;
             }
 
             cell.Element.Arrange(contentRectangle);

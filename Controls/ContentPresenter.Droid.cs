@@ -1,16 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
 using Appercode.UI.Controls.NativeControl.Wrapers;
+using System;
+using System.Drawing;
 
 namespace Appercode.UI.Controls
 {
@@ -45,23 +37,25 @@ namespace Appercode.UI.Controls
 
         protected override SizeF NativeMeasureOverride(SizeF availableSize)
         {
+            var margin = this.Margin;
             var size = base.NativeMeasureOverride(availableSize);
+            var widthIsNotSet = this.ContainsValue(WidthProperty) == false;
+            var heightIsNotSet = this.ContainsValue(HeightProperty) == false;
+            bool needToMeasureContent = false;
 
-            bool needToMesureContent = false;
-
-            if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+            if (widthIsNotSet)
             {
-                size.Width = (float)(availableSize.Width - this.Margin.Left - this.Margin.Right);
-                needToMesureContent = true;
+                size.Width = availableSize.Width - margin.HorizontalThicknessF();
+                needToMeasureContent = true;
             }
 
-            if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+            if (heightIsNotSet)
             {
-                size.Height = (float)(availableSize.Height - this.Margin.Top - this.Margin.Bottom);
-                needToMesureContent = true;
+                size.Height = availableSize.Height - margin.VerticalThicknessF();
+                needToMeasureContent = true;
             }
 
-            if (!needToMesureContent)
+            if (!needToMeasureContent)
             {
                 return size;
             }
@@ -73,17 +67,17 @@ namespace Appercode.UI.Controls
             }
             else
             {
-                needContentSize = new SizeF(0, 0);
-            }          
-
-            if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
-            {
-                size.Width = (float)Math.Min(needContentSize.Width + Margin.Left + Margin.Right, availableSize.Width);
+                needContentSize = SizeF.Empty;
             }
 
-            if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+            if (widthIsNotSet)
             {
-                size.Height = (float)Math.Min(needContentSize.Height + this.Margin.Top + this.Margin.Bottom, availableSize.Height);
+                size.Width = Math.Min(needContentSize.Width + margin.HorizontalThicknessF(), availableSize.Width);
+            }
+
+            if (heightIsNotSet)
+            {
+                size.Height = Math.Min(needContentSize.Height + margin.VerticalThicknessF(), availableSize.Height);
             }
 
             return size;

@@ -1,5 +1,4 @@
 using CoreGraphics;
-using System.Windows;
 using UIKit;
 
 namespace Appercode.UI.Controls
@@ -25,16 +24,19 @@ namespace Appercode.UI.Controls
         {
             var size = base.NativeMeasureOverride(availableSize);
             bool needToMesureContent = false;
+            var margin = this.Margin;
+            var widthIsNotSet = this.ContainsValue(WidthProperty) == false;
+            var heightIsNotSet = this.ContainsValue(HeightProperty) == false;
 
-            if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+            if (widthIsNotSet)
             {
-                size.Width = availableSize.Width - this.Margin.HorizontalThicknessF();
+                size.Width = availableSize.Width - margin.HorizontalThicknessF();
                 needToMesureContent = true;
             }
 
-            if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+            if (heightIsNotSet)
             {
-                size.Height = availableSize.Height - this.Margin.VerticalThicknessF();
+                size.Height = availableSize.Height - margin.VerticalThicknessF();
                 needToMesureContent = true;
             }
 
@@ -45,14 +47,14 @@ namespace Appercode.UI.Controls
 
             var needContentSize = this.templateInstance.MeasureOverride(size);
 
-            if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+            if (widthIsNotSet)
             {
-                size.Width = MathF.Min(needContentSize.Width + Margin.HorizontalThicknessF(), availableSize.Width);
+                size.Width = MathF.Min(needContentSize.Width + margin.HorizontalThicknessF(), availableSize.Width);
             }
 
-            if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+            if (heightIsNotSet)
             {
-                size.Height = MathF.Min(needContentSize.Height + this.Margin.VerticalThicknessF(), availableSize.Height);
+                size.Height = MathF.Min(needContentSize.Height + margin.VerticalThicknessF(), availableSize.Height);
             }
 
             return size;

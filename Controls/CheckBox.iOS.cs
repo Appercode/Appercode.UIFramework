@@ -49,14 +49,16 @@ namespace Appercode.UI.Controls
         protected override CGSize NativeMeasureOverride(CGSize availableSize)
         {
             var size = base.NativeMeasureOverride(availableSize);
-            if (this.ReadLocalValue(CheckBox.HeightProperty) == DependencyProperty.UnsetValue && size.Height < 22)
+            if (this.ContainsValue(HeightProperty) == false && size.Height < 22)
             {
                 size.Height = 22;
             }
-            if (this.ReadLocalValue(CheckBox.WidthProperty) == DependencyProperty.UnsetValue)
+
+            if (this.ContainsValue(WidthProperty) == false)
             {
                 size.Width += 34;
             }
+
             return size;
         }
 

@@ -1,16 +1,11 @@
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Media;
-using Android.Content.Res;
 using Android.Graphics.Drawables;
-using Android.Views;
 using Android.Widget;
 using Appercode.UI.Controls.Media.Imaging;
 using Appercode.UI.Controls.NativeControl.Wrapers;
 using System;
+using System.Drawing;
 using System.Windows;
-using Color = Android.Graphics.Color;
-using Appercode.UI.Controls.Media;
+using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
@@ -99,46 +94,40 @@ namespace Appercode.UI.Controls
         private void ApplyNativeStretch()
         {
             var imageView = this.NativeUIElement as ImageView;
-
             if (imageView != null)
             {
                 switch (this.Stretch)
                 {
-                    case System.Windows.Media.Stretch.None:
+                    case Stretch.None:
                         imageView.SetScaleType(ImageView.ScaleType.Center);
                         break;
-                    case System.Windows.Media.Stretch.Uniform:
+                    case Stretch.Uniform:
                         imageView.SetScaleType(ImageView.ScaleType.FitCenter);
                         break;
-                    case System.Windows.Media.Stretch.UniformToFill:
+                    case Stretch.UniformToFill:
                         imageView.SetScaleType(ImageView.ScaleType.CenterCrop);
                         break;
-                    case System.Windows.Media.Stretch.Fill:
+                    case Stretch.Fill:
                         imageView.SetScaleType(ImageView.ScaleType.FitXy);
                         break;
                 }
             }
         }
 
-        protected override System.Drawing.SizeF NativeMeasureOverride(System.Drawing.SizeF availableSize)
+        protected override SizeF NativeMeasureOverride(SizeF availableSize)
         {
-            var isWidthSetByUser = this.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue ||
-                                   this.ReadValueFromStyle(UIElement.WidthProperty) != DependencyProperty.UnsetValue;
-            var isHeightSetByUser = this.ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue ||
-                                    this.ReadValueFromStyle(UIElement.HeightProperty) != DependencyProperty.UnsetValue;
-            if (isHeightSetByUser)
+            if (this.ContainsValue(HeightProperty))
             {
-                availableSize.Height = (float)(this.Height + this.Margin.Bottom + this.Margin.Top);
+                availableSize.Height = (float)this.Height + this.Margin.VerticalThicknessF();
             }
 
-            if (isWidthSetByUser)
+            if (this.ContainsValue(WidthProperty))
             {
-                availableSize.Width = (float)(this.Width + this.Margin.Right + this.Margin.Left);
+                availableSize.Width = (float)this.Width + this.Margin.HorizontalThicknessF();
             }
 
             var measuredSize = base.NativeMeasureOverride(availableSize);
-
-            if (this.Stretch == System.Windows.Media.Stretch.UniformToFill)
+            if (this.Stretch == Stretch.UniformToFill)
             {
                 float k, k1 = float.MaxValue, k2 = float.MaxValue;
 
@@ -164,16 +153,19 @@ namespace Appercode.UI.Controls
 
         protected override void NativeArrange(RectangleF finalRect)
         {
-            if (this.ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue || this.ReadValueFromStyle(UIElement.HeightProperty) != DependencyProperty.UnsetValue)
+            var margin = this.Margin;
+            if (this.ContainsValue(HeightProperty))
             {
-                var height = (float)(finalRect.Height - this.Margin.Bottom - this.Margin.Top);
-                finalRect.Height = height < 0 ? (float)(finalRect.Height + this.Margin.Bottom + this.Margin.Top) : finalRect.Height;
+                var height = finalRect.Height - margin.VerticalThicknessF();
+                finalRect.Height = height < 0 ? finalRect.Height + margin.VerticalThicknessF() : finalRect.Height;
             }
-            if (this.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue || this.ReadValueFromStyle(UIElement.WidthProperty) != DependencyProperty.UnsetValue)
+
+            if (this.ContainsValue(WidthProperty))
             {
-                var width = (float)(finalRect.Width - this.Margin.Right - this.Margin.Left);
-                finalRect.Width = width < 0 ? (float)(finalRect.Width + this.Margin.Right + this.Margin.Left) : finalRect.Width;
+                var width = finalRect.Width - margin.HorizontalThicknessF();
+                finalRect.Width = width < 0 ? finalRect.Width + margin.HorizontalThicknessF() : finalRect.Width;
             }
+
             base.NativeArrange(finalRect);
         }
     }

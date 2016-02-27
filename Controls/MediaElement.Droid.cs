@@ -1,20 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Media;
-using Android.App;
 using Android.Content;
-using Android.Content.Res;
 using Android.Media;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
-using Appercode.UI.Controls.Media;
 using Appercode.UI.Controls.NativeControl.Wrapers;
 using Appercode.UI.Device;
+using System;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
@@ -175,61 +166,62 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    this.NativeUIElement = new NativeMediaElement(this.Context);
+                    var uiElement = new NativeMediaElement(this.Context);
                     this.videoView = new WrapedVideoView(this.Context);
-                    ((NativeMediaElement)this.NativeUIElement).AddView((WrapedVideoView)this.videoView);
+                    uiElement.AddView(this.videoView);
+                    this.NativeUIElement = uiElement;
 
                     var layoutParams = new ViewGroup.LayoutParams(0, 0);
 
                     layoutParams.Width = double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.FillParent : (int)this.NativeWidth;
                     layoutParams.Height = double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.FillParent : (int)this.NativeHeight;
                     this.NativeUIElement.LayoutParameters = layoutParams;
-                    ((WrapedVideoView)this.videoView).LayoutParameters = layoutParams;
+                    this.videoView.LayoutParameters = layoutParams;
 
-                    ((WrapedVideoView)this.videoView).InitMediaPlayer();
+                    this.videoView.InitMediaPlayer();
 
-                    ((WrapedVideoView)this.videoView).VideoSizeChanged -= MediaElement_VideoSizeChanged;
-                    ((WrapedVideoView)this.videoView).VideoSizeChanged += MediaElement_VideoSizeChanged;
+                    this.videoView.VideoSizeChanged -= MediaElement_VideoSizeChanged;
+                    this.videoView.VideoSizeChanged += MediaElement_VideoSizeChanged;
 
-                    ((WrapedVideoView)this.videoView).BufferingProgressUpdate -= MediaElement_BufferingProgressUpdate;
-                    ((WrapedVideoView)this.videoView).BufferingProgressUpdate += MediaElement_BufferingProgressUpdate;
+                    this.videoView.BufferingProgressUpdate -= MediaElement_BufferingProgressUpdate;
+                    this.videoView.BufferingProgressUpdate += MediaElement_BufferingProgressUpdate;
 
-                    if (this.ReadLocalValue(MediaElement.AudioStreamIndexProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(AudioStreamIndexProperty))
                     {
                         this.ApplyNativeAudioStreamIndex(this.NativeAudioStreamIndex);
                     }
 
-                    if (this.ReadLocalValue(MediaElement.AutoPlayProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(AutoPlayProperty))
                     {
                         this.ApplyNativeAutoPlay(this.NativeAutoPlay);
                     }
 
-                    if (this.ReadLocalValue(MediaElement.BalanceProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(BalanceProperty))
                     {
                         this.ApplyNativeBalance(this.NativeBalance);
                     }
 
-                    if (this.ReadLocalValue(MediaElement.IsMutedProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(IsMutedProperty))
                     {
                         ApplyNativeIsMuted(this.NativeIsMuted);
                     }
 
-                    if (this.ReadLocalValue(MediaElement.PositionProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(PositionProperty))
                     {
                         this.ApplyNativePosition(this.nativePosition);
                     }
 
-                    if (this.ReadLocalValue(MediaElement.SourceProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(SourceProperty))
                     {
                         this.ApplyNativeSource(this.NativeSource);
                     }
 
-                    if (this.ReadLocalValue(MediaElement.StretchProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(StretchProperty))
                     {
                         this.ApplyNativeStretch(this.NativeStretch);
                     }
 
-                    if (this.ReadLocalValue(MediaElement.VolumeProperty) != DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(VolumeProperty))
                     {
                         this.ApplyNativeVolume(this.nativeVolume);
                     }

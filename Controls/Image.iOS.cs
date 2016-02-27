@@ -1,7 +1,6 @@
 using Appercode.UI.Controls.Media.Imaging;
 using CoreGraphics;
 using System;
-using System.Windows;
 using UIKit;
 using SWM = System.Windows.Media;
 
@@ -34,8 +33,8 @@ namespace Appercode.UI.Controls
 
             var imageSize = image.Size;
 
-            bool widthIsUnset = this.ReadLocalValue(Image.WidthProperty) == DependencyProperty.UnsetValue && this.ReadValueFromStyle(Image.WidthProperty) == DependencyProperty.UnsetValue;
-            bool heightIsUnset = this.ReadLocalValue(Image.HeightProperty) == DependencyProperty.UnsetValue && this.ReadValueFromStyle(Image.HeightProperty) == DependencyProperty.UnsetValue;
+            var widthIsUnset = this.ContainsValue(WidthProperty) == false;
+            var heightIsUnset = this.ContainsValue(HeightProperty) == false;
 
             var margin = this.Margin;
             nfloat aspect, widthForImage, heightForImage;

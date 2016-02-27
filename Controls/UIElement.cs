@@ -646,6 +646,12 @@ namespace Appercode.UI.Controls
             return style == null ? DependencyProperty.UnsetValue : style.FindValue(dp);
         }
 
+        internal override bool ContainsValue(DependencyProperty dp)
+        {
+            return base.ContainsValue(dp)
+                || dp != StyleProperty && this.ReadValueFromStyle(dp) != DependencyProperty.UnsetValue;
+        }
+
         protected internal void InvalidateMeasure()
         {
             this.IsMeasureValid = false;
@@ -685,11 +691,6 @@ namespace Appercode.UI.Controls
                     this.isLayoutUpdatedScheduled = false;
                 }
             });
-        }
-
-        internal bool HasNonDefaultValue(DependencyProperty dependencyProperty)
-        {
-            return this.ReadLocalValue(dependencyProperty) != DependencyProperty.UnsetValue;
         }
 
         internal void RaiseBindingValidationError(ValidationErrorEventArgs validationErrorEventArg)

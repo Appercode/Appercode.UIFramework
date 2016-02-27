@@ -138,12 +138,12 @@ namespace Appercode.UI.Controls.Primitives
                 MathF.Max(0, availableSize.Width - margin.HorizontalThicknessF()),
                 MathF.Max(0, availableSize.Height - margin.VerticalThicknessF()));
 
-            if (this.ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue)
+            if (this.ContainsValue(HeightProperty))
             {
                 availableSize.Height = (nfloat)this.Height;
             }
 
-            if (this.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue)
+            if (this.ContainsValue(WidthProperty))
             {
                 availableSize.Width = (nfloat)this.Width;
             }

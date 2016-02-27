@@ -114,8 +114,7 @@ namespace Appercode.UI.Controls
                                         left = actualWidth - needSize.Width;
                                         break;
                                     case HorizontalAlignment.Stretch:
-                                        if (child.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue
-                                            && child.ReadValueFromStyle(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+                                        if (child.ContainsValue(WidthProperty) == false)
                                         {
                                             needSize.Width = actualWidth;
                                             needSize = child.SizeThatFitsMaxAndMin(needSize);
@@ -149,7 +148,7 @@ namespace Appercode.UI.Controls
                                         top = actualHeight - needSize.Height;
                                         break;
                                     case VerticalAlignment.Stretch:
-                                        if (child.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue && child.ReadValueFromStyle(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+                                        if (child.ContainsValue(HeightProperty) == false)
                                         {
                                             needSize.Height = actualHeight;
                                             needSize = child.SizeThatFitsMaxAndMin(needSize);
@@ -197,8 +196,8 @@ namespace Appercode.UI.Controls
 
             availableSize = this.SizeThatFitsMaxAndMin(availableSize);
 
-            var height = this.ReadLocalValue(StackPanel.HeightProperty) != DependencyProperty.UnsetValue ? (nfloat)this.Height : 0;
-            var width = this.ReadLocalValue(StackPanel.WidthProperty) != DependencyProperty.UnsetValue ? (nfloat)this.Width : 0;
+            var height = this.ContainsValue(HeightProperty) ? (nfloat)this.Height : 0;
+            var width = this.ContainsValue(WidthProperty) ? (nfloat)this.Width : 0;
 
             if ((availableSize.Width == 0 && width == 0) || (availableSize.Height == 0 && height == 0) || this.Width == 0 || this.Height == 0)
             {
@@ -208,127 +207,119 @@ namespace Appercode.UI.Controls
             }
 
             var size = this.MeasureContentViewPort(availableSize);
-
-            if (this.Orientation == Controls.Orientation.Vertical)
+            if (this.Orientation == Orientation.Vertical)
             {
-                if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+                if (this.ContainsValue(HeightProperty))
                 {
-                    if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+                    height = (nfloat)this.Height;
+                    if (this.ContainsValue(WidthProperty))
                     {
-                        var sizeForChild = new SizeF(size.Width, nfloat.PositiveInfinity);
-
-                        foreach (var child in this.Children)
-                        {
-                            if (child.NativeUIElement != null)
-                            {
-                                var measuredChild = child.MeasureOverride(sizeForChild);
-
-                                width = MathF.Max(width, measuredChild.Width);
-                                if (height < availableSize.Height)
-                                {
-                                    height += measuredChild.Height;
-                                }
-                            }
-                        }
+                        width = (nfloat)this.Width;
                     }
                     else
                     {
-                        var sizeForChild = new SizeF((nfloat)this.Width, nfloat.PositiveInfinity);
-                        width = (nfloat)this.Width;
-
+                        var sizeForChild = new SizeF(size.Width, height);
                         foreach (var child in this.Children)
                         {
                             if (child.NativeUIElement != null)
                             {
                                 var measuredChild = child.MeasureOverride(sizeForChild);
-                                if (height < availableSize.Height)
-                                {
-                                    height += measuredChild.Height;
-                                }
+                                width = MathF.Max(width, measuredChild.Width);
                             }
                         }
                     }
                 }
                 else
                 {
-                    height = (nfloat)this.Height;
-
-                    if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(WidthProperty))
                     {
-                        var sizeForChild = new SizeF(size.Width, (nfloat)this.Height);
+                        width = (nfloat)this.Width;
+                        var sizeForChild = new SizeF(width, nfloat.PositiveInfinity);
+                        foreach (var child in this.Children)
+                        {
+                            if (child.NativeUIElement != null)
+                            {
+                                var measuredChild = child.MeasureOverride(sizeForChild);
+                                if (height < availableSize.Height)
+                                {
+                                    height += measuredChild.Height;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var sizeForChild = new SizeF(size.Width, nfloat.PositiveInfinity);
                         foreach (var child in this.Children)
                         {
                             if (child.NativeUIElement != null)
                             {
                                 var measuredChild = child.MeasureOverride(sizeForChild);
                                 width = MathF.Max(width, measuredChild.Width);
+                                if (height < availableSize.Height)
+                                {
+                                    height += measuredChild.Height;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        width = (nfloat)this.Width;
                     }
                 }
             }
-            else if (this.Orientation == Controls.Orientation.Horizontal)
+            else if (this.Orientation == Orientation.Horizontal)
             {
-                if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+                if (this.ContainsValue(WidthProperty))
                 {
-                    if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+                    width = (nfloat)this.Width;
+                    if (this.ContainsValue(HeightProperty))
                     {
-                        var sizeForChild = new SizeF(nfloat.PositiveInfinity, size.Height);
-
+                        height = (nfloat)this.Height;
+                    }
+                    else
+                    {
+                        var sizeForChild = new SizeF(width, size.Height);
                         foreach (var child in this.Children)
                         {
                             if (child.NativeUIElement != null)
                             {
                                 var measuredChild = child.MeasureOverride(sizeForChild);
                                 height = MathF.Max(height, measuredChild.Height);
-                                if (width < availableSize.Width)
-                                {
-                                    width += measuredChild.Width;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var sizeForChild = new SizeF(nfloat.PositiveInfinity, (nfloat)this.Height);
-                        height = (nfloat)this.Height;
-
-                        foreach (var child in this.Children)
-                        {
-                            if (child.NativeUIElement != null)
-                            {
-                                var measuredChild = child.MeasureOverride(sizeForChild);
-                                if (width < availableSize.Width)
-                                {
-                                    width += measuredChild.Width;
-                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    width = (nfloat)this.Width;
-
-                    if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+                    if (this.ContainsValue(HeightProperty))
                     {
-                        var sizeForChild = new SizeF((nfloat)this.Width, size.Height);
+                        height = (nfloat)this.Height;
+                        var sizeForChild = new SizeF(nfloat.PositiveInfinity, height);
+                        foreach (var child in this.Children)
+                        {
+                            if (child.NativeUIElement != null)
+                            {
+                                var measuredChild = child.MeasureOverride(sizeForChild);
+                                if (width < availableSize.Width)
+                                {
+                                    width += measuredChild.Width;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var sizeForChild = new SizeF(nfloat.PositiveInfinity, size.Height);
                         foreach (var child in this.Children)
                         {
                             if (child.NativeUIElement != null)
                             {
                                 var measuredChild = child.MeasureOverride(sizeForChild);
                                 height = MathF.Max(height, measuredChild.Height);
+                                if (width < availableSize.Width)
+                                {
+                                    width += measuredChild.Width;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        height = (nfloat)this.Height;
                     }
                 }
             }

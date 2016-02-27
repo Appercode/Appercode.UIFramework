@@ -83,7 +83,7 @@ namespace Appercode.UI.Controls
                 ((ScrollViewer)d).InvalidateScrollInfo();
             }));
 
-        private new SizeF contentSize = new SizeF(nfloat.NaN, nfloat.NaN);
+        private SizeF contentSize = new SizeF(nfloat.NaN, nfloat.NaN);
 
         internal event EventHandler<ScrollChangedEventArgs> ScrollChanged = delegate { };
 
@@ -189,7 +189,7 @@ namespace Appercode.UI.Controls
             {
                 throw new ArgumentNullException("element");
             }
-            return (ScrollBarVisibility)element.GetValue(ScrollViewer.VerticalScrollBarVisibilityProperty);
+            return (ScrollBarVisibility)element.GetValue(VerticalScrollBarVisibilityProperty);
         }
 
         public static void SetHorizontalScrollBarVisibility(DependencyObject element, ScrollBarVisibility horizontalScrollBarVisibility)
@@ -198,7 +198,7 @@ namespace Appercode.UI.Controls
             {
                 throw new ArgumentNullException("element");
             }
-            element.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, horizontalScrollBarVisibility);
+            element.SetValue(HorizontalScrollBarVisibilityProperty, horizontalScrollBarVisibility);
         }
 
         public static void SetManipulationMode(DependencyObject element, ManipulationMode manipulationMode)
@@ -207,7 +207,7 @@ namespace Appercode.UI.Controls
             {
                 throw new ArgumentNullException("element");
             }
-            element.SetValue(ScrollViewer.ManipulationModeProperty, manipulationMode);
+            element.SetValue(ManipulationModeProperty, manipulationMode);
         }
 
         public static void SetVerticalScrollBarVisibility(DependencyObject element, ScrollBarVisibility verticalScrollBarVisibility)
@@ -216,20 +216,11 @@ namespace Appercode.UI.Controls
             {
                 throw new ArgumentNullException("element");
             }
-            element.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, verticalScrollBarVisibility);
+            element.SetValue(VerticalScrollBarVisibilityProperty, verticalScrollBarVisibility);
         }
 
         public void InvalidateScrollInfo()
         {
-            if (this.NativeUIElement != null && this.Content != null)
-            {
-                if (this.Content is UIElement)
-                {
-                    if (((UIElement)this.Content).ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
-                    {
-                    }
-                }
-            }
         }
 
         public void ScrollToHorizontalOffset(double offset)
@@ -257,6 +248,7 @@ namespace Appercode.UI.Controls
                 {
                     var contentWidth = (nfloat)this.ActualWidth;
                     var contentHeight = (nfloat)this.ActualHeight;
+                    var content = this.Content as UIElement;
 
                     if (this.HorizontalScrollBarVisibility == ScrollBarVisibility.Disabled)
                     {
@@ -264,7 +256,7 @@ namespace Appercode.UI.Controls
                     }
                     else
                     {
-                        if (this.Content is UIElement && ((UIElement)this.Content).ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+                        if (content != null && content.ContainsValue(WidthProperty) == false)
                         {
                             contentWidth = nfloat.PositiveInfinity;
                         }
@@ -280,7 +272,7 @@ namespace Appercode.UI.Controls
                     }
                     else
                     {
-                        if (this.Content is UIElement && ((UIElement)this.Content).ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+                        if (content != null && content.ContainsValue(HeightProperty) == false)
                         {
                             contentHeight = nfloat.PositiveInfinity;
                         }
@@ -291,7 +283,7 @@ namespace Appercode.UI.Controls
                     }
 
                     var contentSize = new SizeF(contentWidth, contentHeight);
-                    contentSize = ((UIElement)this.Content).SizeThatFitsMaxAndMin(contentSize);
+                    contentSize = content.SizeThatFitsMaxAndMin(contentSize);
 
                     this.contentSize = this.MeasureContent(contentSize);
                     this.ArrangeContent(this.contentSize);
@@ -356,7 +348,7 @@ namespace Appercode.UI.Controls
             }
             this.contentSize = this.MeasureContent(new SizeF(width, height));
 
-            if (this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue && this.ReadValueFromStyle(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+            if (this.ContainsValue(WidthProperty) == false)
             {
                 this.measuredSize.Width += this.contentSize.Width + horizontalPadding;
                 this.measuredSize.Width = MathF.Min(this.measuredSize.Width, availableSize.Width);
@@ -366,7 +358,7 @@ namespace Appercode.UI.Controls
                 this.measuredSize.Width = (nfloat)this.Width + horizontalMargin;
             }
 
-            if (this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue && this.ReadValueFromStyle(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+            if (this.ContainsValue(HeightProperty) == false)
             {
                 this.measuredSize.Height += this.contentSize.Height + verticalPadding;
                 this.measuredSize.Height = MathF.Min(this.measuredSize.Height, availableSize.Height);
@@ -407,21 +399,22 @@ namespace Appercode.UI.Controls
             var verticalPadding = this.Padding.VerticalThicknessF();
             var horizontalPadding = this.Padding.HorizontalThicknessF();
 
-            if (this.Content is UIElement)
+            var content = this.Content as UIElement;
+            if (content != null)
             {
-                bool widthSetByUser = ((UIElement)this.Content).ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue || ((UIElement)this.Content).ReadValueFromStyle(UIElement.WidthProperty) != DependencyProperty.UnsetValue;
-                bool heightSetByUser = ((UIElement)this.Content).ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue || ((UIElement)this.Content).ReadValueFromStyle(UIElement.HeightProperty) != DependencyProperty.UnsetValue;
-
-                if (((UIElement)this.Content).HorizontalAlignment == HorizontalAlignment.Stretch && !widthSetByUser && this.contentSize.Width < (finalRect.Width - horizontalMargin - horizontalPadding))
+                var widthSetByUser = content.ContainsValue(WidthProperty);
+                if (content.HorizontalAlignment == HorizontalAlignment.Stretch && !widthSetByUser && this.contentSize.Width < (finalRect.Width - horizontalMargin - horizontalPadding))
                 {
                     this.contentSize.Width = finalRect.Width - horizontalMargin - horizontalPadding;
                 }
-                if (((UIElement)this.Content).VerticalAlignment == VerticalAlignment.Stretch && !heightSetByUser && this.contentSize.Height < (finalRect.Height - verticalMargin - verticalPadding))
+
+                var heightSetByUser = content.ContainsValue(HeightProperty);
+                if (content.VerticalAlignment == VerticalAlignment.Stretch && !heightSetByUser && this.contentSize.Height < (finalRect.Height - verticalMargin - verticalPadding))
                 {
                     this.contentSize.Height = finalRect.Height - verticalMargin - verticalPadding;
                 }
 
-                this.contentSize = ((UIElement)this.Content).SizeThatFitsMaxAndMin(this.contentSize);
+                this.contentSize = content.SizeThatFitsMaxAndMin(this.contentSize);
             }
 
             var measuredWidth = default(nfloat);

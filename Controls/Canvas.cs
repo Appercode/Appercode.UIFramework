@@ -132,8 +132,8 @@ namespace Appercode.UI.Controls
             // TODO: size caching
 
             this.measuredFor = availableSize;
-            var height = this.ReadLocalValue(StackPanel.HeightProperty) != DependencyProperty.UnsetValue ? (nfloat)this.Height : 0;
-            var width = this.ReadLocalValue(StackPanel.WidthProperty) != DependencyProperty.UnsetValue ? (nfloat)this.Width : 0;
+            var height = this.ContainsValue(HeightProperty) ? (nfloat)this.Height : 0;
+            var width = this.ContainsValue(WidthProperty) ? (nfloat)this.Width : 0;
             foreach (var child in this.Children)
             {
                 this.childSizeCache[child] = child.MeasureOverride(new SizeF(nfloat.PositiveInfinity, nfloat.PositiveInfinity));

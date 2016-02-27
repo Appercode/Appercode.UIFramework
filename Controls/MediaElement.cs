@@ -264,24 +264,23 @@ namespace Appercode.UI.Controls
                 return base.MeasureOverride(availableSize);
             }
 
-            double height = .0;
-            double width = .0;
-
-            if (this.ReadLocalValue(UIElement.HeightProperty) != DependencyProperty.UnsetValue)
+            nfloat height;
+            nfloat width;
+            if (this.ContainsValue(HeightProperty))
             {
-                if (this.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue)
+                if (this.ContainsValue(WidthProperty))
                 {
                     return base.MeasureOverride(availableSize);
                 }
 
-                height = this.Height;
+                height = (nfloat)this.Height;
                 width = this.NaturalVideoWidth;
             }
             else
             {
-                if (this.ReadLocalValue(UIElement.WidthProperty) != DependencyProperty.UnsetValue)
+                if (this.ContainsValue(WidthProperty))
                 {
-                    width = this.Width;
+                    width = (nfloat)this.Width;
                     height = this.NaturalVideoHeight;
                 }
                 else
@@ -291,7 +290,7 @@ namespace Appercode.UI.Controls
                 }
             }
 
-            return base.MeasureOverride(new SizeF((nfloat)width, (nfloat)height));
+            return base.MeasureOverride(new SizeF(width, height));
         }
 
         public override void Arrange(RectangleF finalRect)

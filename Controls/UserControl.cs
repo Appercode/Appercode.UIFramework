@@ -74,8 +74,8 @@ namespace Appercode.UI.Controls
             var widthReduce = margin.HorizontalThicknessF() + padding.HorizontalThicknessF();
             var heightReduce = margin.VerticalThicknessF() + padding.VerticalThicknessF();
 
-            var width = this.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue ? (nfloat?)null : (nfloat)this.Width;
-            var height = this.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue ? (nfloat?)null : (nfloat)this.Height;
+            var width = this.ContainsValue(WidthProperty) ? (nfloat?)this.Width : null;
+            var height = this.ContainsValue(HeightProperty) ? (nfloat?)this.Height : null;
 
             var availableContentWidth = width.HasValue ? width.Value - padding.HorizontalThicknessF() : availableSize.Width - widthReduce;
             var availableContentHeight = height.HasValue ? height.Value - padding.VerticalThicknessF() : availableSize.Height - heightReduce;
@@ -99,13 +99,12 @@ namespace Appercode.UI.Controls
                 return;
             }
 
-            if (content.HorizontalAlignment == HorizontalAlignment.Stretch
-                && content.ReadLocalValue(UIElement.WidthProperty) == DependencyProperty.UnsetValue)
+            if (content.HorizontalAlignment == HorizontalAlignment.Stretch && content.ContainsValue(WidthProperty) == false)
             {
                 this.contentSize.Width = finalRect.Width - this.Margin.HorizontalThicknessF();
             }
-            if (content.VerticalAlignment == VerticalAlignment.Stretch
-                && content.ReadLocalValue(UIElement.HeightProperty) == DependencyProperty.UnsetValue)
+
+            if (content.VerticalAlignment == VerticalAlignment.Stretch && content.ContainsValue(HeightProperty) == false)
             {
                 this.contentSize.Height = finalRect.Height - this.Margin.VerticalThicknessF();
             }

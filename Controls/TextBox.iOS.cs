@@ -4,7 +4,6 @@ using Foundation;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using UIKit;
 
 namespace Appercode.UI.Controls
@@ -272,13 +271,13 @@ namespace Appercode.UI.Controls
             this.ChangeVisualControl();
 
             this.OnTextAlignmentChanged();
-            if (this.ReadLocalValue(TextBox.SelectionStartProperty) == DependencyProperty.UnsetValue && this.ReadLocalValue(TextBox.SelectionLengthProperty) == DependencyProperty.UnsetValue)
+            if (this.ContainsValue(SelectionStartProperty) || this.ContainsValue(SelectionLengthProperty))
             {
-                this.Select(this.NativeText == null ? 0 : this.NativeText.Length, 0);
+                this.Select(this.SelectionStart, this.SelectionLength);
             }
             else
             {
-                this.Select(this.SelectionStart, this.SelectionLength);
+                this.Select(this.NativeText == null ? 0 : this.NativeText.Length, 0);
             }
         }
 
@@ -288,7 +287,8 @@ namespace Appercode.UI.Controls
 
         protected override CGSize NativeMeasureOverride(CGSize availableSize)
         {
-            var size = new CGSize(availableSize.Width - this.Margin.HorizontalThicknessF(), availableSize.Height - this.Margin.VerticalThicknessF());
+            var margin = this.Margin;
+            var size = new CGSize(availableSize.Width - margin.HorizontalThicknessF(), availableSize.Height - margin.VerticalThicknessF());
             var height = defaultHeight;
             var width = 0.0;
             if (this.AcceptsReturn)
@@ -310,8 +310,8 @@ namespace Appercode.UI.Controls
                 width = needSize.Width;
             }
 
-            height = this.ReadLocalValue(HeightProperty) == DependencyProperty.UnsetValue ? height + this.Margin.VerticalThickness() : this.Height;
-            width = this.ReadLocalValue(WidthProperty) == DependencyProperty.UnsetValue ? width + this.Margin.HorizontalThicknessF() : this.Width;
+            height = this.ContainsValue(HeightProperty) ? this.Height : height + margin.VerticalThickness();
+            width = this.ContainsValue(WidthProperty) ? this.Width : width + margin.HorizontalThicknessF();
 
             return new CGSize(width, height);
         }
