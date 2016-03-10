@@ -265,10 +265,14 @@ namespace Appercode.UI.Controls
             var fits = new CGSize(
                 (nfloat.IsNaN(width) ? availableSize.Width - margin.HorizontalThicknessF() : MathF.Min(availableSize.Width, width)) - padding.HorizontalThicknessF(),
                 (nfloat.IsNaN(height) ? availableSize.Height - margin.VerticalThicknessF() : MathF.Min(availableSize.Height, height)) - padding.VerticalThicknessF());
+            if (nfloat.IsPositiveInfinity(fits.Height))
+            {
+                fits.Height = nfloat.MaxValue;
+            }
+
             if (this.TextWrapping == TextWrapping.NoWrap)
             {
                 fits.Width = nfloat.MaxValue;
-                fits.Height = nfloat.IsPositiveInfinity(fits.Height) ? nfloat.MaxValue : fits.Height;
                 fits = label.GetTextSize(fits);
                 fits.Width = MathF.Min(fits.Width, availableSize.Width);
             }
