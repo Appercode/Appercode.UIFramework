@@ -25,7 +25,17 @@ namespace Appercode.UI.Controls.Navigation
         private List<StackNavigationFrame> navigationStacks;
 #endif
 
-        public TabsNavigationFrame(IFrameStyler styler = null)
+        /// <summary>
+        /// Creates an instance of <see cref="TabsNavigationFrame" /> class.
+        /// </summary>
+
+        public TabsNavigationFrame()
+            : this(null) { }
+
+        /// <summary>
+        /// Creates an instance of <see cref="TabsNavigationFrame" /> class using an implementation of <see cref="IFrameStyler" />.
+        /// </summary>
+        public TabsNavigationFrame(IFrameStyler styler)
         {
             this.styler = styler;
 #if __ANDROID__ || WINDOWS_PHONE

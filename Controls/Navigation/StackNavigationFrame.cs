@@ -22,9 +22,16 @@ namespace Appercode.UI.Controls.Navigation
         private bool modalIsDisplayed;
 
         /// <summary>
-        /// Creates an instance of StackNavigationFrame class.
+        /// Creates an instance of <see cref="StackNavigationFrame" /> class.
         /// </summary>
-        public StackNavigationFrame(IFrameStyler styler = null)
+        public StackNavigationFrame()
+            : this(null) { }
+
+
+        /// <summary>
+        /// Creates an instance of <see cref="StackNavigationFrame" /> class using an implementation of <see cref="IFrameStyler" />.
+        /// </summary>
+        public StackNavigationFrame(IFrameStyler styler)
         {
             this.dispatcher = Dispatcher.CurrentDispatcher;
             this.styler = styler;
