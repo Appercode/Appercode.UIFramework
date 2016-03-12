@@ -928,9 +928,6 @@ namespace Appercode.UI.Controls
 
         private void InitCellsCache(ref SizeF finalSize)
         {
-            ////using (new PerformanceChecker(this, new object[] { finalSize }))
-            ////{
-
             if (finalSize.IsEmpty)
             {
                 return;
@@ -951,40 +948,20 @@ namespace Appercode.UI.Controls
 
             #region Calculating draft sizes and offfsets for columns and rows
 
-            int columnIndex = 0;
-            double currentX = 0;
+            var currentX = 0.0;
             foreach (var column in this.ColumnDefinitionsInternal)
             {
                 column.FinalOffset = currentX; // This is draft value
-
-                if (column.Width.IsAbsolute)
-                {
-                    column.ActualWidth = column.Width.Value;
-                }
-                else
-                {
-                    column.ActualWidth = column.MinWidth;
-                }
+                column.ActualWidth = column.Width.IsAbsolute ? column.Width.Value : column.MinWidth;
                 currentX += column.ActualWidth;
-                ++columnIndex;
             }
 
-            int rowIndex = 0;
-            double currentY = 0;
+            var currentY = 0.0;
             foreach (var row in this.RowDefinitionsInternal)
             {
                 row.FinalOffset = currentY; // This is draft value
-
-                if (row.Height.IsAbsolute)
-                {
-                    row.ActualHeight = row.Height.Value;
-                }
-                else
-                {
-                    row.ActualHeight = row.MinHeight;
-                }
+                row.ActualHeight = row.Height.IsAbsolute ? row.Height.Value : row.ActualHeight = row.MinHeight;
                 currentY += row.ActualHeight;
-                ++rowIndex;
             }
 
             #endregion //Calculating draft sizes and offfsets for columns and rows
@@ -1019,23 +996,23 @@ namespace Appercode.UI.Controls
                     availableHeight = avaliableSize.Height - this.RowDefinitionsInternal[cell.RowStart].Offset;
                 }
 
-                var t = cell.Measure(new SizeF((nfloat)availableWidth, (nfloat)availableHeight));
+                cell.Measure(new SizeF((nfloat)availableWidth, (nfloat)availableHeight));
             }
 
             #endregion // Pre-measure
 
             #region Add size for 'auto' columns and rows if content doesn't fit in them
 
-            foreach (var cellCache in this.cells.OrderBy(x => x.ColumnSpan).ThenBy(x => x.RowSpan))
+            foreach (var cell in this.cells.OrderBy(x => x.ColumnSpan).ThenBy(x => x.RowSpan))
             {
-                if (cellCache.IsColumnsAuto && !cellCache.IsColumnsStar)
+                if (cell.IsColumnsAuto && !cell.IsColumnsStar)
                 {
-                    var columns = this.ColumnDefinitionsInternal.EnumerableRange(cellCache.ColumnStart, cellCache.ColumnSpan, true);
-                    var widthToAdd = cellCache.MeasuredSize.Width - columns.Sum(x => x.ActualWidth);
+                    var columns = this.ColumnDefinitionsInternal.EnumerableRange(cell.ColumnStart, cell.ColumnSpan, true);
+                    var widthToAdd = cell.MeasuredSize.Width - columns.Sum(x => x.ActualWidth);
 
                     if (widthToAdd > 0)
                     {
-                        foreach (var column in columns.Where(x => x.Width.IsAuto || (x.Width.IsStar && treatColumnStarAsAuto)))
+                        foreach (var column in columns.Where(x => x.Width.IsAuto || (treatColumnStarAsAuto && x.Width.IsStar)))
                         {
                             var maxWidthToAdd = column.MaxWidth - column.ActualWidth;
                             if (widthToAdd > maxWidthToAdd)
@@ -1053,18 +1030,18 @@ namespace Appercode.UI.Controls
                 }
             }
 
-            foreach (var cellCache in this.cells.OrderBy(x => x.RowSpan))
+            foreach (var cell in this.cells.OrderBy(x => x.RowSpan))
             {
-                if (cellCache.IsRowsAuto && !cellCache.IsRowsStar)
+                if (cell.IsRowsAuto && !cell.IsRowsStar)
                 {
-                    var rows = this.RowDefinitionsInternal.EnumerableRange(cellCache.RowStart, cellCache.RowSpan, true);
-                    var heighToAdd = cellCache.MeasuredSize.Height - rows.Sum(x => x.ActualHeight);
+                    var rows = this.RowDefinitionsInternal.EnumerableRange(cell.RowStart, cell.RowSpan, true);
+                    var heighToAdd = cell.MeasuredSize.Height - rows.Sum(x => x.ActualHeight);
 
                     if (heighToAdd > 0)
                     {
-                        foreach (var row in rows.Where(x => x.Height.IsAuto || (x.Height.IsStar && treatRowStarAsAuto)))
+                        foreach (var row in rows.Where(x => x.Height.IsAuto || (treatRowStarAsAuto && x.Height.IsStar)))
                         {
-                            var maxHeightToAdd = row.MaxHeight - row.ActualHeight;                            
+                            var maxHeightToAdd = row.MaxHeight - row.ActualHeight;
                             if (heighToAdd > maxHeightToAdd)
                             {
                                 row.ActualHeight = row.MaxHeight;
@@ -1185,23 +1162,37 @@ namespace Appercode.UI.Controls
                     continue;
                 }
 
-                double width = 0.0;
-                int startColumn = cell.ColumnStart;
-                int endColumn = cell.ColumnStart + cell.ColumnSpan;
-                for (int i = startColumn; i < endColumn; i++)
+                var width = 0.0;
+                var columnEnd = cell.ColumnEnd;
+                for (int i = cell.ColumnStart; i <= columnEnd; i++)
                 {
                     width += this.ColumnDefinitionsInternal[i].ActualWidth;
                 }
 
-                double height = 0.0;
-                int startRow = cell.RowStart;
-                int endRow = cell.RowStart + cell.RowSpan;
-                for (int i = startRow; i < endRow; i++)
+                var height = 0.0;
+                int rowEnd = cell.RowEnd;
+                for (int i = cell.RowStart; i <= rowEnd; i++)
                 {
                     height += this.RowDefinitionsInternal[i].ActualHeight;
                 }
 
-                var t = cell.Measure(new SizeF((nfloat)width, (nfloat)height));
+                var allowAdditionalWidth = treatColumnStarAsAuto && cell.IsColumnsAbsolute == false;
+                var availableWidth = allowAdditionalWidth ? nfloat.PositiveInfinity : (nfloat)width;
+                var allowAdditionalHeight = treatRowStarAsAuto && cell.IsRowsAbsolute == false;
+                var availableHeight = allowAdditionalHeight ? nfloat.PositiveInfinity : (nfloat)height;
+                var cellSize = cell.Measure(new SizeF(availableWidth, availableHeight));
+
+                if (allowAdditionalWidth && cellSize.Width > width)
+                {
+                    // TODO: add the same value to other star columns
+                    this.ColumnDefinitionsInternal[cell.ColumnEnd].ActualWidth += cellSize.Width - width;
+                }
+
+                if (allowAdditionalHeight && cellSize.Height > height)
+                {
+                    // TODO: add the same value to other star rows
+                    this.RowDefinitionsInternal[cell.RowEnd].ActualHeight += cellSize.Height - height;
+                }
             }
 
             #endregion // Final remeasure for cells with 'star' size
@@ -1233,8 +1224,6 @@ namespace Appercode.UI.Controls
             ////if (EnsureGridLinesRenderer() != null)
             ////{
             ////    _GridLinesRenderer.InitLines(finalSize);
-            ////}
-
             ////}
         }
 
