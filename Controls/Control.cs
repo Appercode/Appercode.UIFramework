@@ -113,6 +113,11 @@ namespace Appercode.UI.Controls
             }
         }
 
+        internal override FrameworkTemplate InternalTemplate
+        {
+            get { return this.Template; }
+        }
+
         protected internal override IEnumerator LogicalChildren
         {
             get

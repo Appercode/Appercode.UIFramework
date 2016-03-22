@@ -182,6 +182,11 @@ namespace Appercode.UI.Controls
             set { this.SetValue(TemplateProperty, value); }
         }
 
+        internal override FrameworkTemplate InternalTemplate
+        {
+            get { return this.Template; }
+        }
+
         internal override void ApplyTemplate()
         {
             base.ApplyTemplate();

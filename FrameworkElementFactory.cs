@@ -16,10 +16,9 @@ namespace Appercode.UI
     [TypeConverter(typeof(FrameworkElementFactoryConverter))]
     public class FrameworkElementFactory
     {
-        internal int ChildIndex = -1;
         internal List<PropertyValue> PropertyValues = new List<PropertyValue>();
-        private static int autoGenChildNamePostfix = 1;
-        private static string autoGenChildNamePrefix = "~ChildID";
+
+        private readonly Lazy<Dictionary<string, DependencyObject>> namedChildren = new Lazy<Dictionary<string, DependencyObject>>();
         private string childName;
         private bool @sealed;
         private Type type;
@@ -414,11 +413,6 @@ namespace Appercode.UI
             this.Seal();
         }
 
-        internal bool IsChildNameValid(string childName)
-        {
-            return !childName.StartsWith(FrameworkElementFactory.autoGenChildNamePrefix, StringComparison.Ordinal);
-        }
-
         internal DependencyObject InstantiateUnoptimizedTree()
         {
             this.Seal();
@@ -431,7 +425,7 @@ namespace Appercode.UI
                 }
                 else if (p.Value is TemplateBindingExtension)
                 {
-                    this.templateBindingsStore.Add(new WeakReference<DependencyObject>((DependencyObject)depObj), p);
+                    this.templateBindingsStore.Add(new WeakReference<DependencyObject>(depObj), p);
                 }
                 else
                 {
@@ -448,10 +442,28 @@ namespace Appercode.UI
                 }
             }
 
+            if (this.namedChildren.IsValueCreated)
+            {
+                this.namedChildren.Value.Clear();
+            }
+
+            if (String.IsNullOrEmpty(this.childName) == false)
+            {
+                this.namedChildren.Value.Add(this.childName, depObj);
+            }
+
             var nextChild = this.FirstChild;
             while (nextChild != null)
             {
                 var childInstance = nextChild.InstantiateUnoptimizedTree();
+                if (nextChild.namedChildren.IsValueCreated)
+                {
+                    foreach (var namedChild in nextChild.namedChildren.Value)
+                    {
+                        this.namedChildren.Value.Add(namedChild.Key, namedChild.Value);
+                    }
+                }
+
                 ((IAddChild)depObj).AddChild(childInstance);
                 nextChild = nextChild.NextSibling;
             }
@@ -489,6 +501,17 @@ namespace Appercode.UI
             }
         }
 
+        internal DependencyObject GetNamedChild(string childName)
+        {
+            DependencyObject result = null;
+            if (this.namedChildren.IsValueCreated)
+            {
+                this.namedChildren.Value.TryGetValue(childName, out result);
+            }
+
+            return result;
+        }
+
         private void Seal()
         {
             if (this.IsSealed)
@@ -504,19 +527,12 @@ namespace Appercode.UI
             {
                 throw new InvalidOperationException("TypeMustImplementIAddChild");
             }
-            this.ApplyAutoAliasRules();
-            if (this.childName == null || this.childName == string.Empty)
+
+            if (String.IsNullOrEmpty(this.childName) == false)
             {
-                this.childName = this.GenerateChildName();
+                this.childName = String.Intern(this.childName);
             }
-            else
-            {
-                if (!this.IsChildNameValid(this.childName))
-                {
-                    throw new InvalidOperationException(string.Format("ChildName {0} NamePattern Reserved", this.childName));
-                }
-                this.childName = string.Intern(this.childName);
-            }
+
             lock (this.synchronized)
             {
                 for (int i = 0; i < this.PropertyValues.Count; i++)
@@ -527,14 +543,11 @@ namespace Appercode.UI
                     this.PropertyValues[i] = item;
                 }
             }
+
             this.@sealed = true;
-            if (this.childName != null && this.childName != string.Empty && this.frameworkTemplate != null)
+            if (this.frameworkTemplate != null)
             {
-                this.ChildIndex = StyleHelper.CreateChildIndexFromChildName(this.childName, this.frameworkTemplate);
-            }
-            for (FrameworkElementFactory j = this.firstChild; j != null; j = j.nextSibling)
-            {
-                if (this.frameworkTemplate != null)
+                for (var j = this.firstChild; j != null; j = j.nextSibling)
                 {
                     j.Seal(this.frameworkTemplate);
                 }
@@ -579,17 +592,6 @@ namespace Appercode.UI
                     this.PropertyValues[count] = item;
                 }
             }
-        }
-
-        private string GenerateChildName()
-        {
-            string str = string.Concat(FrameworkElementFactory.autoGenChildNamePrefix, FrameworkElementFactory.autoGenChildNamePostfix.ToString(CultureInfo.InvariantCulture));
-            ////Interlocked.Increment(ref FrameworkElementFactory.AutoGenChildNamePostfix);
-            return str;
-        }
-
-        private void ApplyAutoAliasRules()
-        {
         }
     }
 

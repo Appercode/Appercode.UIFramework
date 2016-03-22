@@ -538,6 +538,11 @@ namespace Appercode.UI.Controls
             }
         }
 
+        internal virtual FrameworkTemplate InternalTemplate
+        {
+            get { return null; }
+        }
+
         protected internal virtual IEnumerator LogicalChildren
         {
             get { return null; }
@@ -650,6 +655,16 @@ namespace Appercode.UI.Controls
         {
             return base.ContainsValue(dp)
                 || dp != StyleProperty && this.ReadValueFromStyle(dp) != DependencyProperty.UnsetValue;
+        }
+
+        /// <summary>
+        /// Retrieves the element that corresponds to the given <param name="childName" /> in this element's Template definition.
+        /// </summary>
+        /// <param name="childName">The name to find the matching element for.</param>
+        /// <returns>An element or null if no element was found.</returns>
+        protected internal DependencyObject GetTemplateChild(string childName)
+        {
+            return this.InternalTemplate?.VisualTree.GetNamedChild(childName);
         }
 
         protected internal void InvalidateMeasure()
