@@ -67,6 +67,7 @@
     <Compile Include="Controls\ContentPresenter.Abstract.cs" />
     <Compile Include="Controls\ContentPresenter.cs" />
     <Compile Include="Controls\Control.cs" />
+    <Compile Include="Controls\DatePicker.cs" />
     <Compile Include="Controls\DefinitionBase.cs" />
     <Compile Include="Controls\Grid.Abstract.cs" />
     <Compile Include="Controls\Grid.cs" />

@@ -278,7 +278,7 @@ namespace Appercode.UI.Controls
             this.NativeOnbackgroundChange();
         }
 
-        protected void OnTemplateChanged(ControlTemplate oldTemplate, ControlTemplate newTemplate)
+        protected virtual void OnTemplateChanged(ControlTemplate oldTemplate, ControlTemplate newTemplate)
         {
             if (newTemplate.TargetType != this.GetType())
             {
@@ -287,7 +287,7 @@ namespace Appercode.UI.Controls
 
             if (this.controlTemplateInstance != null)
             {
-                this.controlTemplateInstance.LayoutUpdated -= this.ControlTemplateInstance_LayoutUpdated;
+                this.controlTemplateInstance.LayoutUpdated -= this.OnTemplateInstanceLayoutUpdated;
                 this.RemoveControlTemplateInstance();
                 this.RemoveLogicalChild(this.controlTemplateInstance);
             }
@@ -295,7 +295,7 @@ namespace Appercode.UI.Controls
             if (newTemplate != null)
             {
                 this.controlTemplateInstance = (UIElement)newTemplate.LoadContent();
-                this.controlTemplateInstance.LayoutUpdated += this.ControlTemplateInstance_LayoutUpdated;
+                this.controlTemplateInstance.LayoutUpdated += this.OnTemplateInstanceLayoutUpdated;
                 this.AddLogicalChild(this.controlTemplateInstance);
                 this.AddControlTemplateInstance();
             }
@@ -309,7 +309,7 @@ namespace Appercode.UI.Controls
             this.OnLayoutUpdated();
         }
 
-        private void ControlTemplateInstance_LayoutUpdated(object sender, System.EventArgs e)
+        private void OnTemplateInstanceLayoutUpdated(object sender, EventArgs e)
         {
             if (this.Parent != null)
             {

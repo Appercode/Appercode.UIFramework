@@ -80,6 +80,8 @@
     <CodesignKey>iPhone Distribution</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controls\DatePicker.iOS.cs" />
+    <Compile Include="Controls\DatePicker.cs" />
     <Compile Include="Controls\FontWeight.cs" />
     <Compile Include="Controls\AppBarButton.iOS.cs" />
     <Compile Include="Controls\AppBarButton.cs" />
