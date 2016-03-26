@@ -641,8 +641,6 @@ namespace Appercode.UI.Controls
 
         private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            ////using (new PerformanceChecker(this, new object[] {sender, e}))
-            ////{
             if (e.NewItems != null)
             {
                 foreach (var item in e.NewItems)
@@ -663,8 +661,8 @@ namespace Appercode.UI.Controls
                 }
             }
 
+            this.Invalidate();
             this.OnLayoutUpdated();
-            ////}
         }
 
         private void Child_LayoutUpdated(object sender, EventArgs e)
