@@ -1,10 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 
 #if __IOS__
-using System;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 #else
@@ -149,56 +149,54 @@ namespace Appercode.UI.Controls
         {
             if (this.controlTemplateInstance != null)
             {
-                var isMeasureNotActual = !this.IsMeasureValid;
-
-                isMeasureNotActual |= isMeasureNotActual |= this.measuredFor == null || this.measuredFor.Value != availableSize;
-                //    || (availableSize.Height < this.measuredFor.Value.Height && this.measuredSize.Height > availableSize.Height)
-                //    || (availableSize.Width < this.measuredFor.Value.Width && this.measuredSize.Width > availableSize.Width));
-
-                if (!isMeasureNotActual)
+                var isMeasureActual = this.IsMeasureValid && this.measuredFor == availableSize;
+                if (isMeasureActual)
                 {
                     return this.measuredSize;
                 }
 
+                this.ApplyTemplate();
                 this.measuredFor = availableSize;
 
-                if (this.Visibility == Controls.Visibility.Collapsed)
+                if (this.Visibility == Visibility.Collapsed)
                 {
-                    return new System.Drawing.SizeF();
+                    return SizeF.Empty;
                 }
 
-                if (!double.IsNaN(this.Height))
+                var margin = this.Margin;
+                var padding = this.Padding;
+                if (this.ContainsValue(HeightProperty))
                 {
                     availableSize.Height = (nfloat)this.Height;
                 }
                 else
                 {
-                    availableSize.Height -= this.Margin.VerticalThicknessF() + this.Padding.VerticalThicknessF();
+                    availableSize.Height -= margin.VerticalThicknessF() + padding.VerticalThicknessF();
                 }
 
-                if (!double.IsNaN(this.Width))
+                if (this.ContainsValue(WidthProperty))
                 {
                     availableSize.Width = (nfloat)this.Width;
                 }
                 else
                 {
-                    availableSize.Width -= this.Margin.HorizontalThicknessF() + this.Padding.HorizontalThicknessF();
+                    availableSize.Width -= margin.HorizontalThicknessF() + padding.HorizontalThicknessF();
                 }
 
                 this.measuredSize = this.controlTemplateInstance.MeasureOverride(availableSize);
-                
+
                 if (!double.IsNaN(this.Height))
                 {
                     measuredSize.Height = (nfloat)this.Height;
                 }
+
                 if (!double.IsNaN(this.Width))
                 {
                     measuredSize.Width = (nfloat)this.Width;
                 }
 
-                this.measuredSize.Height += this.Margin.VerticalThicknessF() + this.Padding.VerticalThicknessF();
-                this.measuredSize.Width += this.Margin.HorizontalThicknessF() + this.Padding.HorizontalThicknessF();
-
+                this.measuredSize.Height += margin.VerticalThicknessF() + padding.VerticalThicknessF();
+                this.measuredSize.Width += margin.HorizontalThicknessF() + padding.HorizontalThicknessF();
                 this.measuredSizeCashe = this.measuredSize;
                 this.IsMeasureValid = true;
             }
@@ -284,7 +282,7 @@ namespace Appercode.UI.Controls
         {
             if (newTemplate.TargetType != this.GetType())
             {
-                throw new System.ArgumentException(string.Format("Invalid TargetType expected {0} got {1}", this.GetType(), newTemplate.TargetType));
+                throw new ArgumentException(string.Format("Invalid TargetType expected {0} got {1}", this.GetType(), newTemplate.TargetType));
             }
 
             if (this.controlTemplateInstance != null)
