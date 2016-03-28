@@ -20,9 +20,9 @@ namespace Appercode.UI.Controls
             base.NativeInit();
         }
 
-        partial void ApplyDate(DateTimeOffset value)
+        private static NSDate ConvertDate(DateTimeOffset value)
         {
-            this.pickerView?.NativePicker?.SetDate((NSDate)value.LocalDateTime.Date, false);
+            return (NSDate)value.LocalDateTime.Date;
         }
 
         partial void AddPickerView()
@@ -31,6 +31,29 @@ namespace Appercode.UI.Controls
             {
                 this.pickerView = new PickerView(this);
                 this.pickerPresenter.Content = pickerView;
+            }
+        }
+
+        partial void ApplyDate(DateTimeOffset value)
+        {
+            this.pickerView?.NativePicker?.SetDate(ConvertDate(value), false);
+        }
+
+        partial void ApplyMaxYear(DateTimeOffset value)
+        {
+            var nativePicker = this.pickerView?.NativePicker;
+            if (nativePicker != null)
+            {
+                nativePicker.MaximumDate = ConvertDate(value);
+            }
+        }
+
+        partial void ApplyMinYear(DateTimeOffset value)
+        {
+            var nativePicker = this.pickerView?.NativePicker;
+            if (nativePicker != null)
+            {
+                nativePicker.MinimumDate = ConvertDate(value);
             }
         }
 
@@ -84,9 +107,11 @@ namespace Appercode.UI.Controls
                     var nativePicker = new UIDatePicker
                     {
                         Locale = NSLocale.FromLocaleIdentifier(CultureInfo.CurrentUICulture.Name.Replace('-', '_')),
+                        MaximumDate = ConvertDate(parent.MaxYear),
+                        MinimumDate = ConvertDate(parent.MinYear),
                         Mode = UIDatePickerMode.Date
                     };
-                    nativePicker.SetDate((NSDate)this.parent.Date.LocalDateTime.Date, false);
+                    nativePicker.SetDate(ConvertDate(parent.Date), false);
                     nativePicker.ValueChanged += OnDateChanged;
                     this.NativeUIElement = nativePicker;
                 }

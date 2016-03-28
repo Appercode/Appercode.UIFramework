@@ -9,7 +9,13 @@ namespace Appercode.UI.Controls
         private const string ElementPresenter = "PART_Presenter";
 
         public static readonly DependencyProperty DateProperty = DependencyProperty.Register(
-            nameof(Date), typeof(DateTimeOffset), typeof(DatePicker), new PropertyMetadata(default(DateTimeOffset), OnDateChanged));
+            nameof(Date), typeof(DateTimeOffset), typeof(DatePicker), new PropertyMetadata(default(DateTimeOffset), OnDatePropertyChanged));
+
+        public static readonly DependencyProperty MaxYearProperty = DependencyProperty.Register(
+            nameof(MaxYear), typeof(DateTimeOffset), typeof(DatePicker), new PropertyMetadata(DateTimeOffset.MaxValue, OnDatePropertyChanged));
+
+        public static readonly DependencyProperty MinYearProperty = DependencyProperty.Register(
+            nameof(MinYear), typeof(DateTimeOffset), typeof(DatePicker), new PropertyMetadata(DateTimeOffset.MinValue, OnDatePropertyChanged));
 
         private static readonly ControlTemplate DefaultTemplate;
 
@@ -47,6 +53,18 @@ namespace Appercode.UI.Controls
         {
             get { return (DateTimeOffset)this.GetValue(DateProperty); }
             set { this.SetValue(DateProperty, value); }
+        }
+
+        public DateTimeOffset MaxYear
+        {
+            get { return (DateTimeOffset)this.GetValue(MaxYearProperty); }
+            set { this.SetValue(MaxYearProperty, value); }
+        }
+
+        public DateTimeOffset MinYear
+        {
+            get { return (DateTimeOffset)this.GetValue(MinYearProperty); }
+            set { this.SetValue(MinYearProperty, value); }
         }
 
         public override void OnApplyTemplate()
@@ -87,12 +105,24 @@ namespace Appercode.UI.Controls
             }
         }
 
-        private static void OnDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnDatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var datePicker = (DatePicker)d;
             if (e.NewValue is DateTimeOffset)
             {
-                datePicker.OnDateChanged((DateTimeOffset)e.NewValue);
+                var newValue = (DateTimeOffset)e.NewValue;
+                if (e.Property == DateProperty)
+                {
+                    datePicker.OnDateChanged(newValue);
+                }
+                else if (e.Property == MaxYearProperty)
+                {
+                    datePicker.OnMaxYearChanged(newValue);
+                }
+                else if (e.Property == MinYearProperty)
+                {
+                    datePicker.OnMinYearChanged(newValue);
+                }
             }
         }
 
@@ -102,6 +132,38 @@ namespace Appercode.UI.Controls
             if (this.mainButton != null)
             {
                 this.mainButton.Content = newValue.ToString("d");
+            }
+        }
+
+        private void OnMaxYearChanged(DateTimeOffset newValue)
+        {
+            if (newValue < this.MinYear)
+            {
+                this.MaxYear = this.MinYear;
+            }
+            else
+            {
+                this.ApplyMaxYear(newValue);
+                if (this.Date > newValue)
+                {
+                    this.Date = newValue;
+                }
+            }
+        }
+
+        private void OnMinYearChanged(DateTimeOffset newValue)
+        {
+            if (newValue > this.MaxYear)
+            {
+                this.MinYear = this.MaxYear;
+            }
+            else
+            {
+                this.ApplyMinYear(newValue);
+                if (this.Date < newValue)
+                {
+                    this.Date = newValue;
+                }
             }
         }
 
@@ -134,5 +196,9 @@ namespace Appercode.UI.Controls
         partial void AddPickerView();
 
         partial void ApplyDate(DateTimeOffset value);
+
+        partial void ApplyMaxYear(DateTimeOffset value);
+
+        partial void ApplyMinYear(DateTimeOffset value);
     }
 }
