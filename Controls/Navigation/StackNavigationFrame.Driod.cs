@@ -71,23 +71,24 @@ namespace Appercode.UI.Controls.Navigation
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            RootLayout rootLayout = new RootLayout(this);
-
-            FrameLayout frgmCont = new FrameLayout(this);
-            frgmCont.Id = this.fragmentPageFrameLayoutResourceId;
+            var rootLayout = new RootLayout(this);
+            var frgmCont = new FrameLayout(this) { Id = this.fragmentPageFrameLayoutResourceId };
             rootLayout.AddView(frgmCont, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-            rootLayout.SizeChanged += (s, e) =>
-            {
-                this.PageHeight = rootLayout.Height;
-                this.PageWidth = rootLayout.Width;
-
-                var dpiPageSize = new RectangleF(
-                    0.0f, 0.0f, ScreenProperties.ConvertPixelsToDPI(this.PageWidth), ScreenProperties.ConvertPixelsToDPI(this.PageHeight));
-                AppercodeVisualRoot.Instance.Arrange(dpiPageSize);
-            };
+            rootLayout.SizeChanged +=
+                (s, e) =>
+                {
+                    this.PageHeight = rootLayout.Height;
+                    this.PageWidth = rootLayout.Width;
+                    var dpiPageSize = new RectangleF(
+                        0.0f, 0.0f, ScreenProperties.ConvertPixelsToDPI(this.PageWidth), ScreenProperties.ConvertPixelsToDPI(this.PageHeight));
+                    AppercodeVisualRoot.Instance.Arrange(dpiPageSize);
+                };
 
             this.SetContentView(rootLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-            this.Navigate(this.StartPage, null, NavigationType.Default);
+            if (this.StartPage != null)
+            {
+                this.Navigate(this.StartPage, null, NavigationType.Default);
+            }
         }
 
         private void NativeShowPage(AppercodePage page, NavigationMode mode, NavigationType navigationType)
