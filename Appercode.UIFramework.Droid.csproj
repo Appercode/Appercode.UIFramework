@@ -61,10 +61,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\AppBarButton.cs" />
     <Compile Include="Controls\AppercodePage.cs" />
     <Compile Include="Controls\AppercodePage.Droid.cs" />
     <Compile Include="Controls\AppercodeVisualRoot.cs" />
     <Compile Include="Controls\Base\GridSizeCollectionBase.cs" />
+    <Compile Include="Controls\BitmapIcon.cs" />
     <Compile Include="Controls\Border.cs" />
     <Compile Include="Controls\CommandBar.cs" />
     <Compile Include="Controls\CommandBarElementCollection.cs" />
@@ -144,8 +146,10 @@
     </Compile>
     <Compile Include="Controls\Popups\MessageDialog.Droid.cs" />
     <Compile Include="Controls\Popups\UICommand.cs" />
+    <Compile Include="Controls\Primitives\IconElement.cs" />
     <Compile Include="Controls\Primitives\PickerBase.cs" />
     <Compile Include="Controls\Primitives\PickerBase.Droid.cs" />
+    <Compile Include="Controls\ProgressRing.cs" />
     <Compile Include="Controls\RangePicker.cs" />
     <Compile Include="Controls\TextChangedEventHandler.cs" />
     <Compile Include="Controls\RangePicker.Droid.cs" />
