@@ -63,12 +63,15 @@ namespace Appercode.UI.Controls
         protected override void NativeArrange(CGRect finalRect)
         {
             base.NativeArrange(finalRect);
-            if (this.templateInstance.NativeUIElement.Superview == null)
+            if (this.templateInstance != null)
             {
-                this.NativeUIElement.AddSubview(this.templateInstance.NativeUIElement);
-            }
+                if (this.templateInstance.NativeUIElement.Superview == null)
+                {
+                    this.NativeUIElement.AddSubview(this.templateInstance.NativeUIElement);
+                }
 
-            this.templateInstance.Arrange(new CGRect(CGPoint.Empty, this.RenderSize));
+                this.templateInstance.Arrange(new CGRect(CGPoint.Empty, this.RenderSize));
+            }
         }
 
         private void NativeTemplateUpdate(UIElement oldValue, UIElement newValue)
@@ -79,7 +82,7 @@ namespace Appercode.UI.Controls
                 {
                     oldValue.NativeUIElement.RemoveFromSuperview();
                 }
-                newValue.NativeUIElement.Frame = this.NativeUIElement.Frame;
+
                 this.NativeUIElement.AddSubview(newValue.NativeUIElement);
             }
         }

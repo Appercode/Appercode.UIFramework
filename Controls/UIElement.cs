@@ -465,7 +465,7 @@ namespace Appercode.UI.Controls
         }
 
         /// <summary>
-        /// Not used
+        /// Gets or sets the template child of the <see cref="UIElement" />.
         /// </summary>
         public UIElement TemplateChild { get; set; }
 

@@ -1,6 +1,4 @@
 ﻿using Appercode.UI.Data;
-using Appercode.UI.Internals;
-using Appercode.UI.Markup;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -48,7 +46,7 @@ namespace Appercode.UI.Controls
         static ContentPresenter()
         {
             ContentTemplateProperty = ContentControl.ContentTemplateProperty.AddOwner(
-                typeof(ContentPresenter), new PropertyMetadata(new DefaultTemplate(), OnContentTemplateChanged));
+                typeof(ContentPresenter), new PropertyMetadata(OnContentTemplateChanged));
             ContentProperty = ContentControl.ContentProperty.AddOwner(typeof(ContentPresenter), new PropertyMetadata(OnContentChanged));
             ContentTemplateSelectorProperty = ContentControl.ContentTemplateSelectorProperty.AddOwner(
                 typeof(ContentPresenter), new PropertyMetadata(OnContentTemplateSelectorChanged));
@@ -57,11 +55,7 @@ namespace Appercode.UI.Controls
             TemplateProperty = DependencyProperty.Register(
                 nameof(Template), typeof(DataTemplate), typeof(ContentPresenter), new PropertyMetadata(OnTemplateChanged));
 
-            // TODO: Check if current implementation of UIElementContentTemplate works
-            // UIElementContentTemplate = new UseContentTemplate();
-            var frameworkElementFactory = new FrameworkElementFactory(typeof(ContentControl));
-            frameworkElementFactory.SetValue(ContentControl.ContentProperty, new TemplateBindingExtension(ContentProperty));
-            UIElementContentTemplate = new DataTemplate { VisualTree = frameworkElementFactory };
+            UIElementContentTemplate = new UseContentTemplate();
         }
 
         /// <summary>
@@ -149,12 +143,17 @@ namespace Appercode.UI.Controls
                 var oldValue = this.templateInstance;
                 if (oldValue != null)
                 {
+                    this.templateInstance.LayoutUpdated -= this.OnTemplateInstanceLayoutUpdated;
                     LogicalTreeHelper.RemoveLogicalChild(this, oldValue);
                 }
 
                 this.templateInstance = value;
-                this.AddLogicalChild(this.templateInstance);
-                this.NativeTemplateUpdate(oldValue, value);
+                if (value != null)
+                {
+                    this.AddLogicalChild(value);
+                    value.LayoutUpdated += this.OnTemplateInstanceLayoutUpdated;
+                    this.NativeTemplateUpdate(oldValue, value);
+                }
             }
         }
 
@@ -302,7 +301,8 @@ namespace Appercode.UI.Controls
             if (newValue != null)
             {
                 var contentPresenter = (ContentPresenter)d;
-                contentPresenter.TemplateInstance = (UIElement)newValue.LoadContent();
+                contentPresenter.TemplateInstance =
+                    newValue.CanBuildVisualTree ? contentPresenter.TemplateChild : (UIElement)newValue.LoadContent();
             }
         }
 
@@ -323,6 +323,7 @@ namespace Appercode.UI.Controls
                 if (newTemplate == UIElementContentTemplate)
                 {
                     this.ClearValue(DataContextProperty);
+                    UIElementContentTemplate.BuildVisualTree(this);
                 }
                 else
                 {
@@ -369,6 +370,11 @@ namespace Appercode.UI.Controls
             }
 
             this.DataContext = null;
+        }
+
+        private void OnTemplateInstanceLayoutUpdated(object sender, EventArgs e)
+        {
+            this.InvalidateMeasure();
         }
 
         private DataTemplate SelectTemplateForString(string s)
@@ -419,22 +425,13 @@ namespace Appercode.UI.Controls
         {
             public DefaultTemplate()
             {
-                this.CanBuildVisualTree = true;
                 var textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                 textBlockFactory.SetBinding(TextBlock.TextProperty, new Binding());
                 this.VisualTree = textBlockFactory;
                 this.Seal();
             }
-
-            // TODO: Check if this override can be safely removed
-            internal override bool BuildVisualTree(UIElement container)
-            {
-                this.VisualTree.SetValue(TextBlock.TextProperty, new TemplateBindingExtension(ContentProperty));
-                return true;
-            }
         }
 
-        // TODO: Check if this class can be safely removed
         private class UseContentTemplate : DataTemplate
         {
             public UseContentTemplate()
@@ -445,14 +442,25 @@ namespace Appercode.UI.Controls
 
             internal override bool BuildVisualTree(UIElement container)
             {
-                object content = ((ContentPresenter)container).Content;
-                UIElement uiElement = content as UIElement;
-                if (uiElement == null)
+                var content = ((ContentPresenter)container).Content;
+                var contentElement = content as UIElement;
+                if (contentElement == null)
                 {
-                    TypeConverter converter = TypeDescriptor.GetConverter(content.GetType());
-                    uiElement = (UIElement)converter.ConvertTo(content, typeof(UIElement));
+                    var converter = TypeDescriptor.GetConverter(content.GetType());
+                    contentElement = (UIElement)converter.ConvertTo(content, typeof(UIElement));
                 }
-                StyleHelper.AddCustomTemplateRoot(container, uiElement);
+
+                if (contentElement != null)
+                {
+                    var parent = LogicalTreeHelper.GetParent(contentElement) as UIElement;
+                    if (parent != null)
+                    {
+                        parent.TemplateChild = null;
+                        parent.InvalidateMeasure();
+                    }
+                }
+
+                container.TemplateChild = contentElement;
                 return true;
             }
         }
