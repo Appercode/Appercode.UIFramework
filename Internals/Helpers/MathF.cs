@@ -25,7 +25,7 @@ namespace Appercode.UI
             }
 
             var delta = value1 - value2;
-            return delta < MinimumDelta && delta > -MinimumDelta;
+            return delta > MinimumDelta || delta < -MinimumDelta;
         }
 
         public static nfloat GetNotNaN(this double value)
