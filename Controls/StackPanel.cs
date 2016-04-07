@@ -345,8 +345,11 @@ namespace Appercode.UI.Controls
         public override void Arrange(RectangleF finalRect)
         {
             var orientation = this.Orientation;
-            if ((this.ActualHeight != finalRect.Height && orientation == Orientation.Horizontal)
-                || (this.ActualWidth != finalRect.Width && orientation == Orientation.Vertical))
+            var margin = this.Margin;
+            if ((orientation == Orientation.Horizontal &&
+                    MathF.AreNotClose((nfloat)this.ActualHeight + margin.VerticalThicknessF(), finalRect.Height))
+                || (orientation == Orientation.Vertical
+                    && MathF.AreNotClose((nfloat)this.ActualWidth + margin.HorizontalThicknessF(), finalRect.Width)))
             {
                 this.needsResizeChilds.Clear();
                 foreach (var child in this.Children)
