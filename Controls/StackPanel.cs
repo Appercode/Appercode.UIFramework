@@ -95,12 +95,17 @@ namespace Appercode.UI.Controls
                     var child = children[i];
                     if (child.NativeUIElement != null)
                     {
-                        SizeF needSize;
+                        var needMeasure = child.measuredFor == null || this.needsResizeChilds.Contains(child);
+                        var needSize = child.measuredSize; 
                         switch (this.Orientation)
                         {
                             case Orientation.Vertical:
                                 var actualWidth = (nfloat)this.ActualWidth;
-                                needSize = child.MeasureOverride(new SizeF(actualWidth, nfloat.PositiveInfinity));
+                                if (needMeasure)
+                                {
+                                    needSize = child.MeasureOverride(new SizeF(actualWidth, nfloat.PositiveInfinity));
+                                }
+
                                 var left = default(nfloat);
                                 switch (child.HorizontalAlignment)
                                 {
@@ -134,7 +139,11 @@ namespace Appercode.UI.Controls
                                 break;
                             case Orientation.Horizontal:
                                 var actualHeight = (nfloat)this.ActualHeight;
-                                needSize = child.MeasureOverride(new SizeF(nfloat.PositiveInfinity, actualHeight));
+                                if (needMeasure)
+                                {
+                                    needSize = child.MeasureOverride(new SizeF(nfloat.PositiveInfinity, actualHeight));
+                                }
+
                                 var top = default(nfloat);
                                 switch (child.VerticalAlignment)
                                 {
