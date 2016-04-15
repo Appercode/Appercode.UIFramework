@@ -24,9 +24,6 @@ namespace Appercode.UI.Controls
                     ((ItemsControl)d).OnItemsSourceChanged(e.OldValue, e.NewValue);
                 }));
 
-        public static readonly DependencyProperty ItemsProperty =
-            DependencyProperty.Register("Items", typeof(ItemCollection), typeof(ItemsControl), new PropertyMetadata(null));
-
         public static readonly DependencyProperty ItemsPanelProperty =
             DependencyProperty.Register("ItemsPanel", typeof(ItemsPanelTemplate), typeof(ItemsControl), new PropertyMetadata(new ItemsPanelTemplate() { VisualTree = new FrameworkElementFactory(typeof(StackPanel)) },
                 (d, e) =>
@@ -48,7 +45,8 @@ namespace Appercode.UI.Controls
             DependencyProperty.Register(nameof(ItemTemplateSelector), typeof(DataTemplateSelector), typeof(ItemsControl), new PropertyMetadata(OnItemTemplatePropertyChanged));
 
         protected Panel panel;
-        private readonly Lazy<ItemContainerGenerator> itemContainerGenerator;
+        private ItemContainerGenerator itemContainerGenerator;
+        private ItemCollection items;
 
         private WeakEventHandler<NotifyCollectionChangedEventArgs> itemsSourceCollectionChangedHandler;
 
@@ -57,20 +55,7 @@ namespace Appercode.UI.Controls
 
         public ItemsControl()
         {
-            this.itemContainerGenerator = new Lazy<ItemContainerGenerator>(this.CreateItemContainerGenerator);
             this.itemsSourceCollectionChangedHandler = new WeakEventHandler<NotifyCollectionChangedEventArgs>(this.ItemsSourceCollectionChanged);
-            this.Items.CollectionChanged += (s, e) =>
-                {
-                    if (!this.isItemsCollectionChangeFromCode)
-                    {
-                        if (this.ItemsSource != null)
-                        {
-                            throw new InvalidOperationException("ItemsCollectionMustBeEmptyBeforeUsingItemsSource");
-                        }
-                        this.itemsWasSetByUser = true;
-                        this.UpdateItems(e);
-                    }
-                };
             this.GeneratePanel();
         }
 
@@ -96,13 +81,12 @@ namespace Appercode.UI.Controls
         {
             get
             {
-                var items = (ItemCollection)this.GetValue(ItemsControl.ItemsProperty);
-                if (items == null)
+                if (this.items == null)
                 {
-                    items = new ItemCollection();
-                    this.SetValue(ItemsControl.ItemsProperty, items);
+                    this.InitializeItems();
                 }
-                return items;
+
+                return this.items;
             }
         }
 
@@ -138,7 +122,15 @@ namespace Appercode.UI.Controls
         /// </summary>
         public ItemContainerGenerator ItemContainerGenerator
         {
-            get { return this.itemContainerGenerator.Value; }
+            get
+            {
+                if (this.itemContainerGenerator == null)
+                {
+                    this.InitializeItems();
+                }
+
+                return this.itemContainerGenerator;
+            }
         }
 
         protected internal override IEnumerator LogicalChildren
@@ -183,7 +175,7 @@ namespace Appercode.UI.Controls
         {
             var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
             contentPresenterFactory.SetBinding(ContentPresenter.ContentProperty, new Binding());
-            return new ItemContainerGenerator(contentPresenterFactory, this.Items);
+            return new ItemContainerGenerator(contentPresenterFactory, this.items);
         }
 
         protected virtual void GeneratePanel()
@@ -371,6 +363,27 @@ namespace Appercode.UI.Controls
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             this.UpdateItems(e);
+        }
+
+        private void InitializeItems()
+        {
+            this.items = new ItemCollection();
+            this.items.CollectionChanged += this.OnItemsCollectionChanged;
+            this.itemContainerGenerator = this.CreateItemContainerGenerator();
+        }
+
+        private void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (this.isItemsCollectionChangeFromCode == false)
+            {
+                if (this.ItemsSource != null)
+                {
+                    throw new InvalidOperationException("ItemsCollection must be empty before using of ItemsSource");
+                }
+
+                this.itemsWasSetByUser = true;
+                this.UpdateItems(e);
+            }
         }
     }
 }
