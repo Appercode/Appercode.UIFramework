@@ -362,7 +362,7 @@ namespace Appercode.UI.Controls
 
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.UpdateItems(e);
+            Dispatcher.Invoke((Action<NotifyCollectionChangedEventArgs>)this.UpdateItems, e);
         }
 
         private void InitializeItems()
