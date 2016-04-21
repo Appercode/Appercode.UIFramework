@@ -1,3 +1,4 @@
+using Android.App;
 using Android.Content;
 using Android.Views;
 using Appercode.UI.Controls.NativeControl.Wrapers;
@@ -11,21 +12,13 @@ namespace Appercode.UI.Controls
     public partial class UIElement
     {
         private Visibility nativeVisibility;
-        public static Android.App.Activity StaticContext;
+        public static Activity StaticContext;
 
         public virtual View NativeUIElement { get; protected internal set; }
-        public Context Context
-        {
-            get
-            {
-                return UIElement.StaticContext;
-            }
-        }
 
-        internal virtual bool IsFocused
-        {
-            get { return false; }
-        }
+        public Context Context => StaticContext;
+
+        internal virtual bool IsFocused => false;
 
         protected virtual double NativeWidth
         {
@@ -75,7 +68,7 @@ namespace Appercode.UI.Controls
 
                 if (this.NativeUIElement != null)
                 {
-                    if (value == Controls.Visibility.Collapsed)
+                    if (value == Visibility.Collapsed)
                     {
                         this.NativeUIElement.Visibility = ViewStates.Gone;
                     }
@@ -89,22 +82,19 @@ namespace Appercode.UI.Controls
 
         protected virtual SizeF NativeMeasureOverride(SizeF availableSize)
         {
-            SizeF absoluteAvailableSize = new SizeF();
-            absoluteAvailableSize.Width = ScreenProperties.ConvertDPIToPixels(availableSize.Width);
-            absoluteAvailableSize.Height = ScreenProperties.ConvertDPIToPixels(availableSize.Height);
+            var absoluteAvailableSize = new SizeF(
+                ScreenProperties.ConvertDPIToPixels(availableSize.Width),
+                ScreenProperties.ConvertDPIToPixels(availableSize.Height));
+            var margin = this.Margin;
 
-            Thickness absoluteMargin = new Thickness();
-            absoluteMargin.Left = (int)ScreenProperties.ConvertDPIToPixels((float)this.Margin.Left);
-            absoluteMargin.Top = (int)ScreenProperties.ConvertDPIToPixels((float)this.Margin.Top);
-            absoluteMargin.Right = (int)ScreenProperties.ConvertDPIToPixels((float)this.Margin.Right);
-            absoluteMargin.Bottom = (int)ScreenProperties.ConvertDPIToPixels((float)this.Margin.Bottom);
-
-            int measuredWidth;
-            int measuredHeight;
+            var absoluteMargin = new Thickness(
+                (int)ScreenProperties.ConvertDPIToPixels(margin.LeftF()),
+                (int)ScreenProperties.ConvertDPIToPixels(margin.TopF()),
+                (int)ScreenProperties.ConvertDPIToPixels(margin.RightF()),
+                (int)ScreenProperties.ConvertDPIToPixels(margin.BottomF()));
 
             int availableWidth;
             int availableHeight;
-
             // TODO: Unclear behavior. Incorrect on API 18
             if (double.IsPositiveInfinity(absoluteAvailableSize.Width))
             {
@@ -112,7 +102,7 @@ namespace Appercode.UI.Controls
             }
             else
             {
-                availableWidth = (int)(absoluteAvailableSize.Width - absoluteMargin.Left - absoluteMargin.Right);
+                availableWidth = (int)(absoluteAvailableSize.Width - absoluteMargin.HorizontalThicknessF());
             }
             if (availableWidth < 0)
             {
@@ -125,63 +115,67 @@ namespace Appercode.UI.Controls
             }
             else
             {
-                availableHeight = (int)(absoluteAvailableSize.Height - absoluteMargin.Top - absoluteMargin.Bottom);
+                availableHeight = (int)(absoluteAvailableSize.Height - absoluteMargin.VerticalThicknessF());
             }
             if (availableHeight < 0)
             {
                 availableHeight = 0;
             }
 
+            int measuredWidth;
+            int measuredHeight;
             switch (this.NativeUIElement.LayoutParameters.Width)
             {
                 case ViewGroup.LayoutParams.WrapContent:
-                    measuredWidth = Android.Views.View.MeasureSpec.MakeMeasureSpec(availableWidth, MeasureSpecMode.AtMost);
+                    measuredWidth = View.MeasureSpec.MakeMeasureSpec(availableWidth, MeasureSpecMode.AtMost);
                     break;
-                case ViewGroup.LayoutParams.FillParent:
-                    measuredWidth = Android.Views.View.MeasureSpec.MakeMeasureSpec(availableWidth, MeasureSpecMode.Exactly);
+                case ViewGroup.LayoutParams.MatchParent:
+                    measuredWidth = View.MeasureSpec.MakeMeasureSpec(availableWidth, MeasureSpecMode.Exactly);
                     break;
                 default:
-                    measuredWidth = Android.Views.View.MeasureSpec.MakeMeasureSpec(availableWidth, MeasureSpecMode.Exactly);
+                    measuredWidth = View.MeasureSpec.MakeMeasureSpec(availableWidth, MeasureSpecMode.Exactly);
                     break;
             }
             switch (this.NativeUIElement.LayoutParameters.Height)
             {
                 case ViewGroup.LayoutParams.WrapContent:
-                    measuredHeight = Android.Views.View.MeasureSpec.MakeMeasureSpec(availableHeight, MeasureSpecMode.AtMost);
+                    measuredHeight = View.MeasureSpec.MakeMeasureSpec(availableHeight, MeasureSpecMode.AtMost);
                     break;
-                case ViewGroup.LayoutParams.FillParent:
-                    measuredHeight = Android.Views.View.MeasureSpec.MakeMeasureSpec(availableHeight, MeasureSpecMode.Exactly);
+                case ViewGroup.LayoutParams.MatchParent:
+                    measuredHeight = View.MeasureSpec.MakeMeasureSpec(availableHeight, MeasureSpecMode.Exactly);
                     break;
                 default:
-                    measuredHeight = Android.Views.View.MeasureSpec.MakeMeasureSpec(availableHeight, MeasureSpecMode.Exactly);
+                    measuredHeight = View.MeasureSpec.MakeMeasureSpec(availableHeight, MeasureSpecMode.Exactly);
                     break;
             }
 
             this.NativeUIElement.Measure(measuredWidth, measuredHeight);
 
-            SizeF absoluteMeasuredSize = new SizeF();
-            absoluteMeasuredSize.Width = this.NativeUIElement.MeasuredWidth + (float)absoluteMargin.Left + (float)absoluteMargin.Right;
-            absoluteMeasuredSize.Height = this.NativeUIElement.MeasuredHeight + (float)absoluteMargin.Top + (float)absoluteMargin.Bottom;
+            var absoluteMeasuredSize = new SizeF(
+                this.NativeUIElement.MeasuredWidth + absoluteMargin.HorizontalThicknessF(),
+                this.NativeUIElement.MeasuredHeight + absoluteMargin.VerticalThicknessF());
 
-            SizeF dpiMeasuredSize = new SizeF();
-            dpiMeasuredSize.Width = Math.Min(ScreenProperties.ConvertPixelsToDPI(absoluteMeasuredSize.Width), availableSize.Width);
-            dpiMeasuredSize.Height = Math.Min(ScreenProperties.ConvertPixelsToDPI(absoluteMeasuredSize.Height), availableSize.Height);
+            var dpiMeasuredSize = new SizeF(
+                Math.Min(ScreenProperties.ConvertPixelsToDPI(absoluteMeasuredSize.Width), availableSize.Width),
+                Math.Min(ScreenProperties.ConvertPixelsToDPI(absoluteMeasuredSize.Height), availableSize.Height));
 
             return dpiMeasuredSize;
         }
 
         protected virtual void NativeArrange(RectangleF finalRect)
         {
-            RectangleF newFinalRect = new RectangleF((float)finalRect.X + (float)this.Margin.Left,
-                                                     (float)finalRect.Y + (float)this.Margin.Top,
-                                                     (float)Math.Max(0, finalRect.Width - this.Margin.Left - this.Margin.Right),
-                                                     (float)Math.Max(0, finalRect.Height - this.Margin.Top - this.Margin.Bottom));
+            var margin = this.Margin;
+            var newFinalRect = new RectangleF(
+                finalRect.X + margin.LeftF(),
+                finalRect.Y + margin.TopF(),
+                Math.Max(0, finalRect.Width - margin.HorizontalThicknessF()),
+                Math.Max(0, finalRect.Height - margin.VerticalThicknessF()));
 
-            RectangleF absoluteNewFinalRect = new RectangleF();
-            absoluteNewFinalRect.X = ScreenProperties.ConvertDPIToPixels(newFinalRect.X);
-            absoluteNewFinalRect.Y = ScreenProperties.ConvertDPIToPixels(newFinalRect.Y);
-            absoluteNewFinalRect.Width = ScreenProperties.ConvertDPIToPixels(newFinalRect.Width);
-            absoluteNewFinalRect.Height = ScreenProperties.ConvertDPIToPixels(newFinalRect.Height);
+            var absoluteNewFinalRect = new RectangleF(
+                ScreenProperties.ConvertDPIToPixels(newFinalRect.X),
+                ScreenProperties.ConvertDPIToPixels(newFinalRect.Y),
+                ScreenProperties.ConvertDPIToPixels(newFinalRect.Width),
+                ScreenProperties.ConvertDPIToPixels(newFinalRect.Height));
 
             //int newWidth = Android.Views.View.MeasureSpec.MakeMeasureSpec((int)(absoluteNewFinalRect.Right - absoluteNewFinalRect.Left), MeasureSpecMode.Exactly);
             //int newHeight = Android.Views.View.MeasureSpec.MakeMeasureSpec((int)(absoluteNewFinalRect.Bottom - absoluteNewFinalRect.Top), MeasureSpecMode.Exactly);

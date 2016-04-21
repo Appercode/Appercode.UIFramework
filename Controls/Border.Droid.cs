@@ -1,22 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Media;
-using Android.App;
-using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
-using Appercode.UI.Controls.NativeControl;
-using Appercode.UI.Controls.NativeControl.Wrapers;
 using Appercode.UI.Device;
+using System;
+using System.Drawing;
+using System.Windows;
+using System.Windows.Media;
 using Color = Android.Graphics.Color;
 
 namespace Appercode.UI.Controls
@@ -148,10 +138,9 @@ namespace Appercode.UI.Controls
 
         protected ViewGroup.LayoutParams CreateLayoutParams(UIElement element)
         {
-            var layoutParams = new ViewGroup.LayoutParams(0, 0);
-            layoutParams.Width = double.IsNaN(element.Width) ? ViewGroup.LayoutParams.FillParent : (int)element.Width;
-            layoutParams.Height = double.IsNaN(element.Height) ? ViewGroup.LayoutParams.FillParent : (int)element.Height;
-            return layoutParams;
+            return new ViewGroup.LayoutParams(
+                element.ContainsValue(WidthProperty) ? (int)element.Width : ViewGroup.LayoutParams.MatchParent,
+                element.ContainsValue(HeightProperty) ? (int)element.Height : ViewGroup.LayoutParams.MatchParent);
         }
 
         private void ApplyNativeContent(UIElement newContent)
@@ -202,9 +191,9 @@ namespace Appercode.UI.Controls
             }
         }
 
-        private void NativeArrangeContent(System.Drawing.RectangleF rectangleF)
+        private void NativeArrangeContent(RectangleF rectangleF)
         {
-            ((UIElement)this.Child).Arrange(rectangleF);
+            this.Child.Arrange(rectangleF);
         }
 
         private Drawable CreateNativeBorder(Brush background, Brush borderBrush, Thickness borderThickness,
@@ -284,6 +273,7 @@ namespace Appercode.UI.Controls
         private float[] cornerRadiusArray;
         private Thickness borderThickness;
         private bool noChild;
+
         public CustomShapeDrawable(Shape s, Paint background, Paint border, float[] cornerRadiusArray, Thickness borderThickness, bool noChild = false)
             : base(s)
         {

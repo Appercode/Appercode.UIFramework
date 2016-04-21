@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
 using Appercode.UI.Controls.NativeControl.Wrapers;
+using System;
 
 namespace Appercode.UI.Controls.NativeControl
 {
@@ -34,16 +26,19 @@ namespace Appercode.UI.Controls.NativeControl
                 {
                     this.RemoveAllViews();
                     this.childView = value;
-                    this.AddView(value, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent));
+                    this.AddView(value, new LayoutParams(LayoutParams.WrapContent, LayoutParams.WrapContent));
                 }
             }
         }
+
         public View AdditionalView { get; set; }
 
         public GravityFlags ChildGravity { get; set; }
+
         public GravityFlags AdditionalChildGravity { get; set; }
 
         public LayoutParams ChildLayoutParams { get; set; }
+
         public LayoutParams AdditionalChildLyaoutParams { get; set; }
 
         protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
@@ -63,8 +58,9 @@ namespace Appercode.UI.Controls.NativeControl
 
                     if (this.AdditionalView != null)
                     {
-                        this.AdditionalView.Measure(Android.Views.View.MeasureSpec.MakeMeasureSpec(right - left, MeasureSpecMode.Exactly),
-                                                Android.Views.View.MeasureSpec.MakeMeasureSpec(bottom - top, MeasureSpecMode.Exactly));
+                        this.AdditionalView.Measure(
+                            MeasureSpec.MakeMeasureSpec(right - left, MeasureSpecMode.Exactly),
+                            MeasureSpec.MakeMeasureSpec(bottom - top, MeasureSpecMode.Exactly));
                         switch (this.AdditionalChildGravity & GravityFlags.HorizontalGravityMask)
                         {
                             case GravityFlags.NoGravity:
@@ -115,8 +111,9 @@ namespace Appercode.UI.Controls.NativeControl
                         }
                         this.AdditionalView.Layout(tempChildLeft, tempChildTop, tempChildRight, tempChildBottom);
 
-                        this.ChildView.Measure(Android.Views.View.MeasureSpec.MakeMeasureSpec(additionalChildRight - additionalChildLeft, MeasureSpecMode.Exactly),
-                                      Android.Views.View.MeasureSpec.MakeMeasureSpec(additionalChildBottom - additionalChildTop, MeasureSpecMode.Exactly));
+                        this.ChildView.Measure(
+                            MeasureSpec.MakeMeasureSpec(additionalChildRight - additionalChildLeft, MeasureSpecMode.Exactly),
+                            MeasureSpec.MakeMeasureSpec(additionalChildBottom - additionalChildTop, MeasureSpecMode.Exactly));
                     }
                     else
                     {
@@ -130,14 +127,14 @@ namespace Appercode.UI.Controls.NativeControl
 
                         if (this.ChildLayoutParams != null)
                         {
-                            if (this.ChildLayoutParams.Width != LayoutParams.FillParent
+                            if (this.ChildLayoutParams.Width != LayoutParams.MatchParent
                                 && this.ChildLayoutParams.Width != LayoutParams.WrapContent
                                 && this.ChildLayoutParams.Width < tempChildRight - tempChildLeft)
                             {
                                 requaredWidth = this.ChildLayoutParams.Width;
                             }
 
-                            if (this.ChildLayoutParams.Height != LayoutParams.FillParent
+                            if (this.ChildLayoutParams.Height != LayoutParams.MatchParent
                                 && this.ChildLayoutParams.Height != LayoutParams.WrapContent
                                 && this.ChildLayoutParams.Height < tempChildBottom - tempChildTop)
                             {
@@ -145,8 +142,9 @@ namespace Appercode.UI.Controls.NativeControl
                             }
                         }
 
-                        this.ChildView.Measure(Android.Views.View.MeasureSpec.MakeMeasureSpec(requaredWidth, MeasureSpecMode.Exactly),
-                                      Android.Views.View.MeasureSpec.MakeMeasureSpec(requaredHeight, MeasureSpecMode.Exactly));
+                        this.ChildView.Measure(
+                            MeasureSpec.MakeMeasureSpec(requaredWidth, MeasureSpecMode.Exactly),
+                            MeasureSpec.MakeMeasureSpec(requaredHeight, MeasureSpecMode.Exactly));
                     }
 
                     switch (this.ChildGravity & GravityFlags.HorizontalGravityMask)

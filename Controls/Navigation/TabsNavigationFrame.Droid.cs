@@ -3,7 +3,6 @@ using Android.Content.PM;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
-using Android.Support.V4.View;
 using Android.Views;
 using Android.Widget;
 using Appercode.UI.Controls.Navigation.Primitives;
@@ -86,10 +85,10 @@ namespace Appercode.UI.Controls.Navigation
 
             this.pagerPage.ViewPager.PageSelected += Pager_PageSelected;
 
-            rootLayout.AddView(this.pagerPage.ViewPager, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.FillParent));
-            rootLayout.AddView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.FillParent));
+            rootLayout.AddView(this.pagerPage.ViewPager, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+            rootLayout.AddView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
-            this.SetContentView(rootLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.FillParent));
+            this.SetContentView(rootLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
         }
 
         private void ViewPagerLayotChange(object sender, View.LayoutChangeEventArgs e)
@@ -191,10 +190,8 @@ namespace Appercode.UI.Controls.Navigation
             this.visualRoot.Child = page;
 
             frameLayout.Visibility = ViewStates.Visible;
-            Android.App.FragmentTransaction transaction = this.FragmentManager.BeginTransaction();
-
+            var transaction = this.FragmentManager.BeginTransaction();
             transaction.SetCustomAnimations(Resource.Animation.fadein, Resource.Animation.fadeout, Resource.Animation.fadein, Resource.Animation.fadeout);
-
             transaction.Replace(this.fragmentPageFrameLayoutResourceId, page.NativeFragment);
 
             page.NativeFragment.Create += (s, e) =>
@@ -212,6 +209,7 @@ namespace Appercode.UI.Controls.Navigation
 
             transaction.Commit();
         }
+
         private void NativeBackToTabs()
         {
             this.backStack.Pop();
@@ -219,7 +217,7 @@ namespace Appercode.UI.Controls.Navigation
 
             this.ChangeActionBarNavigationMode(ActionBarNavigationMode.Tabs);
 
-            Android.App.FragmentTransaction transaction = this.FragmentManager.BeginTransaction();
+            var transaction = this.FragmentManager.BeginTransaction();
             transaction.SetCustomAnimations(Resource.Animation.fadein, Resource.Animation.fadeout, Resource.Animation.fadein, Resource.Animation.fadeout);
             transaction.Remove(this.CurrentPage.NativeFragment);
 
@@ -265,10 +263,8 @@ namespace Appercode.UI.Controls.Navigation
             this.PageHeight = rootLayout.Height - rootLayout.PaddingTop - marginTop;
             this.PageWidth = rootLayout.Width;
 
-            RectangleF dpiPageSize = new System.Drawing.RectangleF(0.0f,
-                                                                   0.0f,
-                                                                   ScreenProperties.ConvertPixelsToDPI(this.PageWidth),
-                                                                   ScreenProperties.ConvertPixelsToDPI(this.PageHeight));
+            var dpiPageSize = new RectangleF(
+                0.0f, 0.0f, ScreenProperties.ConvertPixelsToDPI(this.PageWidth), ScreenProperties.ConvertPixelsToDPI(this.PageHeight));
             this.pagerPage.Arrange(dpiPageSize);
             AppercodeVisualRoot.Instance.Arrange(dpiPageSize);
         }

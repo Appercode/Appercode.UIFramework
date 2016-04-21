@@ -1,17 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-
-using Android.App;
 using Android.Content;
-using Android.Graphics;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Appercode.UI.Device;
 
 namespace Appercode.UI.Controls
 {
@@ -66,6 +55,7 @@ namespace Appercode.UI.Controls
         {
             private ListView leftListView;
             private ListView rightListView;
+
             public NativeRangePicker(Context context, ListPicker picker) : base(context)
             {
                 this.Orientation = Android.Widget.Orientation.Horizontal;
@@ -89,14 +79,15 @@ namespace Appercode.UI.Controls
                     rightListView.OnItemSelectedListener = (ListPickerAdapter)this.rightListView.Adapter;
                     rightListView.OnItemClickListener = (ListPickerAdapter)this.rightListView.Adapter;
                 });
-                this.AddView(leftListView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.WrapContent, 1));
-                this.AddView(rightListView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.WrapContent, 1));
+                this.AddView(leftListView, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent, 1));
+                this.AddView(rightListView, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent, 1));
             }
 
             public int LeftSelectedPosition
             {
                 get { return ((ListPickerAdapter) this.leftListView.Adapter).SelectedItemPosition; }
             }
+
             public int RightSelectedPosition
             {
                 get { return ((ListPickerAdapter) this.rightListView.Adapter).SelectedItemPosition; }
@@ -106,6 +97,7 @@ namespace Appercode.UI.Controls
             {
                 get { return this.leftListView.Adapter; }
             }
+
             public IListAdapter RightAdapter
             {
                 get { return this.rightListView.Adapter; }

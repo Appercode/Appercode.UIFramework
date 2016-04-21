@@ -30,7 +30,7 @@ namespace Appercode.UI.Controls
 
         private bool isApplyNewSource = false;
 
-        protected Nullable<int> NativeAudioStreamIndex
+        protected int? NativeAudioStreamIndex
         {
             get
             {
@@ -173,8 +173,8 @@ namespace Appercode.UI.Controls
 
                     var layoutParams = new ViewGroup.LayoutParams(0, 0);
 
-                    layoutParams.Width = double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.FillParent : (int)this.NativeWidth;
-                    layoutParams.Height = double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.FillParent : (int)this.NativeHeight;
+                    layoutParams.Width = double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeWidth;
+                    layoutParams.Height = double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeHeight;
                     this.NativeUIElement.LayoutParameters = layoutParams;
                     this.videoView.LayoutParameters = layoutParams;
 
@@ -235,27 +235,27 @@ namespace Appercode.UI.Controls
         {
             if (dp.Name == "NaturalDuration")
             {
-                return new Duration(new TimeSpan(0, 0, 0, 0, ((WrapedVideoView)this.videoView).Duration));
+                return new Duration(new TimeSpan(0, 0, 0, 0, this.videoView.Duration));
             }
 
             if (dp.Name == "NaturalVideoHeight")
             {
-                return ((WrapedVideoView)this.videoView).VideoHeight;
+                return this.videoView.VideoHeight;
             }
 
             if (dp.Name == "NaturalVideoWidth")
             {
-                return ((WrapedVideoView)this.videoView).VideoWidth;
+                return this.videoView.VideoWidth;
             }
 
             if (dp.Name == "Position")
             {
-                return new TimeSpan(0, 0, 0, 0, ((WrapedVideoView)this.videoView).Position);
+                return new TimeSpan(0, 0, 0, 0, this.videoView.Position);
             }
 
             if (dp.Name == "BufferingProgress")
             {
-                return ((WrapedVideoView)this.videoView).BufferingProgress;
+                return this.videoView.BufferingProgress;
             }
 
             if (dp.Name == "CurrentState")
@@ -265,7 +265,7 @@ namespace Appercode.UI.Controls
 
             if (dp.Name == "Volume")
             {
-                return ((Android.Media.AudioManager)this.Context.GetSystemService(Android.Content.Context.AudioService)).GetStreamVolume(Stream.Music);
+                return ((AudioManager)this.Context.GetSystemService(Context.AudioService)).GetStreamVolume(Stream.Music);
             }
 
             return base.GetValue(dp);
@@ -278,13 +278,9 @@ namespace Appercode.UI.Controls
 
         private void NativePause()
         {
-            ((WrapedVideoView)this.videoView).Pause();
-
+            this.videoView.Pause();
             this.NativeCurrentState = MediaElementState.Paused;
-            if (this.CurrentStateChanged != null)
-            {
-                this.CurrentStateChanged(this, new RoutedEventArgs());
-            }
+            this.CurrentStateChanged?.Invoke(this, new RoutedEventArgs());
         }
 
         private void NativePlay()
@@ -297,62 +293,40 @@ namespace Appercode.UI.Controls
                     {
                         if (this.NativeUIElement != null && !string.IsNullOrWhiteSpace(this.Source.OriginalString))
                         {
-                            ((WrapedVideoView)this.videoView).Prepare();
+                            this.videoView.Prepare();
                             this.isApplyNewSource = true;
                         }
                     }
                     catch (Exception e)
                     {
-                        if (this.MediaFailed != null)
-                        {
-                            this.MediaFailed(this, new System.Windows.ExceptionRoutedEventArgs(e));
-                        }
+                        this.MediaFailed?.Invoke(this, new ExceptionRoutedEventArgs(e));
                     }
                 }
 
-                ((WrapedVideoView)this.videoView).Play();
-
+                this.videoView.Play();
                 this.NativeCurrentState = MediaElementState.Playing;
-                if (this.CurrentStateChanged != null)
-                {
-                    this.CurrentStateChanged(this, new RoutedEventArgs());
-                }
-
-                ((WrapedVideoView)this.videoView).Completion -= MediaElement_Completion;
-                ((WrapedVideoView)this.videoView).Completion += MediaElement_Completion;
+                this.CurrentStateChanged?.Invoke(this, new RoutedEventArgs());
+                this.videoView.Completion -= MediaElement_Completion;
+                this.videoView.Completion += MediaElement_Completion;
             }
         }
 
         private void NativeStop()
         {
-            ((WrapedVideoView)this.videoView).Completion -= MediaElement_Completion;
-            ((WrapedVideoView)this.videoView).Stop();
+            this.videoView.Completion -= MediaElement_Completion;
+            this.videoView.Stop();
             this.isApplyNewSource = false;
 
             this.NativeCurrentState = MediaElementState.Stopped;
-            if (this.CurrentStateChanged != null)
-            {
-                this.CurrentStateChanged(this, new RoutedEventArgs());
-            }
-
-            if (this.MediaEnded != null)
-            {
-                this.MediaEnded(this, new RoutedEventArgs());
-            }
+            this.CurrentStateChanged?.Invoke(this, new RoutedEventArgs());
+            this.MediaEnded?.Invoke(this, new RoutedEventArgs());
         }
 
         private void MediaElement_BufferingProgressUpdate(object sender, EventArgs e)
         {
             this.NativeCurrentState = MediaElementState.Buffering;
-            if (this.CurrentStateChanged != null)
-            {
-                this.CurrentStateChanged(this, new RoutedEventArgs());
-            }
-
-            if (this.BufferingProgressChanged != null)
-            {
-                this.BufferingProgressChanged(this, new RoutedEventArgs());
-            }
+            this.CurrentStateChanged?.Invoke(this, new RoutedEventArgs());
+            this.BufferingProgressChanged?.Invoke(this, new RoutedEventArgs());
         }
 
         private void MediaElement_VideoSizeChanged(object sender, EventArgs e)
@@ -363,27 +337,15 @@ namespace Appercode.UI.Controls
         private void MediaElement_Completion(object sender, EventArgs e)
         {
             this.isApplyNewSource = false;
-
             this.NativeCurrentState = MediaElementState.Stopped;
-            if (this.CurrentStateChanged != null)
-            {
-                this.CurrentStateChanged(this, new RoutedEventArgs());
-            }
-
-            if (this.MediaEnded != null)
-            {
-                this.MediaEnded(this, new RoutedEventArgs());
-            }
+            this.CurrentStateChanged?.Invoke(this, new RoutedEventArgs());
+            this.MediaEnded?.Invoke(this, new RoutedEventArgs());
         }
 
         private void MediaElement_Prepared(object sender, EventArgs e)
         {
-            if (this.MediaOpened != null)
-            {
-                this.MediaOpened(this, new RoutedEventArgs());
-            }
-
-            ((WrapedVideoView)this.videoView).Prepared -= MediaElement_Prepared;
+            this.MediaOpened?.Invoke(this, new RoutedEventArgs());
+            this.videoView.Prepared -= MediaElement_Prepared;
         }
 
         private void NativeArrangeVideoView(System.Drawing.RectangleF finalRect)
@@ -392,11 +354,10 @@ namespace Appercode.UI.Controls
             int top = (int)ScreenProperties.ConvertDPIToPixels(finalRect.Top);
             int right = (int)ScreenProperties.ConvertDPIToPixels(finalRect.Right);
             int bottom = (int)ScreenProperties.ConvertDPIToPixels(finalRect.Bottom);
-
-            ((WrapedVideoView)this.videoView).Layout(left, top, right, bottom);
+            this.videoView.Layout(left, top, right, bottom);
         }
 
-        private void ApplyNativeAudioStreamIndex(Nullable<int> audioStreamIndex)
+        private void ApplyNativeAudioStreamIndex(int? audioStreamIndex)
         {
         }
 
@@ -414,16 +375,13 @@ namespace Appercode.UI.Controls
 
         private void ApplyNativePosition(TimeSpan position)
         {
-            ((WrapedVideoView)this.videoView).SeekTo((int)position.TotalMilliseconds);
+            this.videoView.SeekTo((int)position.TotalMilliseconds);
         }
 
         private void ApplyNativeSource(Uri source)
         {
             this.NativeCurrentState = MediaElementState.Opening;
-            if (this.CurrentStateChanged != null)
-            {
-                this.CurrentStateChanged(this, new RoutedEventArgs());
-            }
+            this.CurrentStateChanged?.Invoke(this, new RoutedEventArgs());
 
             int indBegin = source.OriginalString.IndexOf("Assets");
             int indEnd = 5;
@@ -448,7 +406,7 @@ namespace Appercode.UI.Controls
                 this.nativeSource = new Uri(src, UriKind.Relative);
             }
 
-            if (((WrapedVideoView)this.videoView).IsPlaying)
+            if (this.videoView.IsPlaying)
             {
                 this.Stop();
             }
@@ -459,20 +417,20 @@ namespace Appercode.UI.Controls
                 {
                     if (this.Source.IsAbsoluteUri)
                     {
-                        ((WrapedVideoView)this.videoView).SetDataSource(this.Source.OriginalString);
+                        this.videoView.SetDataSource(this.Source.OriginalString);
                     }
                     else
                     {
-                        Android.Content.Res.AssetFileDescriptor afd = this.Context.Assets.OpenFd(this.nativeSource.OriginalString);
+                        var afd = this.Context.Assets.OpenFd(this.nativeSource.OriginalString);
                         if (afd != null)
                         {
-                            ((WrapedVideoView)this.videoView).SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
+                            this.videoView.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
                         }
                     }
 
-                    ((WrapedVideoView)this.videoView).Prepared -= MediaElement_Prepared;
-                    ((WrapedVideoView)this.videoView).Prepared += MediaElement_Prepared;
-                    ((WrapedVideoView)this.videoView).Prepare();
+                    this.videoView.Prepared -= MediaElement_Prepared;
+                    this.videoView.Prepared += MediaElement_Prepared;
+                    this.videoView.Prepare();
 
                     this.isApplyNewSource = true;
 
@@ -484,10 +442,7 @@ namespace Appercode.UI.Controls
                 }
                 catch (Exception e)
                 {
-                    if (this.MediaFailed != null)
-                    {
-                        this.MediaFailed(this, new System.Windows.ExceptionRoutedEventArgs(e));
-                    }
+                    this.MediaFailed?.Invoke(this, new ExceptionRoutedEventArgs(e));
                 }
             }
         }
@@ -498,7 +453,7 @@ namespace Appercode.UI.Controls
 
         private void ApplyNativeVolume(double volume)
         {
-            Android.Media.AudioManager t = (Android.Media.AudioManager)this.Context.GetSystemService(Android.Content.Context.AudioService);
+            var t = (AudioManager)this.Context.GetSystemService(Context.AudioService);
             t.SetStreamVolume(Stream.Music, (int)volume, VolumeNotificationFlags.PlaySound);
         }
     }

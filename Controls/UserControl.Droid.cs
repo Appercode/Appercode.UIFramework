@@ -1,18 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
-using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Controls.NativeControl.Wrapers;
-  
+
 namespace Appercode.UI.Controls
 {
     public class NativeUserControl : WrapedViewGroup
@@ -25,25 +14,11 @@ namespace Appercode.UI.Controls
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
         }
-
-        protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
-        {
-            base.OnSizeChanged(w, h, oldw, oldh);
-        }
-
-        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-        {
-            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
     }
 
     public partial class UserControl
     {
-        protected View ContentNativeUIElemtnt
-        {
-            get;
-            set;
-        }
+        protected View ContentNativeUIElement { get; set; }
 
         protected internal override void NativeInit()
         {
@@ -55,7 +30,7 @@ namespace Appercode.UI.Controls
                 {
                     this.NativeUIElement = new NativeUserControl(this.Context);
                 }
-                
+
                 this.ApplyNativeContent(this.Content);
                 this.ApplyNativePadding(this.Padding);
             }
@@ -72,25 +47,25 @@ namespace Appercode.UI.Controls
 
         protected ViewGroup.LayoutParams CreateLayoutParams(UIElement element)
         {
-            var layoutParams = new ViewGroup.LayoutParams(0, 0);
-            layoutParams.Width = double.IsNaN(element.Width) ? ViewGroup.LayoutParams.FillParent : (int)element.Width;
-            layoutParams.Height = double.IsNaN(element.Height) ? ViewGroup.LayoutParams.FillParent : (int)element.Height;
-            return layoutParams;
+            return new ViewGroup.LayoutParams(
+                element.ContainsValue(WidthProperty) ? (int)element.Width : ViewGroup.LayoutParams.MatchParent,
+                element.ContainsValue(HeightProperty) ? (int)element.Height : ViewGroup.LayoutParams.MatchParent);
         }
 
         private void ApplyNativeContent(UIElement newContent)
         {
             if (this.NativeUIElement != null && newContent != null)
             {
-                this.ContentNativeUIElemtnt = newContent.NativeUIElement;
-                ((NativeUserControl)this.NativeUIElement).RemoveAllViews();
-                ((NativeUserControl)this.NativeUIElement).AddView(this.ContentNativeUIElemtnt);
+                this.ContentNativeUIElement = newContent.NativeUIElement;
+                var nativeUserControl = (NativeUserControl)this.NativeUIElement;
+                nativeUserControl.RemoveAllViews();
+                nativeUserControl.AddView(this.ContentNativeUIElement);
             }
         }
 
         private void NativeArrangeContent(System.Drawing.RectangleF rectangleF)
         {
-            ((UIElement)this.Content).Arrange(rectangleF);
+            this.Content.Arrange(rectangleF);
         }
     }
 }

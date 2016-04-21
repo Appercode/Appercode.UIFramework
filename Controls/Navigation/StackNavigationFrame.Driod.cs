@@ -2,10 +2,12 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Appercode.UI.Device;
 using System;
+using System.ComponentModel;
 using System.Drawing;
 
 namespace Appercode.UI.Controls.Navigation
@@ -24,10 +26,7 @@ namespace Appercode.UI.Controls.Navigation
             base.OnSizeChanged(w, h, oldw, oldh);
             if (h != 0 && w != 0 && oldh != h && oldw != w)
             {
-                if (this.SizeChanged != null)
-                {
-                    this.SizeChanged(this, null);
-                }
+                this.SizeChanged?.Invoke(this, null);
             }
         }
     }
@@ -37,7 +36,7 @@ namespace Appercode.UI.Controls.Navigation
     {
         protected int fragmentPageFrameLayoutResourceId = 1;
 
-        public StackNavigationFrame(IntPtr javaReference, Android.Runtime.JniHandleOwnership transfer)
+        public StackNavigationFrame(IntPtr javaReference, JniHandleOwnership transfer)
             : base(javaReference, transfer)
         {
         }
@@ -66,7 +65,7 @@ namespace Appercode.UI.Controls.Navigation
 
         public override void OnBackPressed()
         {
-            this.CurrentPage.InternalOnBackKeyPress(new System.ComponentModel.CancelEventArgs());
+            this.CurrentPage.InternalOnBackKeyPress(new CancelEventArgs());
         }
 
         protected override void OnCreate(Bundle bundle)
@@ -76,28 +75,25 @@ namespace Appercode.UI.Controls.Navigation
 
             FrameLayout frgmCont = new FrameLayout(this);
             frgmCont.Id = this.fragmentPageFrameLayoutResourceId;
-            rootLayout.AddView(frgmCont, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.FillParent));
+            rootLayout.AddView(frgmCont, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
             rootLayout.SizeChanged += (s, e) =>
             {
                 this.PageHeight = rootLayout.Height;
                 this.PageWidth = rootLayout.Width;
 
-                RectangleF dpiPageSize = new System.Drawing.RectangleF(0.0f,
-                                                                       0.0f,
-                                                                       ScreenProperties.ConvertPixelsToDPI(this.PageWidth),
-                                                                       ScreenProperties.ConvertPixelsToDPI(this.PageHeight));
-
+                var dpiPageSize = new RectangleF(
+                    0.0f, 0.0f, ScreenProperties.ConvertPixelsToDPI(this.PageWidth), ScreenProperties.ConvertPixelsToDPI(this.PageHeight));
                 AppercodeVisualRoot.Instance.Arrange(dpiPageSize);
             };
 
-            this.SetContentView(rootLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.FillParent));
+            this.SetContentView(rootLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
             this.Navigate(this.StartPage, null, NavigationType.Default);
         }
 
         private void NativeShowPage(AppercodePage page, NavigationMode mode, NavigationType navigationType)
         {
             this.Title = page.Title;
-            Android.App.FragmentTransaction transaction = this.FragmentManager.BeginTransaction();
+            var transaction = this.FragmentManager.BeginTransaction();
             transaction.Replace(this.fragmentPageFrameLayoutResourceId, page.NativeFragment);
             transaction.Commit();
         }

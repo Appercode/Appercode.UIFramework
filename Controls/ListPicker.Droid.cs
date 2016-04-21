@@ -1,7 +1,3 @@
-using System.Globalization;
-using System.Threading;
-using Android.App;
-using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
 using Appercode.UI.Controls.NativeControl.Wrapers;
@@ -9,6 +5,7 @@ using Appercode.UI.Controls.Primitives;
 using Appercode.UI.Device;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 
 namespace Appercode.UI.Controls
 {
@@ -24,7 +21,7 @@ namespace Appercode.UI.Controls
                 pickerButton.Content = "picker";
                 this.pickerView = new ListView(this.Context)
                 {
-                    LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.WrapContent)
+                    LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
                 };
                 this.pickerView.Post(() =>
                 {
