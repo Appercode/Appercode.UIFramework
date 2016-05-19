@@ -28,7 +28,10 @@ namespace Appercode.UI.Controls
                 {
                     this.NativeUIElement = new NativeContentPresenter(this.Context);
 
-                    ((NativeContentPresenter)this.NativeUIElement).AddView(this.TemplateInstance.NativeUIElement);
+                    if (this.Template != null)
+                    {
+                        ((NativeContentPresenter)this.NativeUIElement).AddView(this.TemplateInstance.NativeUIElement);
+                    }
                 }
             }
 
