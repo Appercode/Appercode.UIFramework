@@ -19,6 +19,7 @@ namespace Appercode.UI.Controls.Navigation
         private AppercodePage currentPage;
         private AppercodeVisualRoot visualRoot;
         private Stack<AppercodePage> backStack;
+        private bool isNavigationInProgress;
         private bool modalIsDisplayed;
 
         /// <summary>
@@ -109,13 +110,9 @@ namespace Appercode.UI.Controls.Navigation
 #pragma warning restore 108
 
         /// <summary>
-        /// Is navigation process is in progress
+        /// Gets if navigation process is in progress.
         /// </summary>
-        public bool IsNavigationInProgress
-        {
-            get;
-            private set;
-        }
+        public bool IsNavigationInProgress => this.isNavigationInProgress;
 
         /// <summary>
         /// <see cref="AppercodePage"/> that currently is showing
@@ -184,7 +181,7 @@ namespace Appercode.UI.Controls.Navigation
                 throw new ArgumentException("sourcePageType must be an AppercodePage", "sourcePageType");
             }
 
-            if (this.IsNavigationInProgress)
+            if (this.isNavigationInProgress)
             {
                 return false;
             }
@@ -269,7 +266,7 @@ namespace Appercode.UI.Controls.Navigation
 
         private object NavigateInternal(Type sourcePageType, object parameter, NavigationType navigationType)
         {
-            this.IsNavigationInProgress = true;
+            this.isNavigationInProgress = true;
 
             // navigating from
             if (this.CurrentPage != null)
@@ -278,7 +275,7 @@ namespace Appercode.UI.Controls.Navigation
                 this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
                 if (navigatingCancelEventArgs.Cancel)
                 {
-                    this.IsNavigationInProgress = false;
+                    this.isNavigationInProgress = false;
                     return BooleanBoxes.FalseBox;
                 }
             }
@@ -291,19 +288,7 @@ namespace Appercode.UI.Controls.Navigation
                 this.backStack.Push(this.CurrentPage);
             }
 
-            // Create page
-            var pageConstructorInfo = sourcePageType.GetConstructor(new Type[] { });
-            AppercodePage pageInstance;
-            try
-            {
-                pageInstance = (AppercodePage)pageConstructorInfo.Invoke(new object[] { });
-            }
-            catch (TargetInvocationException e)
-            {
-                this.IsNavigationInProgress = false;
-                throw e.InnerException;
-            }
-
+            var pageInstance = PageFactory.InstantiatePage(sourcePageType, ref this.isNavigationInProgress);
             pageInstance.NavigationService = this.NavigationService;
             this.visualRoot.Child = pageInstance;
             this.NativeShowPage(pageInstance, NavigationMode.New, navigationType);
@@ -313,7 +298,7 @@ namespace Appercode.UI.Controls.Navigation
             pageInstance.InternalOnNavigatedTo(navigationEventArgs);
 
             this.CurrentPage = pageInstance;
-            this.IsNavigationInProgress = false;
+            this.isNavigationInProgress = false;
             return BooleanBoxes.TrueBox;
         }
 

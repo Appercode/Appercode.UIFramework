@@ -130,6 +130,7 @@
     <Compile Include="Controls\NativeControl\IndeterminateUIProgressView.cs" />
     <Compile Include="Controls\Navigation\IFrameStyler.cs" />
     <Compile Include="Controls\Navigation\NavigationType.cs" />
+    <Compile Include="Controls\Navigation\PageFactory.cs" />
     <Compile Include="Controls\PasswordBox.cs" />
     <Compile Include="Controls\PasswordBox.iOS.cs" />
     <Compile Include="Controls\Popups\MessageDialog.cs" />

@@ -123,6 +123,7 @@
     <Compile Include="Controls\NativeControl\Wrapers\WrapedVideoView.cs" />
     <Compile Include="Controls\Navigation\IFrameStyler.cs" />
     <Compile Include="Controls\Navigation\NavigationType.cs" />
+    <Compile Include="Controls\Navigation\PageFactory.cs" />
     <Compile Include="Controls\Navigation\Primitives\TabBarTab.cs" />
     <Compile Include="Controls\Navigation\Primitives\TabBarTabsCollection.cs" />
     <Compile Include="Controls\Navigation\Primitives\ViewPagerPage.cs" />

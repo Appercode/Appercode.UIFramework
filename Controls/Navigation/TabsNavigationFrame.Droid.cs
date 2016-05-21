@@ -1,16 +1,20 @@
 using Android.App;
 using Android.Content.PM;
+using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
+using Android.Support.V4.View;
 using Android.Views;
 using Android.Widget;
 using Appercode.UI.Controls.Navigation.Primitives;
 using Appercode.UI.Device;
 using Java.Lang;
 using Java.Lang.Reflect;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using static Android.Resource;
 
 namespace Appercode.UI.Controls.Navigation
 {
@@ -61,12 +65,12 @@ namespace Appercode.UI.Controls.Navigation
             // this will start Navigation to first tab
             this.ActionBar.NavigationMode = ActionBarNavigationMode.Tabs;
 
-            var styledAttributes = this.Theme.ObtainStyledAttributes(new int[] { Android.Resource.Attribute.ActionBarSize, Android.Resource.Attribute.ActionBarStyle });
+            var styledAttributes = this.Theme.ObtainStyledAttributes(new int[] { Attribute.ActionBarSize, Attribute.ActionBarStyle });
             var mActionBarSize = (int)styledAttributes.GetDimension(0, 0);
             var actionbarStyleId = styledAttributes.GetResourceId(1, 0);
             styledAttributes.Recycle();
 
-            styledAttributes = this.Theme.ObtainStyledAttributes(actionbarStyleId, new int[] { Android.Resource.Attribute.BackgroundStacked });
+            styledAttributes = this.Theme.ObtainStyledAttributes(actionbarStyleId, new int[] { Attribute.BackgroundStacked });
             var tabsBackground = styledAttributes.GetDrawable(0);
             styledAttributes.Recycle();
 
@@ -93,7 +97,7 @@ namespace Appercode.UI.Controls.Navigation
 
         private void ViewPagerLayotChange(object sender, View.LayoutChangeEventArgs e)
         {
-            var styledAttributes = this.Theme.ObtainStyledAttributes(new int[] { Android.Resource.Attribute.ActionBarSize, Android.Resource.Attribute.ActionBarStyle });
+            var styledAttributes = this.Theme.ObtainStyledAttributes(new int[] { Attribute.ActionBarSize, Attribute.ActionBarStyle });
             var mActionBarSize = (int)styledAttributes.GetDimension(0, 0);
             styledAttributes.Recycle();
 
@@ -115,16 +119,16 @@ namespace Appercode.UI.Controls.Navigation
             this.pagerPage.ViewPager.LayoutParameters = lp;
         }
 
-        public override void OnConfigurationChanged(Android.Content.Res.Configuration newConfig)
+        public override void OnConfigurationChanged(Configuration newConfig)
         {
             base.OnConfigurationChanged(newConfig);
         }
 
-        private void Tabs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Tabs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Add:
                     var tab = e.NewItems[0] as TabBarTab;
                     var androidTab = ActionBar.NewTab();
 
@@ -149,23 +153,24 @@ namespace Appercode.UI.Controls.Navigation
                     this.ActionBar.AddTab(androidTab, e.NewStartingIndex);
                     if (this.pagerPage == null)
                     {
-                        this.pagerPage = new ViewPagerPage() { FragmentManager = this.FragmentManager };
+                        this.pagerPage = new ViewPagerPage { FragmentManager = this.FragmentManager };
                         this.visualRoot.Child = pagerPage;
                     }
-                    var page = this.InstantiatePage(tab.PageType);
+
+                    var page = PageFactory.InstantiatePage(tab.PageType, ref this.isNavigationInProgress);
                     page.NavigationService = this.navigationService;
                     this.pagerPage.AddPage(page, tab.NavigationParameter);
                     break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Remove:
                     break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Replace:
                     break;
                 default:
                     throw new InvalidEnumArgumentException();
             }
         }
 
-        private void Pager_PageSelected(object sender, Android.Support.V4.View.ViewPager.PageSelectedEventArgs e)
+        private void Pager_PageSelected(object sender, ViewPager.PageSelectedEventArgs e)
         {
             this.ActionBar.SetSelectedNavigationItem(e.Position);
         }

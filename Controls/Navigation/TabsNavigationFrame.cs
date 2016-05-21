@@ -17,6 +17,7 @@ namespace Appercode.UI.Controls.Navigation
         private AppercodeVisualRoot visualRoot;
         private AppercodePage currentPage;
         private int currentTabIndex = -1;
+        private bool isNavigationInProgress;
 
 #if __ANDROID__ || WINDOWS_PHONE
         private NavigationService navigationService;
@@ -163,13 +164,9 @@ namespace Appercode.UI.Controls.Navigation
         }
 
         /// <summary>
-        /// Is navigation process is in progress
+        /// Gets if navigation process is in progress.
         /// </summary>
-        public bool IsNavigationInProgress
-        {
-            get;
-            private set;
-        }
+        public bool IsNavigationInProgress => this.isNavigationInProgress;
 
         /// <summary>
         /// Navigate to page in cuttent stack
@@ -220,11 +217,12 @@ namespace Appercode.UI.Controls.Navigation
                 throw new ArgumentException("sourcePageType must be an AppercodePage", "sourcePageType");
             }
 
-            if (this.IsNavigationInProgress)
+            if (this.isNavigationInProgress)
             {
                 return false;
             }
-            this.IsNavigationInProgress = true;
+
+            this.isNavigationInProgress = true;
 
             // navigating from with check
             NavigatingCancelEventArgs navigatingCancelEventArgs = new NavigatingCancelEventArgs(sourcePageType, NavigationMode.New);
@@ -234,7 +232,7 @@ namespace Appercode.UI.Controls.Navigation
                 this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
                 if (navigatingCancelEventArgs.Cancel == true)
                 {
-                    this.IsNavigationInProgress = false;
+                    this.isNavigationInProgress = false;
                     return false;
                 }
             }
@@ -259,7 +257,7 @@ namespace Appercode.UI.Controls.Navigation
             }
             else
             {
-                pageInstance = InstantiatePage(sourcePageType);
+                pageInstance = PageFactory.InstantiatePage(sourcePageType, ref this.isNavigationInProgress);
             }
 
             pageInstance.NavigationService = this.navigationService;
@@ -271,7 +269,7 @@ namespace Appercode.UI.Controls.Navigation
 
             this.CurrentPage = pageInstance;
 
-            this.IsNavigationInProgress = false;
+            this.isNavigationInProgress = false;
             return true;
 #else
             if (this.currentTabIndex < 0 || this.currentTabIndex >= this.navigationStacks.Count)
@@ -298,16 +296,16 @@ namespace Appercode.UI.Controls.Navigation
         { 
 #if __ANDROID__ || WINDOWS_PHONE
          
-            if (this.IsNavigationInProgress)
+            if (this.isNavigationInProgress)
             {
                 return;
             }
-            this.IsNavigationInProgress = true;
 
+            this.isNavigationInProgress = true;
             if (this.backStack.Count == 0)
             {
                 this.CloseApplication();
-                this.IsNavigationInProgress = false;
+                this.isNavigationInProgress = false;
                 return;
             }
 
@@ -319,7 +317,7 @@ namespace Appercode.UI.Controls.Navigation
             this.CurrentPage.InternalOnNavigatingFrom(navigatingCancelEventArgs);
             if (navigatingCancelEventArgs.Cancel == true)
             {
-                this.IsNavigationInProgress = false;
+                this.isNavigationInProgress = false;
                 return;
             }
 
@@ -331,7 +329,7 @@ namespace Appercode.UI.Controls.Navigation
                 this.CurrentPage = previousPage;
                 // navigated to
                 previousPage.InternalOnNavigatedTo(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
-                this.IsNavigationInProgress = false;
+                this.isNavigationInProgress = false;
                 return;
             }
 
@@ -346,7 +344,7 @@ namespace Appercode.UI.Controls.Navigation
             this.CurrentPage = previousPage;
             // navigated to
             previousPage.InternalOnNavigatedTo(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
-            this.IsNavigationInProgress = false;
+            this.isNavigationInProgress = false;
 #else
             if (this.currentTabIndex < 0 || this.currentTabIndex >= this.navigationStacks.Count)
             {
@@ -395,24 +393,6 @@ namespace Appercode.UI.Controls.Navigation
                 var rd = (ResourceDictionary)generatorMethod.Invoke(null, new object[] { });
                 this.visualRoot.Resources.MergedDictionaries.Add(rd);
             }
-        }
-
-        internal AppercodePage InstantiatePage(Type sourcePageType)
-        {
-            var pageConstructorInfo = sourcePageType.GetConstructor(new Type[] {
-
-            });
-            AppercodePage pageInstance = null;
-            try
-            {
-                pageInstance = (AppercodePage)pageConstructorInfo.Invoke(new object[] {});
-            }
-            catch (System.Reflection.TargetInvocationException e)
-            {
-                this.IsNavigationInProgress = false;
-                throw e.InnerException;
-            }
-            return pageInstance;
         }
 
         private void CloseApplication()
