@@ -10,19 +10,7 @@ namespace Appercode.UI.Controls
 {
     public partial class AppercodePage
     {
-        public event EventHandler Appeared = delegate { };
-
-        protected internal UIScrollView ScrollView
-        {
-            get
-            {
-                if (this.ViewController != null)
-                {
-                    return this.ViewController.Scroll;
-                }
-                return null;
-            }
-        }
+        public event EventHandler Appeared;
 
         protected internal AppercodePageViewController ViewController { get; set; }
 
@@ -30,33 +18,16 @@ namespace Appercode.UI.Controls
         {
             if (this.ViewController == null)
             {
-                this.ViewController = new AppercodePageViewController();
-                WeakReference wr = new WeakReference(this);
-                this.ViewController.Appeared += (sender, e) =>
-                {
-                    if (wr.IsAlive)
-                    {
-                        ((AppercodePage)wr.Target).Appeared(this, EventArgs.Empty);
-                    }
-                };
-
-                ((AppercodeUIScrollView)this.ScrollView).ContentInsetsChanged += delegate(object sender, EventArgs e)
-                {
-                    if (wr.IsAlive && AppercodeVisualRoot.Instance.Child == wr.Target)
-                    {
-                        AppercodeVisualRoot.Instance.Arrange(AppercodeVisualRoot.Instance.CurrentRect);
-                    }
-                };
-
-                this.ViewController.View = this.ScrollView;
-                this.ViewController.View.BackgroundColor = UIColor.White;
+                this.ViewController = new AppercodePageViewController(this);
                 this.NativeUIElement = this.ViewController.View;
                 this.UpdatePageTopBarCommands(this.TopAppBar);
             }
-            if (this.Title != null)
+
+            if (this.ContainsValue(TitleProperty))
             {
                 this.ViewController.Title = this.Title;
             }
+
             base.NativeInit();
         }
 
@@ -76,10 +47,8 @@ namespace Appercode.UI.Controls
 
         protected override void NativeArrange(CGRect finalRect)
         {
-            this.ScrollView.ContentSize = finalRect.Size;
-
-            // That's right. We don't need to rearrange page;
-            ////base.NativeArrange(finalRect);
+            // Do not call base, because we don't need to rearrange page;
+            this.ViewController.Arrange(finalRect);
         }
 
         protected override void NativeOnbackgroundChange()
@@ -109,9 +78,19 @@ namespace Appercode.UI.Controls
             }
         }
 
-        internal class AppercodeUIScrollView : UIScrollView
+        private void OnAppeared()
         {
-            public event EventHandler ContentInsetsChanged = delegate { };
+            this.Appeared?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal class RootScrollView : UIScrollView
+        {
+            private readonly AppercodePage parentPage;
+
+            public RootScrollView(AppercodePage parentPage)
+            {
+                this.parentPage = parentPage;
+            }
 
             public override UIEdgeInsets ContentInset
             {
@@ -124,7 +103,11 @@ namespace Appercode.UI.Controls
                     if (!base.ContentInset.Equals(value))
                     {
                         base.ContentInset = value;
-                        this.ContentInsetsChanged(this, EventArgs.Empty);
+                        var visualRoot = AppercodeVisualRoot.Instance;
+                        if (visualRoot.Child == this.parentPage)
+                        {
+                            visualRoot.Arrange(visualRoot.CurrentRect);
+                        }
                     }
                 }
             }
@@ -132,7 +115,8 @@ namespace Appercode.UI.Controls
 
         protected internal class AppercodePageViewController : UIViewController
         {
-            internal readonly AppercodeUIScrollView Scroll;
+            private readonly AppercodePage parentPage;
+            private readonly RootScrollView scrollView;
             private bool defaultInsetsAreSet;
             private UIEdgeInsets defaultContentInsets;
             private UIEdgeInsets defaultIndicatorsInsets;
@@ -142,14 +126,17 @@ namespace Appercode.UI.Controls
 
             bool ignoreScroling = false;
 
-            public AppercodePageViewController()
+            protected internal AppercodePageViewController(AppercodePage parentPage)
             {
-                this.Scroll = new AppercodeUIScrollView();
-                this.Scroll.ScrollEnabled = false;
-                this.Scroll.Scrolled += HandleScrolled;
+                this.parentPage = parentPage;
+                this.scrollView = new RootScrollView(parentPage)
+                {
+                    BackgroundColor = UIColor.White,
+                    ScrollEnabled = false
+                };
+                this.scrollView.Scrolled += this.HandleScrolled;
+                this.View = this.scrollView;
             }
-
-            public event EventHandler Appeared = delegate { };
 
             public override void ViewWillAppear(bool animated)
             {
@@ -167,8 +154,12 @@ namespace Appercode.UI.Controls
             public override void ViewDidAppear(bool animated)
             {
                 base.ViewDidAppear(animated);
-                var inset = ((UIScrollView)this.View).ContentInset;
-                this.Appeared(this, EventArgs.Empty);
+                this.parentPage.OnAppeared();
+            }
+
+            internal void Arrange(CGRect finalRect)
+            {
+                this.scrollView.ContentSize = finalRect.Size;
             }
 
             internal void HideKeyboard()
@@ -200,7 +191,7 @@ namespace Appercode.UI.Controls
 
             protected virtual void KeyboardWillShowNotification(NSNotification notification)
             {
-                this.Scroll.ScrollEnabled = true;
+                this.scrollView.ScrollEnabled = true;
                 var scroll = this.GetScrollView();
                 if (this.defaultInsetsAreSet == false)
                 {
@@ -228,7 +219,7 @@ namespace Appercode.UI.Controls
 
             protected virtual void KeyboardWillHideNotification(NSNotification notification)
             {
-                this.Scroll.ScrollEnabled = false;
+                this.scrollView.ScrollEnabled = false;
                 var firstResponder = FindFirstResponder(this.View);
 
                 // Reset the content inset of the ScrollView and animate using the current keyboard animation duration
@@ -275,7 +266,7 @@ namespace Appercode.UI.Controls
             {
                 // UIScrollView contains two UIImageView subviews for scroll indicators: http://stackoverflow.com/a/5664311
                 // They might be found earlier than the page subview and affect the returned result
-                return this.Scroll.Subviews.OfType<UIScrollView>().FirstOrDefault() ?? this.Scroll;
+                return this.scrollView.Subviews.OfType<UIScrollView>().FirstOrDefault() ?? this.scrollView;
             }
         }
     }
