@@ -1,3 +1,4 @@
+using Appercode.UI.Input;
 using CoreGraphics;
 using Foundation;
 using System;
@@ -57,6 +58,12 @@ namespace Appercode.UI.Controls
                 this.ViewController.Title = this.Title;
             }
             base.NativeInit();
+        }
+
+        internal override void OnTap(GestureEventArgs args)
+        {
+            base.OnTap(args);
+            this.ViewController.HideKeyboard();
         }
 
         protected override void OnTitleChanged(string oldValue, string newValue)
@@ -142,24 +149,7 @@ namespace Appercode.UI.Controls
                 this.Scroll.Scrolled += HandleScrolled;
             }
 
-            void HandleScrolled (object sender, EventArgs e)
-            {
-                if(!ignoreScroling)
-                {
-                    UIView activeView = this.KeyboardGetActiveView();
-                    if (activeView != null)
-                    {
-                        activeView.ResignFirstResponder();
-                    }
-                }
-            }
-
             public event EventHandler Appeared = delegate { };
-
-            public override void ViewDidLoad()
-            {
-                base.ViewDidLoad();
-            }
 
             public override void ViewWillAppear(bool animated)
             {
@@ -169,12 +159,7 @@ namespace Appercode.UI.Controls
 
             public override void ViewWillDisappear(bool animated)
             {
-                var firstResponder = FindFirstResponder(this.View);
-                if (firstResponder != null)
-                {
-                    firstResponder.ResignFirstResponder();
-                }
-
+                this.HideKeyboard();
                 this.UnregisterKeyboardNotifications();
                 base.ViewWillDisappear(animated);
             }
@@ -186,7 +171,14 @@ namespace Appercode.UI.Controls
                 this.Appeared(this, EventArgs.Empty);
             }
 
-            #region KeybordMagic
+            internal void HideKeyboard()
+            {
+                var firstResponder = FindFirstResponder(this.View);
+                if (firstResponder != null)
+                {
+                    firstResponder.ResignFirstResponder();
+                }
+            }
 
             protected virtual void RegisterForKeyboardNotifications()
             {
@@ -206,11 +198,6 @@ namespace Appercode.UI.Controls
                 }
             }
 
-            protected virtual UIView KeyboardGetActiveView()
-            {
-                return FindFirstResponder(this.View);
-            }
-
             protected virtual void KeyboardWillShowNotification(NSNotification notification)
             {
                 this.Scroll.ScrollEnabled = true;
@@ -228,13 +215,13 @@ namespace Appercode.UI.Controls
                 var contentInsets = new UIEdgeInsets(scroll.ContentInset.Top, default(nfloat), contentBottomInset, default(nfloat));
                 scroll.ScrollIndicatorInsets = contentInsets;
                 scroll.ContentInset = contentInsets;
-                var activeView = this.KeyboardGetActiveView();
-                if (activeView != null)
+                var firstResponder = FindFirstResponder(this.View);
+                if (firstResponder != null)
                 {
                     this.ignoreScroling = true;
                     UIView.Animate(
                         UIKeyboard.AnimationDurationFromNotification(notification),
-                        () => scroll.ScrollRectToVisible(scroll.ConvertRectFromView(activeView.Frame, activeView.Superview), false),
+                        () => scroll.ScrollRectToVisible(scroll.ConvertRectFromView(firstResponder.Frame, firstResponder.Superview), false),
                         () => this.ignoreScroling = false);
                 }
             }
@@ -242,10 +229,10 @@ namespace Appercode.UI.Controls
             protected virtual void KeyboardWillHideNotification(NSNotification notification)
             {
                 this.Scroll.ScrollEnabled = false;
-                var activeView = this.KeyboardGetActiveView();
+                var firstResponder = FindFirstResponder(this.View);
 
                 // Reset the content inset of the ScrollView and animate using the current keyboard animation duration
-                var animationDuration = activeView == null ? 0 : UIKeyboard.AnimationDurationFromNotification(notification);
+                var animationDuration = firstResponder == null ? 0 : UIKeyboard.AnimationDurationFromNotification(notification);
                 UIView.Animate(animationDuration, this.ResetScrollView);
             }
 
@@ -255,7 +242,8 @@ namespace Appercode.UI.Controls
                 {
                     return view;
                 }
-                foreach (UIView subView in view.Subviews)
+
+                foreach (var subView in view.Subviews)
                 {
                     var firstResponder = FindFirstResponder(subView);
                     if (firstResponder != null)
@@ -263,7 +251,16 @@ namespace Appercode.UI.Controls
                         return firstResponder;
                     }
                 }
+
                 return null;
+            }
+
+            private void HandleScrolled(object sender, EventArgs e)
+            {
+                if (this.ignoreScroling == false)
+                {
+                    this.HideKeyboard();
+                }
             }
 
             private void ResetScrollView()
@@ -280,8 +277,6 @@ namespace Appercode.UI.Controls
                 // They might be found earlier than the page subview and affect the returned result
                 return this.Scroll.Subviews.OfType<UIScrollView>().FirstOrDefault() ?? this.Scroll;
             }
-
-            #endregion
         }
     }
 }

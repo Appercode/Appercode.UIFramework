@@ -766,6 +766,11 @@ namespace Appercode.UI.Controls
             return false;
         }
 
+        internal virtual void OnTap(GestureEventArgs args)
+        {
+            this.Tap?.Invoke(this, args);
+        }
+
         protected internal void AddLogicalChild(object child)
         {
             if (child != null)
@@ -980,19 +985,16 @@ namespace Appercode.UI.Controls
 
         private void RaiseTap()
         {
-            GestureEventArgs args = new GestureEventArgs();
-            args.Handled = false;
-            args.OriginalSource = this;
-
-            UIElement currentElement = this;
-
+            var args = new GestureEventArgs
+            {
+                Handled = false,
+                OriginalSource = this
+            };
+            var currentElement = this;
             while (currentElement != null && args.Handled == false)
             {
-                if (currentElement.Tap != null)
-                {
-                    currentElement.Tap(currentElement, args);
-                }
-                currentElement = (UIElement)LogicalTreeHelper.GetParent(currentElement);
+                currentElement.OnTap(args);
+                currentElement = currentElement.Parent;
             }
         }
     }
