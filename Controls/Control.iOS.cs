@@ -8,9 +8,9 @@ namespace Appercode.UI.Controls
     {
         private bool nativeIsEnabled;
         private Brush nativeForeground;
-        private Controls.FontFamily nativeFontFamily;
-        private Controls.FontStyle nativeFontStyle;
-        private Controls.FontWeight nativeFontWeight;
+        private FontFamily nativeFontFamily;
+        private FontStyle nativeFontStyle;
+        private FontWeight nativeFontWeight;
         private double nativeFontSize;
 
         private bool NativeIsEnabled
@@ -116,8 +116,8 @@ namespace Appercode.UI.Controls
                 this.NativeForeground = this.Foreground;
                 this.NativeFontSize = this.FontSize;
                 this.NativeFontWeight = this.FontWeight;
-                this.nativeFontFamily = this.FontFamily;
-                if (this.ReadValueFromStyle(Control.TemplateProperty) != DependencyProperty.UnsetValue)
+                this.NativeFontFamily = this.FontFamily;
+                if (this.controlTemplateInstance == null && this.ContainsValue(TemplateProperty))
                 {
                     this.OnTemplateChanged(null, this.Template);
                 }
@@ -161,12 +161,9 @@ namespace Appercode.UI.Controls
             {
                 this.NativeUIElement.RemoveFromSuperview();
             }
-            this.NativeUIElement = new UIButton(UIButtonType.Custom);
 
-            if (this.Parent != null && this.Parent.NativeUIElement != null)
-            {
-                this.Parent.NativeUIElement.AddSubview(this.NativeUIElement);
-            }
+            this.NativeUIElement = new UIButton(UIButtonType.Custom);
+            this.Parent?.NativeUIElement?.AddSubview(this.NativeUIElement);
             this.NativeUIElement.AddSubview(this.controlTemplateInstance.NativeUIElement);
         }
 
