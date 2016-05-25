@@ -1,48 +1,97 @@
-using System;
-
-using Android.Content;
 using Android.Views;
 using Android.Widget;
+using System;
 
-namespace Appercode.UI.Controls.NativeControl.Wrapers
+namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    public class WrappedSeekBar : SeekBar, ITapableView, IJavaFinalizable, View.IOnClickListener
+    internal class WrappedSeekBar : SeekBar, IJavaFinalizable, View.IOnClickListener
     {
-        public WrappedSeekBar(IntPtr handle, Android.Runtime.JniHandleOwnership transfer)
-            : base(handle, transfer)
+        private readonly UIElement owner;
+
+        public WrappedSeekBar(UIElement owner)
+            : base(owner.Context)
         {
+            this.owner = owner;
             this.SetOnClickListener(this);
+            this.Orientation = Orientation.Horizontal;
         }
 
-        public WrappedSeekBar(Context context)
-            : base(context)
-        {
-            this.SetOnClickListener(this);
-        }
-
-        public event EventHandler NativeTap;
         public event EventHandler JavaFinalized;
 
-        public void WrapedNativeRaiseTap()
+        public Orientation Orientation { get; set; }
+
+        public void OnClick(View v)
         {
-            if (this.NativeTap != null)
-            {
-                this.NativeTap(this, null);
-            }
+            this.owner.OnTap();
         }
 
         protected override void JavaFinalize()
         {
-            if (this.JavaFinalized != null)
-            {
-                this.JavaFinalized(null, null);
-            }
+            this.JavaFinalized?.Invoke(null, null);
             base.JavaFinalize();
         }
 
-        public void OnClick(View v)
+        protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
         {
-            WrapedNativeRaiseTap();
+            if (this.Orientation == Orientation.Vertical)
+            {
+                base.OnSizeChanged(h, w, oldh, oldw);
+            }
+            else
+            {
+                base.OnSizeChanged(w, h, oldw, oldh);
+            }
+        }
+
+        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+        {
+            if (this.Orientation == Orientation.Vertical)
+            {
+                base.OnMeasure(heightMeasureSpec, widthMeasureSpec);
+                this.SetMeasuredDimension(MeasuredHeight, MeasuredWidth);
+            }
+            else
+            {
+                base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+            }
+        }
+
+        protected override void OnDraw(Android.Graphics.Canvas canvas)
+        {
+            if (this.Orientation == Orientation.Vertical)
+            {
+                canvas.Rotate(-90);
+                canvas.Translate(-this.Height, 0);
+            }
+
+            base.OnDraw(canvas);
+        }
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            if (this.Orientation == Orientation.Vertical)
+            {
+                if (!this.Enabled)
+                {
+                    return false;
+                }
+
+                switch (e.Action)
+                {
+                    case MotionEventActions.Down:
+                    case MotionEventActions.Move:
+                    case MotionEventActions.Up:
+                        this.Progress = this.Max - (int)(this.Max * e.GetY() / this.Height);
+                        this.OnSizeChanged(this.Width, this.Height, 0, 0);
+                        break;
+                    default:
+                        return base.OnTouchEvent(e);
+                }
+
+                return true;
+            }
+
+            return base.OnTouchEvent(e);
         }
     }
 }

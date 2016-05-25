@@ -1,7 +1,7 @@
 using Android.Graphics.Drawables;
 using Android.Widget;
 using Appercode.UI.Controls.Media.Imaging;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
 using System.Drawing;
 using System.Windows;
@@ -17,15 +17,13 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    WrapedImageView imageView = new WrapedImageView(this.Context);
+                    var imageView = new WrappedImageView(this);
                     imageView.SetAdjustViewBounds(true);
-
                     this.NativeUIElement = imageView;
                 }
 
                 this.ApplyNativeStretch();
                 this.ApplyNativeSource();
-
                 base.NativeInit();
             }
         }

@@ -1,6 +1,6 @@
 using Android.Views;
 using Android.Widget;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -519,14 +519,16 @@ namespace Appercode.UI.Controls
         private void AddControlTemplateInstance()
         {
             var oldView = this.NativeUIElement;
-            this.NativeUIElement = new WrapedViewGroup(this.Context);
-
-            if (this.Parent != null && this.Parent.NativeUIElement != null && oldView.Parent != null)
+            var nativeView = new WrappedViewGroup(this);
+            this.NativeUIElement = nativeView;
+            if (this.Parent?.NativeUIElement != null && oldView.Parent != null)
             {
-                ((ViewGroup)this.Parent.NativeUIElement).RemoveView(oldView);
-                ((ViewGroup)this.Parent.NativeUIElement).AddView(this.NativeUIElement);
+                var parentNativeView = (ViewGroup)this.Parent.NativeUIElement;
+                parentNativeView.RemoveView(oldView);
+                parentNativeView.AddView(this.NativeUIElement);
             }
-            ((WrapedViewGroup)this.NativeUIElement).AddView(this.controlTemplateInstance.NativeUIElement);
+
+            nativeView.AddView(this.controlTemplateInstance.NativeUIElement);
         }
 
         partial void ApplyNativeBackground(Brush newValue)

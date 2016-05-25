@@ -1,5 +1,5 @@
 using Android.Views;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
 using System.Drawing;
 
@@ -11,9 +11,9 @@ namespace Appercode.UI.Controls
         {
             if (this.Context != null && this.Parent != null && this.NativeUIElement == null)
             {
-                var nativeView = new WrapedViewGroup(this.Context);
+                var nativeView = new WrappedViewGroup(this);
                 this.NativeUIElement = nativeView;
-                if (this.Template != null)
+                if (this.ContainsValue(TemplateProperty))
                 {
                     nativeView.AddView(this.TemplateInstance.NativeUIElement);
                 }

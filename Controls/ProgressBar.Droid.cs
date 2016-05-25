@@ -1,16 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Appercode.UI.Controls.NativeControl.Wrapers;
-using Appercode.UI.Controls.Primitives;
+using Appercode.UI.Controls.NativeControl.Wrappers;
+using static Android.Resource;
 
 namespace Appercode.UI.Controls
 {
@@ -33,15 +22,11 @@ namespace Appercode.UI.Controls
 
         protected internal override void NativeInit()
         {
-            if (this.Parent != null && this.Context != null)
+            if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
-                if (this.NativeUIElement == null)
-                {
-                    this.NativeUIElement = new WrapedProgressBar(this.Context, null, Android.Resource.Attribute.ProgressBarStyleHorizontal);
-
-                    this.ApplyNativeIsIndeterminate(this.NativeIsIndeterminate);
-                    this.ApplyNativeValue(this.NativeValue);
-                }
+                this.NativeUIElement = new WrappedProgressBar(this, null, Attribute.ProgressBarStyleHorizontal);
+                this.ApplyNativeIsIndeterminate(this.NativeIsIndeterminate);
+                this.ApplyNativeValue(this.NativeValue);
             }
 
             base.NativeInit();
@@ -51,7 +36,7 @@ namespace Appercode.UI.Controls
         {
             if (this.NativeUIElement != null)
             {
-                ((WrapedProgressBar)this.NativeUIElement).Max = (int)maximum;
+                ((WrappedProgressBar)this.NativeUIElement).Max = (int)maximum;
                 this.ApplyNativeValue(this.NativeValue);
             }
         }
@@ -71,13 +56,13 @@ namespace Appercode.UI.Controls
                 double range = maximum - minimum;
                 int progress = (int)(100.0 * value / range);
 
-                ((WrapedProgressBar)this.NativeUIElement).Progress = progress;
+                ((WrappedProgressBar)this.NativeUIElement).Progress = progress;
             }
         }
 
         private void ApplyNativeIsIndeterminate(bool isIndeterminate)
         {
-            ((WrapedProgressBar)this.NativeUIElement).Indeterminate = isIndeterminate;
+            ((WrappedProgressBar)this.NativeUIElement).Indeterminate = isIndeterminate;
         }
     }
 }

@@ -1,11 +1,11 @@
-using Android.Content;
 using Android.Text;
 using Android.Text.Method;
 using Android.Views;
 using Android.Views.InputMethods;
+using Android.Widget;
 using Appercode.UI.Controls.Input;
 using Appercode.UI.Controls.NativeControl;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
 using System.Linq;
 using System.Windows.Media;
@@ -19,54 +19,6 @@ namespace Appercode.UI.Controls
         public Java.Lang.ICharSequence FilterFormatted(Java.Lang.ICharSequence source, int start, int end, ISpanned dest, int dstart, int dend)
         {
             return source.SubSequenceFormatted(0, 0);
-        }
-    }
-
-    public class NativeEditText : WrapedEditText
-    {
-        public NativeEditText(IntPtr handle, Android.Runtime.JniHandleOwnership transfer)
-            : base(handle, transfer)
-        {
-        }
-
-        public NativeEditText(Context context)
-            : base(context)
-        {
-        }
-
-        public event RoutedEventHandler NativeSelectionChanged;
-
-        public void PublicSetSelection(int start, int stop)
-        {
-            base.SetSelection(start, stop);
-        }
-
-        public override void SetSelection(int start, int stop)
-        {
-            base.SetSelection(start, stop);
-        }
-
-        protected override void OnSelectionChanged(int selStart, int selEnd)
-        {
-            if (this.Text.Length <= selStart)
-            {
-                base.OnSelectionChanged(selStart, selEnd);
-                if (this.NativeSelectionChanged != null)
-                {
-                    this.NativeSelectionChanged(this, new RoutedEventArgs());
-                }
-            }
-        }
-
-        protected override void OnTextChanged(Java.Lang.ICharSequence text, int start, int before, int after)
-        {
-            if (this.Text != text.ToString())
-            {
-            }
-            else
-            {
-                base.OnTextChanged(text, start, before, after);
-            }
         }
     }
 
@@ -229,12 +181,11 @@ namespace Appercode.UI.Controls
             }
         }
 
-
-
         public void NativeSelect(int start, int length)
         {
-            ((NativeEditText)this.NativeUIElement).RequestFocus();
-            ((NativeEditText)this.NativeUIElement).SetSelection(start, start + length);
+            var nativeView = (EditText)this.NativeUIElement;
+            nativeView.RequestFocus();
+            nativeView.SetSelection(start, start + length);
         }
 
         protected internal override void NativeInit()
@@ -243,7 +194,7 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    var nativeView = new NativeEditText(this.Context);
+                    var nativeView = new WrappedEditText(this);
                     this.NativeUIElement = nativeView;
                     nativeView.NativeSelectionChanged += this.TextBoxNativeSelectionChanged;
                     nativeView.TextChanged += this.TextBoxTextChanged;
@@ -277,7 +228,7 @@ namespace Appercode.UI.Controls
         private void ApplyNativeInputScope(InputScope inputScope)
         {
             // TODO: check the input type correctly switches, for example, from Text to Number and then back to Text
-            var editText = (NativeEditText)this.NativeUIElement;
+            var editText = (TextView)this.NativeUIElement;
             var inputTypes = editText.InputType;
             switch (inputScope)
             {
@@ -288,7 +239,7 @@ namespace Appercode.UI.Controls
                     editText.InputType = inputTypes | InputTypes.ClassText;
                     editText.ImeOptions = ImeAction.Search;
                     break;
-                case Input.InputScope.EmailAddress:
+                case InputScope.EmailAddress:
                     editText.InputType = inputTypes | InputTypes.ClassText | InputTypes.TextVariationEmailAddress;
                     break;
                 default:
@@ -304,17 +255,18 @@ namespace Appercode.UI.Controls
                 this.Text = this.Text.Replace(Environment.NewLine, " ");
             }
 
-            var nativeView = (NativeEditText)this.NativeUIElement;
-            this.nativeSelectionStart = nativeView.SelectionStart;
+            var nativeView = (TextView)this.NativeUIElement;
+            this.NativeSelectionStart = nativeView.SelectionStart;
             this.NativeSelectionLength = nativeView.SelectionEnd - nativeView.SelectionStart;
             this.SelectionChanged?.Invoke(this, new RoutedEventArgs());
         }
 
         private void ApplyNativeText(string value)
         {
-            if (((NativeEditText)this.NativeUIElement).Text != value)
+            var nativeView = (TextView)this.NativeUIElement;
+            if (nativeView.Text != value)
             {
-                ((NativeEditText)this.NativeUIElement).Text = value != null ? (string)value : string.Empty;
+                nativeView.Text = value ?? string.Empty;
             }
         }
 
@@ -325,55 +277,44 @@ namespace Appercode.UI.Controls
 
         private void ApplyNativeTextWrapping(TextWrapping value)
         {
+            var nativeView = (TextView)this.NativeUIElement;
             if (value == TextWrapping.Wrap)
             {
-                ((NativeEditText)this.NativeUIElement).TransformationMethod = null;
-                ((NativeEditText)this.NativeUIElement).SetHorizontallyScrolling(false);
+                nativeView.TransformationMethod = null;
+                nativeView.SetHorizontallyScrolling(false);
             }
             else
             {
-                ((NativeEditText)this.NativeUIElement).TransformationMethod = SingleLineTransformationMethod.Instance;
-                ((NativeEditText)this.NativeUIElement).SetHorizontallyScrolling(true);
+                nativeView.TransformationMethod = SingleLineTransformationMethod.Instance;
+                nativeView.SetHorizontallyScrolling(true);
             }
         }
 
         private void ApplyNativeTextAlignment(TextAlignment value)
         {
+            GravityFlags gravity;
             switch (value)
             {
-                case Controls.TextAlignment.Center:
-                    {
-                        ((NativeEditText)this.NativeUIElement).Gravity = GravityFlags.Center;
-                        break;
-                    }
-                case Controls.TextAlignment.Left:
-                    {
-                        ((NativeEditText)this.NativeUIElement).Gravity = GravityFlags.Left;
-                        break;
-                    }
-                case Controls.TextAlignment.Right:
-                    {
-                        ((NativeEditText)this.NativeUIElement).Gravity = GravityFlags.Right;
-                        break;
-                    }
+                case TextAlignment.Center:
+                    gravity = GravityFlags.Center;
+                    break;
+                case TextAlignment.Left:
+                    gravity = GravityFlags.Left;
+                    break;
+                case TextAlignment.Right:
+                    gravity = GravityFlags.Right;
+                    break;
                 default:
-                    {
-                        ((NativeEditText)this.NativeUIElement).Gravity = GravityFlags.Left;
-                        break;
-                    }
+                    gravity = GravityFlags.Left;
+                    break;
             }
+
+            ((TextView)this.NativeUIElement).Gravity = gravity;
         }
 
         private void ApplyNativeAcceptsReturn(bool value)
         {
-            if (!value)
-            {
-                ((NativeEditText)this.NativeUIElement).SetSingleLine(true);
-            }
-            else
-            {
-                ((NativeEditText)this.NativeUIElement).SetSingleLine(false);
-            }
+            ((TextView)this.NativeUIElement).SetSingleLine(!value);
         }
 
         private void ApplyNativeSelectionStart(int value)
@@ -405,30 +346,30 @@ namespace Appercode.UI.Controls
                 {
                     filterArray = new IInputFilter[1];
                 }
+
                 filterArray[0] = new InputFilterLengthFilter(maxLength);
             }
             else
             {
                 if (isReadOnly)
                 {
-                    filterArray = new IInputFilter[1];
-                    filterArray[0] = this.readOnlyFilter;
+                    filterArray = new[] { this.readOnlyFilter };
 
                     // It is unclear, what to with the background in readonly mode
-                    // Android.Graphics.Drawables.StateListDrawable draw = (Android.Graphics.Drawables.StateListDrawable)Resources.System.GetDrawable(Android.Resource.Drawable.EditBoxBackground);
-                    // draw.SetState(new int[1] { Android.Resource.Attribute.DisabledAlpha });
-                    // Android.Graphics.Drawables.Drawable draw2 = draw.Current;
-                    // ((NativeEditText)this.NativeUIElement).SetBackgroundDrawable(draw2);
+                    // var draw = (Android.Graphics.Drawables.StateListDrawable)Resources.System.GetDrawable(Android.Resource.Drawable.EditBoxBackground);
+                    // draw.SetState(new[] { Android.Resource.Attribute.DisabledAlpha });
+                    // this.NativeUIElement.Background = draw.Current;
                 }
                 else
                 {
-                    filterArray = new IInputFilter[0];
+                    filterArray = Array.Empty<IInputFilter>();
 
                     // It is unclear, what to with the background in readonly mode
-                    // ((NativeEditText)this.NativeUIElement).SetBackgroundResource(Android.Resource.Drawable.EditBoxBackground);
+                    // this.NativeUIElement.Background = Android.Resource.Drawable.EditBoxBackground;
                 }
             }
-            ((NativeEditText)this.NativeUIElement).SetFilters(filterArray);
+
+            ((TextView)this.NativeUIElement).SetFilters(filterArray);
         }
     }
 }

@@ -1,6 +1,6 @@
 using Android.Views;
 using Appercode.UI.Controls.NativeControl;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System.Drawing;
 using System.Windows.Media;
 
@@ -12,13 +12,15 @@ namespace Appercode.UI.Controls
         {
             if (this.NativeUIElement != null)
             {
-                var wvg = this.NativeUIElement as WrapedViewGroup;
+                var wvg = this.NativeUIElement as WrappedViewGroup;
                 if (wvg != null)
                 {
                     wvg.AddViewInLayoutOverride(view.NativeUIElement);
-                    return;
                 }
-                ((ViewGroup)this.NativeUIElement).AddView(view.NativeUIElement);
+                else
+                {
+                    ((ViewGroup)this.NativeUIElement).AddView(view.NativeUIElement); 
+                }
             }
         }
 

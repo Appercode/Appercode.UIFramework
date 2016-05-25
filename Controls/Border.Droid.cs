@@ -2,6 +2,7 @@ using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
 using Android.Views;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using Appercode.UI.Device;
 using System;
 using System.Drawing;
@@ -113,7 +114,7 @@ namespace Appercode.UI.Controls
             base.NativeInit();
             if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
-                this.NativeUIElement = new NativeControl.Wrapers.WrapedViewGroup(this.Context);
+                this.NativeUIElement = new WrappedViewGroup(this);
                 this.ApplyNativeContent(this.Child);
                 this.ApplyNativeBorderThickness(this.BorderThickness);
             }
@@ -142,7 +143,7 @@ namespace Appercode.UI.Controls
             if (this.NativeUIElement != null && newContent != null)
             {
                 this.ChildNativeUIElemtnt = newContent.NativeUIElement;
-                var nativeView = (NativeControl.Wrapers.WrapedViewGroup)this.NativeUIElement;
+                var nativeView = (WrappedViewGroup)this.NativeUIElement;
                 nativeView.RemoveAllViews();
                 nativeView.AddViewInLayoutOverride(this.ChildNativeUIElemtnt);
                 this.ApplyNativeBorderThickness(this.BorderThickness);

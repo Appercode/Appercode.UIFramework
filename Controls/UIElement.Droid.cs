@@ -1,7 +1,7 @@
 using Android.App;
 using Android.Content;
 using Android.Views;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Device;
 using System;
 using System.Drawing;
@@ -19,6 +19,15 @@ namespace Appercode.UI.Controls
         public Context Context => StaticContext;
 
         internal virtual bool IsFocused => false;
+
+        internal virtual bool ShouldInterceptTouchEvent => Tap != null;
+
+        internal virtual void OnTap()
+        {
+            RaiseTap();
+        }
+
+        internal virtual void OnNativeClick() { }
 
         protected internal virtual double NativeWidth
         {
@@ -193,8 +202,6 @@ namespace Appercode.UI.Controls
 
             if (this.NativeUIElement != null)
             {
-                ((ITapableView)this.NativeUIElement).NativeTap -= this.UIElementNativeTap;
-                ((ITapableView)this.NativeUIElement).NativeTap += this.UIElementNativeTap;
                 ((IJavaFinalizable)this.NativeUIElement).JavaFinalized -= this.UIElement_JavaFinalized;
                 ((IJavaFinalizable)this.NativeUIElement).JavaFinalized += this.UIElement_JavaFinalized;
             }
@@ -212,11 +219,6 @@ namespace Appercode.UI.Controls
                 ((IJavaFinalizable)this.NativeUIElement).JavaFinalized -= this.UIElement_JavaFinalized;
                 this.NativeUIElement = null;
             }
-        }
-
-        private void UIElementNativeTap(object sender, EventArgs e)
-        {
-            this.RaiseTap();
         }
     }
 }

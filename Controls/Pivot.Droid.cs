@@ -1,4 +1,5 @@
-﻿using Appercode.UI.Controls.NativeControl.Wrapers;
+﻿using Android.Views;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 
 namespace Appercode.UI.Controls
 {
@@ -10,7 +11,7 @@ namespace Appercode.UI.Controls
 
             if (this.PivotHeader != null)
             {
-                ((WrapedViewGroup)this.NativeUIElement).AddView(((UIElement)this.PivotHeader).NativeUIElement);
+                ((ViewGroup)this.NativeUIElement).AddView(((UIElement)this.PivotHeader).NativeUIElement);
             }
         }
 

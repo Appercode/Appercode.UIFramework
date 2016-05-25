@@ -1,10 +1,6 @@
-﻿#region Using directives
-using Android.Content;
-using Android.Runtime;
-using Android.Util;
-using Android.Views;
+﻿using Android.Runtime;
 using Android.Webkit;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using Appercode.UI.Controls.Navigation;
 using Java.Interop;
 using System;
@@ -13,10 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-#endregion //Using directives
 
 namespace Appercode.UI.Controls
-{   
+{
     public sealed partial class WebBrowser
     {
         /// <summary>
@@ -29,7 +24,7 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    var webView = new WrappedWebView(this.Context);
+                    var webView = new WrappedWebView(this);
                     this.WebViewClient = new WrappingWebViewClient(this);
                     webView.SetWebViewClient(this.WebViewClient);
                     webView.SetWebChromeClient(new MyWebChromeClient());
@@ -685,112 +680,6 @@ namespace Appercode.UI.Controls
                                                    Value = input
                                                });
             }
-        }
-
-        /// <summary>
-        /// Wraps original Android WebView control
-        /// </summary>
-        public class WrappedWebView : WebView, ITapableView, IJavaFinalizable
-        {
-            #region Fields
-
-            /// <summary>
-            /// Holds tap detector object instance
-            /// </summary>
-            private TapDetector _TapDetector;
-
-            #endregion //Fields
-
-            #region Constructors
-
-            /// <summary>
-            /// Initializes the wrapped web view
-            /// </summary>
-            /// <param name="javaReference"></param>
-            /// <param name="transfer"></param>
-            protected WrappedWebView(IntPtr javaReference, JniHandleOwnership transfer)
-                : base(javaReference, transfer)
-            {
-                _TapDetector = new TapDetector(this);
-            }
-
-            /// <summary>
-            /// Initializes the wrapped web view
-            /// </summary>
-            /// <param name="context"></param>
-            public WrappedWebView(Context context)
-                : base(context)
-            {
-                _TapDetector = new TapDetector(this);
-            }
-
-            /// <summary>
-            /// Initializes the wrapped web view
-            /// </summary>
-            /// <param name="context"></param>
-            /// <param name="attrs"></param>
-            public WrappedWebView(Context context, IAttributeSet attrs)
-                : base(context, attrs)
-            {
-                _TapDetector = new TapDetector(this);
-            }
-
-            /// <summary>
-            /// Initializes the wrapped web view
-            /// </summary>
-            /// <param name="context"></param>
-            /// <param name="attrs"></param>
-            /// <param name="defStyle"></param>
-            public WrappedWebView(Context context, IAttributeSet attrs, int defStyle)
-                : base(context, attrs, defStyle)
-            {
-                _TapDetector = new TapDetector(this);
-            }
-
-            /// <summary>
-            /// Initializes the wrapped web view
-            /// </summary>
-            /// <param name="context"></param>
-            /// <param name="attrs"></param>
-            /// <param name="defStyle"></param>
-            /// <param name="privateBrowsing"></param>
-            public WrappedWebView(Context context, IAttributeSet attrs, int defStyle, bool privateBrowsing)
-                : base(context, attrs, defStyle, privateBrowsing)
-            {
-                _TapDetector = new TapDetector(this);
-            }
-
-            #endregion //Constructors
-
-            #region Interfaces implementations
-
-            public override bool OnTouchEvent(MotionEvent e)
-            {
-                _TapDetector.Detect(e);
-                return base.OnTouchEvent(e);
-            }
-
-            public event EventHandler NativeTap;
-            public event EventHandler JavaFinalized;
-
-            public void WrapedNativeRaiseTap()
-            {
-                if (this.NativeTap != null)
-                {
-                    this.NativeTap(this, null);
-                }
-            }
-
-            protected override void JavaFinalize()
-            {
-                if (this.JavaFinalized != null)
-                {
-                    this.JavaFinalized(null, null);
-                }
-                base.JavaFinalize();
-            }
-
-            #endregion //Interfaces implementations
         }
 
         #endregion //Nested types

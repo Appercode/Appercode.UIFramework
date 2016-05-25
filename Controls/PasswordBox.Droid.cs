@@ -1,5 +1,8 @@
 using Android.Text;
+using Android.Widget;
 using Appercode.UI.Controls.NativeControl;
+using Appercode.UI.Controls.NativeControl.Wrappers;
+using System;
 using System.Linq;
 using System.Windows.Media;
 
@@ -39,7 +42,7 @@ namespace Appercode.UI.Controls
 
         public void NativeSelect(int start, int length)
         {
-            ((NativeEditText)this.NativeUIElement).SetSelection(start, start + length);
+            ((EditText)this.NativeUIElement).SetSelection(start, start + length);
         }
 
         protected internal override void NativeInit()
@@ -48,7 +51,7 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    var nativeView = new NativeEditText(this.Context)
+                    var nativeView = new WrappedEditText(this)
                     {
                         InputType = InputTypes.TextVariationPassword | InputTypes.ClassText
                     };
@@ -76,12 +79,13 @@ namespace Appercode.UI.Controls
 
         private void ApplyNativePassword(string password)
         {
-            if (((NativeEditText)this.NativeUIElement).Text != password)
+            var nativeView = (EditText)this.NativeUIElement;
+            if (nativeView.Text != password)
             {
-                ((NativeEditText)this.NativeUIElement).Text = password != null ? (string)password : string.Empty;
+                nativeView.Text = password ?? string.Empty;
             }
 
-            ((NativeEditText)this.NativeUIElement).SetSelection(this.Password.Length);
+            nativeView.SetSelection(password.Length);
         }
 
         private void ApplyNativeMaxLength(int maxLength)
@@ -91,21 +95,10 @@ namespace Appercode.UI.Controls
 
         private void ApplyInputFilters(int maxLength)
         {
-            IInputFilter[] filterArray;
-
-            if (maxLength > 0)
-            {
-
-                filterArray = new IInputFilter[1];
-
-                filterArray[0] = new InputFilterLengthFilter(maxLength);
-            }
-            else
-            {
-                filterArray = new IInputFilter[0];
-            }
-
-            ((NativeEditText)this.NativeUIElement).SetFilters(filterArray);
+            var filterArray =  maxLength > 0
+                ? new[] { new InputFilterLengthFilter(maxLength) }
+                : Array.Empty<IInputFilter>();
+            ((TextView)this.NativeUIElement).SetFilters(filterArray);
         }
     }
 }

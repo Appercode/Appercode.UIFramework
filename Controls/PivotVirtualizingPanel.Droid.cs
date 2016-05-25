@@ -1,11 +1,7 @@
-using Android.Content;
-using Android.Runtime;
 using Android.Support.V4.View;
-using Android.Util;
 using Android.Views;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using Java.Lang;
-using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
@@ -14,8 +10,6 @@ using ViewPagerIndicator;
 
 namespace Appercode.UI.Controls
 {
-    #region Implementation classes
-
     internal class PivotAdapter : PagerAdapter, TitleProvider
     {
         public class UiElementTuple
@@ -149,91 +143,6 @@ namespace Appercode.UI.Controls
         }        
     }
 
-    internal class WrappedViewPager : ViewPager, ITapableView, IJavaFinalizable
-    {
-        #region Fields
-
-        /// <summary>
-        /// Holds tap detector object instance
-        /// </summary>
-        private TapDetector _TapDetector;
-
-        #endregion //Fields
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes the wrapped web view
-        /// </summary>
-        /// <param name="javaReference"></param>
-        /// <param name="transfer"></param>
-        protected WrappedViewPager(IntPtr javaReference, JniHandleOwnership transfer)
-            : base(javaReference, transfer)
-        {
-            _TapDetector = new TapDetector(this);
-        }
-
-        /// <summary>
-        /// Initializes the wrapped web view
-        /// </summary>
-        /// <param name="context"></param>
-        public WrappedViewPager(Context context)
-            : base(context)
-        {
-            _TapDetector = new TapDetector(this);
-        }
-
-        /// <summary>
-        /// Initializes the wrapped web view
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="attrs"></param>
-        public WrappedViewPager(Context context, IAttributeSet attrs)
-            : base(context, attrs)
-        {
-            _TapDetector = new TapDetector(this);
-        }
-
-        #endregion //Constructors
-
-        protected override void OnLayout(bool changed, int l, int t, int r, int b)
-        {
-            base.OnLayout(changed, l, t, r, b);
-        }
-
-        #region Interfaces implementations
-
-        public override bool OnTouchEvent(Android.Views.MotionEvent e)
-        {
-            _TapDetector.Detect(e);
-            return base.OnTouchEvent(e);
-        }
-
-        public event EventHandler NativeTap;
-        public event EventHandler JavaFinalized;
-
-        public void WrapedNativeRaiseTap()
-        {
-            if (this.NativeTap != null)
-            {
-                this.NativeTap(this, null);
-            }
-        }
-
-        protected override void JavaFinalize()
-        {
-            if (this.JavaFinalized != null)
-            {
-                this.JavaFinalized(null, null);
-            }
-            base.JavaFinalize();
-        }
-
-        #endregion //Interfaces implementations
-    }
-
-    #endregion //Implementation classes
-
     public partial class PivotVirtualizingPanel
     {
         public void ItemsUpdated(NotifyCollectionChangedEventArgs e)
@@ -249,7 +158,7 @@ namespace Appercode.UI.Controls
                 if (this.NativeUIElement == null)
                 {
                     this._PivotAdapter = new PivotAdapter(this);
-                    var nativeStackPanel = new WrappedViewPager(this.Context)
+                    var nativeStackPanel = new WrappedViewPager(this)
                     {
                         Adapter = this._PivotAdapter,
                         CurrentItem = 0

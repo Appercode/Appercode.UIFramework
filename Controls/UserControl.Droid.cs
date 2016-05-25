@@ -1,5 +1,5 @@
 using Android.Views;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 
 namespace Appercode.UI.Controls
 {
@@ -12,7 +12,7 @@ namespace Appercode.UI.Controls
             base.NativeInit();
             if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
-                this.NativeUIElement = new WrapedViewGroup(this.Context);
+                this.NativeUIElement = new WrappedViewGroup(this);
                 this.ApplyNativeContent(this.Content);
                 this.ApplyNativePadding(this.Padding);
             }

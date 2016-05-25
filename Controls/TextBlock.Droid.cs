@@ -1,10 +1,6 @@
-using Android.Content.Res;
 using Android.Text;
-using Android.Util;
 using Android.Views;
-using Appercode.UI.Controls.Media;
-using Appercode.UI.Controls.NativeControl.Wrapers;
-using Appercode.UI.Device;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -157,7 +153,7 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    this.NativeUIElement = new WrapedTextView(this.Context);
+                    this.NativeUIElement = new WrappedTextView(this);
                 }
 
                 this.ApplyNativeText(this.Text);

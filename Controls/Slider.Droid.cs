@@ -1,104 +1,9 @@
-using System.Drawing;
-using Android.Content;
 using Android.Views;
 using Android.Widget;
-using Appercode.UI.Controls.NativeControl.Wrapers;
-using System;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 
 namespace Appercode.UI.Controls
 {
-    public class NativeSeekBar : WrappedSeekBar
-    {
-        #region Properties
-
-        public Orientation Orientation { get; set; }
-
-        #endregion
-
-        #region Constructors
-
-        public NativeSeekBar(IntPtr handle, Android.Runtime.JniHandleOwnership transfer)
-            : base(handle, transfer)
-        {
-            this.Orientation = Orientation.Horizontal;
-        }
-
-        public NativeSeekBar(Context context)
-            : base(context)
-        {
-            this.Orientation = Orientation.Horizontal;
-        }
-
-        #endregion
-
-        #region Lifecycle
-
-        protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
-        {
-            if (this.Orientation == Orientation.Vertical)
-            {
-                base.OnSizeChanged(h, w, oldh, oldw);
-            }
-            else
-            {
-                base.OnSizeChanged(w, h, oldw, oldh);
-            }
-        }
-
-        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-        {
-            if (this.Orientation == Orientation.Vertical)
-            {
-                base.OnMeasure(heightMeasureSpec, widthMeasureSpec);
-                this.SetMeasuredDimension(MeasuredHeight, MeasuredWidth);
-            }
-            else
-            {
-                base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-            }
-        }
-
-        protected override void OnDraw(Android.Graphics.Canvas canvas)
-        {
-            if (this.Orientation == Orientation.Vertical)
-            {
-                canvas.Rotate(-90);
-                canvas.Translate(-Height, 0);
-            }
-
-            base.OnDraw(canvas);
-        }
-
-        public override bool OnTouchEvent(MotionEvent e)
-        {
-            if (this.Orientation == Orientation.Vertical)
-            {
-                if (!this.Enabled)
-                {
-                    return false;
-                }
-
-                switch (e.Action)
-                {
-                    case MotionEventActions.Down:
-                    case MotionEventActions.Move:
-                    case MotionEventActions.Up:
-                        this.Progress = Max - (int)(Max * e.GetY() / Height);
-                        this.OnSizeChanged(Width, Height, 0, 0);
-                        break;
-                    default:
-                        return base.OnTouchEvent(e);
-                }
-
-                return true;
-            }
-
-            return base.OnTouchEvent(e);
-        }
-
-        #endregion
-    }
-
     public partial class Slider
     {
         #region Consts
@@ -147,31 +52,23 @@ namespace Appercode.UI.Controls
 
         #endregion
 
-        #region Initialization
-
         protected internal override void NativeInit()
         {
-            if (this.Parent != null && this.Context != null)
+            if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
-                if (this.NativeUIElement == null)
-                {
-                    this.NativeUIElement = new NativeSeekBar(this.Context);
-                    ((NativeSeekBar)this.NativeUIElement).Max = (int)SeekBarMaximum;
-                    this.ApplyNativeMinimum(Minimum);
-                    this.ApplyNativeMaximum(Maximum);
-                    this.ApplyNativeValue(Value);
-                    this.ApplyNativeIsDirectionReversed(IsDirectionReversed);
-                    this.ApplyNativeOrientation(Orientation);
-                    ((NativeSeekBar)this.NativeUIElement).ProgressChanged += SeekBarProgressChanged;
-                    this.NativeUIElement.FocusChange += SeekBarFocusChange;
-                }
+                var nativeView = new WrappedSeekBar(this) { Max = (int)SeekBarMaximum };
+                this.NativeUIElement = nativeView;
+                this.ApplyNativeMinimum(this.Minimum);
+                this.ApplyNativeMaximum(this.Maximum);
+                this.ApplyNativeValue(this.Value);
+                this.ApplyNativeIsDirectionReversed(this.IsDirectionReversed);
+                this.ApplyNativeOrientation(this.Orientation);
+                nativeView.ProgressChanged += this.SeekBarProgressChanged;
+                nativeView.FocusChange += this.SeekBarFocusChange;
             }
+
             base.NativeInit();
         }
-
-        #endregion
-
-        #region Private methods
 
         protected override void ApplyNativeMaximum(double maximum)
         {
@@ -190,7 +87,7 @@ namespace Appercode.UI.Controls
             base.ApplyNativeValue(value);
             value = IsDirectionReversed ? (Maximum - value) : value;
             var percValue = (value - Minimum) * SeekBarMaximum / (Maximum - Minimum);
-            ((NativeSeekBar)this.NativeUIElement).Progress = (int)percValue;
+            ((SeekBar)this.NativeUIElement).Progress = (int)percValue;
         }
 
         private void ApplyNativeIsDirectionReversed(bool isDirectionReversed)
@@ -214,10 +111,10 @@ namespace Appercode.UI.Controls
         {
             // TODO: (dk) set default width and height
             if (this.NativeUIElement != null)
-                ((NativeSeekBar)this.NativeUIElement).Orientation = orientation;
+            {
+                ((WrappedSeekBar)this.NativeUIElement).Orientation = orientation;
+            }
         }
-
-        #endregion
 
         #region Event handlers
 

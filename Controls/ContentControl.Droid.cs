@@ -1,6 +1,6 @@
 ﻿using Android.Views;
 using Android.Widget;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using Appercode.UI.Device;
 using System.Drawing;
 using System.Windows;
@@ -17,7 +17,7 @@ namespace Appercode.UI.Controls
 
         protected internal override void NativeInit()
         {
-            if (WrapedViewGroup.FillNativeUIElement(this))
+            if (WrappedViewGroup.FillNativeUIElement(this))
             {
                 this.ApplyNativeContent(null, this.Content);
             }

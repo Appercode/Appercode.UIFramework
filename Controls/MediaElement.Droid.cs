@@ -1,7 +1,7 @@
 using Android.Content;
 using Android.Media;
 using Android.Views;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using Appercode.UI.Device;
 using System;
 using System.Windows;
@@ -14,8 +14,7 @@ namespace Appercode.UI.Controls
         private Uri nativeSource;
         private TimeSpan nativePosition;
         private double nativeVolume;
-        private WrapedVideoView videoView;
-
+        private WrappedVideoView videoView;
         private bool isApplyNewSource = false;
 
         protected int? NativeAudioStreamIndex
@@ -154,8 +153,8 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    var nativeView = new WrapedViewGroup(this.Context);
-                    this.videoView = new WrapedVideoView(this.Context);
+                    var nativeView = new WrappedViewGroup(this);
+                    this.videoView = new WrappedVideoView(this);
                     nativeView.AddView(this.videoView);
                     this.NativeUIElement = nativeView;
 
@@ -166,11 +165,7 @@ namespace Appercode.UI.Controls
                     this.videoView.LayoutParameters = layoutParams;
 
                     this.videoView.InitMediaPlayer();
-
-                    this.videoView.VideoSizeChanged -= MediaElement_VideoSizeChanged;
                     this.videoView.VideoSizeChanged += MediaElement_VideoSizeChanged;
-
-                    this.videoView.BufferingProgressUpdate -= MediaElement_BufferingProgressUpdate;
                     this.videoView.BufferingProgressUpdate += MediaElement_BufferingProgressUpdate;
 
                     if (this.ContainsValue(AudioStreamIndexProperty))

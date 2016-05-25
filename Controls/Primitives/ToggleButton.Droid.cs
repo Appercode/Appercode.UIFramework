@@ -28,7 +28,7 @@ namespace Appercode.UI.Controls.Primitives
         {
             if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
-                this.NativeUIElement = new NativeToggleButton(this.Context);
+                this.NativeUIElement = new NativeToggleButton(this);
                 this.ApplyNativeContent(null, this.Content);
             }
 
@@ -36,7 +36,7 @@ namespace Appercode.UI.Controls.Primitives
             if (this.NativeUIElement != null && !(this is CheckBox) && !(this is RadioButton))
             {
                 var nativeView = (NativeToggleButton)this.NativeUIElement;
-                nativeView.IsChecked = this.NativeIsChecked.HasValue && this.NativeIsChecked.Value;
+                nativeView.IsChecked = this.NativeIsChecked == true;
                 nativeView.Background = new Android.Widget.ToggleButton(this.Context).Background;
             }
         }

@@ -1,17 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Support.V4.View;
-using Android.Util;
-using Android.Views;
-using Appercode.UI.Controls;
-using Appercode.UI.Controls.NativeControl.Wrapers;
-using Java.Interop;
-using Java.Lang;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 
 namespace Appercode.UI.Controls
 {
@@ -94,73 +82,6 @@ namespace Appercode.UI.Controls
 
     #region Tabs
 
-    public class WrappedTabPageIndicator : ViewPagerIndicator.TabPageIndicator, ITapableView, IJavaFinalizable
-    {
-        #region Fields
-
-        /// <summary>
-        /// Holds tap detector object instance
-        /// </summary>
-        private TapDetector _TapDetector;
-
-        #endregion //Fields
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes the wrapped web view
-        /// </summary>
-        /// <param name="context"></param>
-        public WrappedTabPageIndicator(Context context)
-            : base(context, null)
-        {
-            _TapDetector = new TapDetector(this);
-        }
-
-        /// <summary>
-        /// Initializes the wrapped web view
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="attrs"></param>
-        public WrappedTabPageIndicator(Context context, IAttributeSet attrs)
-            : base(context, attrs)
-        {
-            _TapDetector = new TapDetector(this);
-        }
-
-        #endregion //Constructors
-
-        #region Interfaces implementations
-
-        public override bool OnTouchEvent(Android.Views.MotionEvent e)
-        {
-            _TapDetector.Detect(e);
-            return base.OnTouchEvent(e);
-        }
-
-        public event EventHandler NativeTap;
-        public event EventHandler JavaFinalized;
-
-        public void WrapedNativeRaiseTap()
-        {
-            if (this.NativeTap != null)
-            {
-                this.NativeTap(this, null);
-            }
-        }
-
-        protected override void JavaFinalize()
-        {
-            if (this.JavaFinalized != null)
-            {
-                this.JavaFinalized(null, null);
-            }
-            base.JavaFinalize();
-        }
-
-        #endregion //Interfaces implementations
-    }
-
     public class TabPivotHeaderControl : Control, IPivotHeaderControl
     {
         protected internal override void NativeInit()
@@ -169,7 +90,7 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    this.NativeUIElement = new WrappedTabPageIndicator(this.Context);
+                    this.NativeUIElement = new WrappedTabPageIndicator(this);
                     if (_ViewPager != null)
                     {
                         this.NativePageIndicator.SetViewPager(_ViewPager);
@@ -179,7 +100,7 @@ namespace Appercode.UI.Controls
             base.NativeInit();
         }
 
-        protected WrappedTabPageIndicator NativePageIndicator
+        private WrappedTabPageIndicator NativePageIndicator
         {
             get { return (WrappedTabPageIndicator)this.NativeUIElement; }
         }
@@ -220,73 +141,6 @@ namespace Appercode.UI.Controls
 
     #region Circles
 
-    public class WrappedCirclePageIndicator : ViewPagerIndicator.CirclePageIndicator, ITapableView, IJavaFinalizable
-    {
-        #region Fields
-
-        /// <summary>
-        /// Holds tap detector object instance
-        /// </summary>
-        private TapDetector _TapDetector;
-
-        #endregion //Fields
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes the wrapped web view
-        /// </summary>
-        /// <param name="context"></param>
-        public WrappedCirclePageIndicator(Context context)
-            : base(context)
-        {
-            _TapDetector = new TapDetector(this);
-        }
-
-        /// <summary>
-        /// Initializes the wrapped web view
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="attrs"></param>
-        public WrappedCirclePageIndicator(Context context, IAttributeSet attrs)
-            : base(context, attrs)
-        {
-            _TapDetector = new TapDetector(this);
-        }
-
-        #endregion //Constructors
-
-        #region Interfaces implementations
-
-        public override bool OnTouchEvent(Android.Views.MotionEvent e)
-        {
-            _TapDetector.Detect(e);
-            return base.OnTouchEvent(e);
-        }
-
-        public event EventHandler NativeTap;
-        public event EventHandler JavaFinalized;
-
-        public void WrapedNativeRaiseTap()
-        {
-            if (this.NativeTap != null)
-            {
-                this.NativeTap(this, null);
-            }
-        }
-
-        protected override void JavaFinalize()
-        {
-            if (this.JavaFinalized != null)
-            {
-                this.JavaFinalized(null, null);
-            }
-            base.JavaFinalize();
-        }
-
-        #endregion //Interfaces implementations
-    }
-
     public partial class CirclePivotHeaderControl
     {
         protected internal override void NativeInit()
@@ -295,7 +149,7 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    this.NativeUIElement = new WrappedCirclePageIndicator(this.Context);
+                    this.NativeUIElement = new WrappedCirclePageIndicator(this);
                     if (_ViewPager != null)
                     {
                         this.NativePageIndicator.SetViewPager(_ViewPager);
@@ -305,7 +159,7 @@ namespace Appercode.UI.Controls
             base.NativeInit();
         }
 
-        protected WrappedCirclePageIndicator NativePageIndicator
+        private WrappedCirclePageIndicator NativePageIndicator
         {
             get { return (WrappedCirclePageIndicator) this.NativeUIElement; }
         }

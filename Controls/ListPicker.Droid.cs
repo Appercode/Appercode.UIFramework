@@ -1,6 +1,6 @@
 using Android.Views;
 using Android.Widget;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using Appercode.UI.Controls.Primitives;
 using Appercode.UI.Device;
 using System.Collections.Generic;
@@ -91,10 +91,10 @@ namespace Appercode.UI.Controls
             public override View GetView(int position, View reusableView, ViewGroup parent)
             {
                 UIElement listItem;
-                var resultView = reusableView as WrapedViewGroup;
+                var resultView = reusableView as ViewGroup;
                 if (resultView == null)
                 {
-                    resultView = new WrapedViewGroup(parent.Context);
+                    resultView = new WrappedViewGroup(this.ListPicker);
                     listItem = (UIElement)this.Generator.ContainerFromIndex(position);
                     this.ListPicker.AddLogicalChild(listItem);
                     this.NativeViewContainers.Add(listItem.NativeUIElement, listItem);

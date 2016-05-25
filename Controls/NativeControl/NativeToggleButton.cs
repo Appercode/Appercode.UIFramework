@@ -1,16 +1,16 @@
-using Android.Content;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 
 namespace Appercode.UI.Controls.NativeControl
 {
-    internal class NativeToggleButton : Wrapers.WrapedViewGroup
+    internal class NativeToggleButton : WrappedViewGroup
     {
         private static readonly int[] CheckedStateSet =
         {
             Android.Resource.Attribute.StateChecked
         };
 
-        public NativeToggleButton(Context context)
-            : base(context)
+        public NativeToggleButton(UIElement owner)
+            : base(owner)
         {
         }
 

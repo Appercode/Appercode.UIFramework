@@ -33,12 +33,12 @@ namespace Appercode.UI.Controls
 
         protected override View CreateDefaultControl(string value)
         {
-            var innerDefaultControl = new NativeScrollViewer(this.Context)
+            var innerDefaultControl = new NativeScrollViewer(this)
             {
                 LayoutParameters = this.CreateLayoutParams()
             };
             innerDefaultControl.ScrollChanged += innerDefaultControl_ScrollChanged;
-            if (this.Background != null)
+            if (this.ContainsValue(BackgroundProperty))
             {
                 innerDefaultControl.Background = this.Background.ToDrawable();
             }
@@ -57,13 +57,12 @@ namespace Appercode.UI.Controls
         protected override View CreateLayoutControl(UIElement value)
         {
             this.AddLogicalChild(value);
-            var innerLayoutControl = new NativeScrollViewer(this.Context);
+            var innerLayoutControl = new NativeScrollViewer(this);
             innerLayoutControl.ScrollChanged += innerDefaultControl_ScrollChanged;
             innerLayoutControl.LayoutParameters = this.CreateLayoutParams();
             innerLayoutControl.ChildView = value.NativeUIElement;
             this.SetNativeBackground(this.Background);
             this.ContentNativeUIElement = innerLayoutControl;
-
             return this.ContentNativeUIElement;
         }
 

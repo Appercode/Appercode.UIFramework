@@ -1,4 +1,5 @@
-﻿using Appercode.UI.Controls.NativeControl.Wrapers;
+﻿using Android.Views;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System.Drawing;
 
 namespace Appercode.UI.Controls
@@ -9,11 +10,12 @@ namespace Appercode.UI.Controls
         {
             if (this.Parent != null)
             {
-                if(this.NativeUIElement == null)
+                if (this.NativeUIElement == null)
                 {
-                    this.NativeUIElement = new WrapedViewGroup(this.Context);
+                    this.NativeUIElement = new WrappedViewGroup(this);
                     this.AddPanelToNativeContainer();
                 }
+
                 base.NativeInit();
             }
         }
@@ -30,7 +32,7 @@ namespace Appercode.UI.Controls
         {
             if (this.NativeUIElement != null)
             {
-                ((WrapedViewGroup)this.NativeUIElement).AddView(this.panel.NativeUIElement);
+                ((ViewGroup)this.NativeUIElement).AddView(this.panel.NativeUIElement);
             }
         }
 
@@ -38,7 +40,7 @@ namespace Appercode.UI.Controls
         {
             if (this.NativeUIElement != null)
             {
-                ((WrapedViewGroup)this.NativeUIElement).RemoveAllViews();
+                ((ViewGroup)this.NativeUIElement).RemoveAllViews();
             }
         }
     }

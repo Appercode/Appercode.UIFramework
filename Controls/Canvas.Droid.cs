@@ -1,5 +1,5 @@
 using Android.Views;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System.Drawing;
 
 namespace Appercode.UI.Controls
@@ -8,7 +8,7 @@ namespace Appercode.UI.Controls
     {
         protected internal override void NativeInit()
         {
-            WrapedViewGroup.FillNativeUIElement(this);
+            WrappedViewGroup.FillNativeUIElement(this);
             base.NativeInit();
         }
 

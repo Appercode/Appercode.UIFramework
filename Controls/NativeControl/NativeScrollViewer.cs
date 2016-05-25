@@ -1,6 +1,7 @@
 using Android.Content;
 using Android.Content.Res;
 using Android.Views;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using Appercode.UI.Device;
 using System;
 using System.Collections.Generic;
@@ -195,12 +196,12 @@ namespace Appercode.UI.Controls.NativeControl
         }
     }
 
-    public class NativeScrollViewer : ContentViewGroup
+    internal class NativeScrollViewer : ContentViewGroup
     {
         /// <summary>
         /// Children of the current view, which able to scroll their content. It will be updated on UpdateLayout call of the ScrollViewer.
         /// </summary>
-        private List<View> childrenWhoCanScroll;
+        private readonly List<View> childrenWhoCanScroll;
 
         /// <summary>
         /// Child view, which currently scrolls it's content. It will be assigned on a touch event.
@@ -223,10 +224,11 @@ namespace Appercode.UI.Controls.NativeControl
 
         private int overflingDistance;
 
-        public NativeScrollViewer(Context context)
-            : base(context)
+        public NativeScrollViewer(UIElement owner)
+            : base(owner)
         {
-            this.InitConstructor(context);
+            this.childrenWhoCanScroll = new List<View>();
+            this.InitConstructor(owner.Context);
         }
 
         public event EventHandler<NativeScrollChangedEventArgs> ScrollChanged;
@@ -579,38 +581,30 @@ namespace Appercode.UI.Controls.NativeControl
 
         public void UpdateChildrenWhoCanScroll()
         {
-            this.childrenWhoCanScroll = new List<View>();
-
-            List<ViewGroup> children = new List<ViewGroup>();
-            children.Add(this);
-
-            ViewGroup view = this;
-
+            this.childrenWhoCanScroll.Clear();
+            var children = new Queue<ViewGroup>();
+            children.Enqueue(this);
             while (children.Count > 0)
             {
-                view = children[0];
-
-                for (int i = 0; i < view.ChildCount; i++)
+                var view = children.Dequeue();
+                for (var i = 0; i < view.ChildCount; i++)
                 {
-                    View child = view.GetChildAt(i);
-
-                    if (child is Appercode.UI.Controls.WebBrowser.WrappedWebView)
+                    var child = view.GetChildAt(i);
+                    if (child is WrappedWebView)
                     {
                         this.childrenWhoCanScroll.Add(child);
                     }
 
-                    if (child is ViewGroup && ((ViewGroup)child).ChildCount > 0)
+                    var childViewGroup = child as ViewGroup;
+                    if (childViewGroup != null && childViewGroup.ChildCount > 0)
                     {
-                        children.Add((ViewGroup)child);
-
+                        children.Enqueue(childViewGroup);
                         if (child is NativeScrollViewer)
                         {
                             this.childrenWhoCanScroll.Add(child);
                         }
                     }
                 }
-
-                children.Remove(view);
             }
         }
 

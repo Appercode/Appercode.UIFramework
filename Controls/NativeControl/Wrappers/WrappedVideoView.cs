@@ -1,27 +1,26 @@
-using Android.Content;
 using Android.Media;
 using Android.Views;
 using Android.Widget;
 using Appercode.UI.Device;
 using System;
 
-namespace Appercode.UI.Controls.NativeControl.Wrapers
+namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    public class WrapedVideoView : VideoView, ITapableView, IJavaFinalizable, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, View.IOnClickListener
+    internal class WrappedVideoView : VideoView, IJavaFinalizable, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, View.IOnClickListener
     {
+        private readonly UIElement owner;
+
         private MediaPlayer player;
-
         private ISurfaceHolder holder;
-
         private double bufferingProgress = 0.0;
 
-        public WrapedVideoView(Context context)
-            : base(context)
+        public WrappedVideoView(UIElement owner)
+            : base(owner.Context)
         {
+            this.owner = owner;
             this.SetOnClickListener(this);
         }
 
-        public event EventHandler NativeTap;
         public event EventHandler JavaFinalized;
         public event EventHandler VideoSizeChanged;
         public new event EventHandler Completion;
@@ -133,29 +132,15 @@ namespace Appercode.UI.Controls.NativeControl.Wrapers
             this.player.SeekTo(msec);
         }
 
-        public void WrapedNativeRaiseTap()
-        {
-            if (this.NativeTap != null)
-            {
-                this.NativeTap(this, null);
-            }
-        }
-
         protected override void JavaFinalize()
         {
-            if (this.JavaFinalized != null)
-            {
-                this.JavaFinalized(null, null);
-            }
+            this.JavaFinalized?.Invoke(null, null);
             base.JavaFinalize();
         }
 
         public void OnPrepared(MediaPlayer mp)
         {
-            if (this.Prepared != null)
-            {
-                this.Prepared(this, new EventArgs());
-            }
+            this.Prepared?.Invoke(this, EventArgs.Empty);
         }
 
         public void SurfaceChanged(ISurfaceHolder holder, Android.Graphics.Format format, int width, int height)
@@ -190,7 +175,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrapers
 
         public void OnClick(View v)
         {
-            WrapedNativeRaiseTap();
+            this.owner.OnTap();
         }
     }
 }

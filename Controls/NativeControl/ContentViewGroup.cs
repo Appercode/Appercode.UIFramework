@@ -1,16 +1,15 @@
-using Android.Content;
 using Android.Views;
-using Appercode.UI.Controls.NativeControl.Wrapers;
+using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
 
 namespace Appercode.UI.Controls.NativeControl
 {
-    public class ContentViewGroup : WrapedViewGroup
+    internal class ContentViewGroup : WrappedViewGroup
     {
         private View childView;
 
-        public ContentViewGroup(Context context)
-            : base(context)
+        public ContentViewGroup(UIElement owner)
+            : base(owner)
         {
         }
 
