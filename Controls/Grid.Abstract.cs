@@ -23,9 +23,5 @@ namespace Appercode.UI.Controls
                 typeof(RowDefinitionCollection),
                 typeof(Grid),
                 new PropertyMetadata());
-
-        private void NativeChildrenCollectionChanged()
-        {
-        }
     }
 }

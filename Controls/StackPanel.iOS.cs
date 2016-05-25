@@ -22,9 +22,5 @@ namespace Appercode.UI.Controls
         {
             this.UpdateLayout();
         }
-
-        private void NativeChildrenCollectionChanged()
-        {
-        }
     }
 }

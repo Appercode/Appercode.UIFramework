@@ -162,7 +162,6 @@
     <Compile Include="Controls\ScrollViewer.cs" />
     <Compile Include="Controls\Slider.cs" />
     <Compile Include="Controls\SelectionMode.cs" />
-    <Compile Include="Controls\StackPanel.Abstract.cs" />
     <Compile Include="Controls\StackPanel.cs" />
     <Compile Include="Controls\SupportedPageOrientation.cs" />
     <Compile Include="Controls\TextAlignment.cs" />

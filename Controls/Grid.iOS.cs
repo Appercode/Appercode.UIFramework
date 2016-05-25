@@ -21,9 +21,5 @@ namespace Appercode.UI.Controls
         {
             this.ArrangeCells(size);
         }
-
-        private void NativeChildrenCollectionChanged()
-        {
-        }
     }
 }

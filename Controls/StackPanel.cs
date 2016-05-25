@@ -62,11 +62,6 @@ namespace Appercode.UI.Controls
                 }
 
                 this.InvalidateMeasure();
-
-                if (this.NativeUIElement != null)
-                {
-                    this.NativeChildrenCollectionChanged();
-                }
             };
         }
 
