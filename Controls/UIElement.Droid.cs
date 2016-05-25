@@ -20,36 +20,34 @@ namespace Appercode.UI.Controls
 
         internal virtual bool IsFocused => false;
 
-        protected virtual double NativeWidth
+        protected internal virtual double NativeWidth
         {
             get
             {
                 return this.Width;
             }
-            set
+            protected set
             {
                 if (this.NativeUIElement != null)
                 {
-                    ViewGroup.LayoutParams oldParams;
-                    oldParams = this.NativeUIElement.LayoutParameters ?? new ViewGroup.LayoutParams(0, 0);
+                    var oldParams = this.NativeUIElement.LayoutParameters ?? new ViewGroup.LayoutParams(0, 0);
                     oldParams.Width = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
                     this.NativeUIElement.LayoutParameters = new ViewGroup.LayoutParams(oldParams);
                 }
             }
         }
 
-        protected virtual double NativeHeight
+        protected internal virtual double NativeHeight
         {
             get
             {
                 return this.Height;
             }
-            set
+            protected set
             {
                 if (this.NativeUIElement != null)
                 {
-                    ViewGroup.LayoutParams oldParams;
-                    oldParams = this.NativeUIElement.LayoutParameters ?? new ViewGroup.LayoutParams(0, 0);
+                    var oldParams = this.NativeUIElement.LayoutParameters ?? new ViewGroup.LayoutParams(0, 0);
                     oldParams.Height = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
                     this.NativeUIElement.LayoutParameters = new ViewGroup.LayoutParams(oldParams);
                 }

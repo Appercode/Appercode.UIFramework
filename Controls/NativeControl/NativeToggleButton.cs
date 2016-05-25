@@ -1,20 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 
 namespace Appercode.UI.Controls.NativeControl
 {
-    public class NativeToggleButton : NativeContentControl
+    internal class NativeToggleButton : Wrapers.WrapedViewGroup
     {
-        private static int[] checkedStateSet =
+        private static readonly int[] CheckedStateSet =
         {
             Android.Resource.Attribute.StateChecked
         };
@@ -35,8 +25,9 @@ namespace Appercode.UI.Controls.NativeControl
             var drawableState = base.OnCreateDrawableState(extraSpace + 1);
             if (this.IsChecked)
             {
-                NativeToggleButton.MergeDrawableStates(drawableState, checkedStateSet);
+                MergeDrawableStates(drawableState, CheckedStateSet);
             }
+
             return drawableState;
         }
     }

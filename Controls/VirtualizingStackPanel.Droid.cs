@@ -12,37 +12,35 @@ namespace Appercode.UI.Controls
 {
     public partial class VirtualizingStackPanel
     {
-        protected override double NativeWidth
+        protected internal override double NativeWidth
         {
             get
             {
                 return base.NativeWidth;
             }
-            set
+            protected set
             {
                 if (this.NativeUIElement != null)
                 {
-                    ViewGroup.LayoutParams oldParams;
-                    oldParams = this.NativeUIElement.LayoutParameters ?? new AbsListView.LayoutParams(0, 0);
-                    oldParams.Width = double.IsNaN(value) ? AbsListView.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
+                    var oldParams = this.NativeUIElement.LayoutParameters ?? new AbsListView.LayoutParams(0, 0);
+                    oldParams.Width = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
                     this.NativeUIElement.LayoutParameters = new AbsListView.LayoutParams(oldParams);
                 }
             }
         }
 
-        protected override double NativeHeight
+        protected internal override double NativeHeight
         {
             get
             {
-                return this.Height;
+                return base.NativeHeight;
             }
-            set
+            protected set
             {
                 if (this.NativeUIElement != null)
                 {
-                    ViewGroup.LayoutParams oldParams;
-                    oldParams = this.NativeUIElement.LayoutParameters ?? new AbsListView.LayoutParams(0, 0);
-                    oldParams.Height = double.IsNaN(value) ? AbsListView.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
+                    var oldParams = this.NativeUIElement.LayoutParameters ?? new AbsListView.LayoutParams(0, 0);
+                    oldParams.Height = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
                     this.NativeUIElement.LayoutParameters = new AbsListView.LayoutParams(oldParams);
                 }
             }

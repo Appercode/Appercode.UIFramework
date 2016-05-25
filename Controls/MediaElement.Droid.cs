@@ -9,18 +9,6 @@ using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
-    public class NativeMediaElement : WrapedViewGroup
-    {
-        public NativeMediaElement(Context context)
-            : base(context)
-        {
-        }
-
-        protected override void OnLayout(bool changed, int l, int t, int r, int b)
-        {
-        }
-    }
-
     public partial class MediaElement
     {
         private Uri nativeSource;
@@ -166,15 +154,14 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    var uiElement = new NativeMediaElement(this.Context);
+                    var nativeView = new WrapedViewGroup(this.Context);
                     this.videoView = new WrapedVideoView(this.Context);
-                    uiElement.AddView(this.videoView);
-                    this.NativeUIElement = uiElement;
+                    nativeView.AddView(this.videoView);
+                    this.NativeUIElement = nativeView;
 
-                    var layoutParams = new ViewGroup.LayoutParams(0, 0);
-
-                    layoutParams.Width = double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeWidth;
-                    layoutParams.Height = double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeHeight;
+                    var layoutParams = new ViewGroup.LayoutParams(
+                        double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeWidth,
+                        double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeHeight);
                     this.NativeUIElement.LayoutParameters = layoutParams;
                     this.videoView.LayoutParameters = layoutParams;
 

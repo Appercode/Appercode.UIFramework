@@ -1,21 +1,8 @@
-using Android.Content;
 using Android.Views;
 using Appercode.UI.Controls.NativeControl.Wrapers;
 
 namespace Appercode.UI.Controls
 {
-    public class NativeUserControl : WrapedViewGroup
-    {
-        public NativeUserControl(Context context)
-            : base(context)
-        {
-        }
-
-        protected override void OnLayout(bool changed, int l, int t, int r, int b)
-        {
-        }
-    }
-
     public partial class UserControl
     {
         protected View ContentNativeUIElement { get; set; }
@@ -23,14 +10,9 @@ namespace Appercode.UI.Controls
         protected internal override void NativeInit()
         {
             base.NativeInit();
-
             if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
-                if (this.NativeUIElement == null)
-                {
-                    this.NativeUIElement = new NativeUserControl(this.Context);
-                }
-
+                this.NativeUIElement = new WrapedViewGroup(this.Context);
                 this.ApplyNativeContent(this.Content);
                 this.ApplyNativePadding(this.Padding);
             }
@@ -57,9 +39,9 @@ namespace Appercode.UI.Controls
             if (this.NativeUIElement != null && newContent != null)
             {
                 this.ContentNativeUIElement = newContent.NativeUIElement;
-                var nativeUserControl = (NativeUserControl)this.NativeUIElement;
-                nativeUserControl.RemoveAllViews();
-                nativeUserControl.AddView(this.ContentNativeUIElement);
+                var nativeView = (ViewGroup)this.NativeUIElement;
+                nativeView.RemoveAllViews();
+                nativeView.AddView(this.ContentNativeUIElement);
             }
         }
 

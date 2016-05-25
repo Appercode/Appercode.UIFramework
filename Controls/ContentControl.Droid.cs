@@ -1,6 +1,6 @@
 ﻿using Android.Views;
 using Android.Widget;
-using Appercode.UI.Controls.NativeControl;
+using Appercode.UI.Controls.NativeControl.Wrapers;
 using Appercode.UI.Device;
 using System.Drawing;
 using System.Windows;
@@ -17,18 +17,9 @@ namespace Appercode.UI.Controls
 
         protected internal override void NativeInit()
         {
-            if (this.Parent != null && this.Context != null)
+            if (WrapedViewGroup.FillNativeUIElement(this))
             {
-                if (this.NativeUIElement == null)
-                {
-                    this.NativeUIElement = new NativeContentControl(this.Context);
-
-                    var layoutParams = new ViewGroup.LayoutParams(0, 0);
-                    layoutParams.Width = double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.WrapContent : (int)this.NativeWidth;
-                    layoutParams.Height = double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.WrapContent : (int)this.NativeHeight;
-                    this.NativeUIElement.LayoutParameters = layoutParams;
-                    this.ApplyNativeContent(null, this.Content);
-                }
+                this.ApplyNativeContent(null, this.Content);
             }
 
             base.NativeInit();
@@ -36,7 +27,7 @@ namespace Appercode.UI.Controls
 
         protected virtual View CreateDefaultControl(string value)
         {
-            var innerDefaultControl = new Android.Widget.TextView(this.Context);
+            var innerDefaultControl = new TextView(this.Context);
             innerDefaultControl.LayoutParameters = this.CreateLayoutParams();
             innerDefaultControl.SetSingleLine(true);
             innerDefaultControl.Text = value;

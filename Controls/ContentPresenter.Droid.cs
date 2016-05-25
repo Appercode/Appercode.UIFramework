@@ -1,4 +1,3 @@
-using Android.Content;
 using Android.Views;
 using Appercode.UI.Controls.NativeControl.Wrapers;
 using System;
@@ -6,32 +5,17 @@ using System.Drawing;
 
 namespace Appercode.UI.Controls
 {
-    public class NativeContentPresenter : WrapedViewGroup, ITapableView
-    {
-        public NativeContentPresenter(Context context)
-            : base(context)
-        {
-        }
-
-        protected override void OnLayout(bool changed, int l, int t, int r, int b)
-        {
-        }
-    }
-
     public partial class ContentPresenter
     {
         protected internal override void NativeInit()
         {
-            if (this.Context != null && this.Parent != null)
+            if (this.Context != null && this.Parent != null && this.NativeUIElement == null)
             {
-                if (this.NativeUIElement == null)
+                var nativeView = new WrapedViewGroup(this.Context);
+                this.NativeUIElement = nativeView;
+                if (this.Template != null)
                 {
-                    this.NativeUIElement = new NativeContentPresenter(this.Context);
-
-                    if (this.Template != null)
-                    {
-                        ((NativeContentPresenter)this.NativeUIElement).AddView(this.TemplateInstance.NativeUIElement);
-                    }
+                    nativeView.AddView(this.TemplateInstance.NativeUIElement);
                 }
             }
 
@@ -103,12 +87,13 @@ namespace Appercode.UI.Controls
         {
             if (this.NativeUIElement != null)
             {
+                var viewGroup = (ViewGroup)this.NativeUIElement;
                 if (oldValue != null)
                 {
-                    ((ViewGroup)this.NativeUIElement).RemoveAllViews();
+                    viewGroup.RemoveAllViews();
                 }
 
-                ((NativeContentPresenter)this.NativeUIElement).AddView(newValue.NativeUIElement);
+                viewGroup.AddView(newValue.NativeUIElement);
             }
         }
     }

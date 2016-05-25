@@ -122,8 +122,8 @@
     <Compile Include="Controls\Media\ImageSource.cs" />
     <Compile Include="Controls\Media\TokenizerHelper.cs" />
     <Compile Include="Controls\NativeControl\UIElementExtensions.Droid.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\NativeMediaPlayer.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\WrapedVideoView.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\NativeMediaPlayer.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\WrapedVideoView.cs" />
     <Compile Include="Controls\Navigation\IFrameStyler.cs" />
     <Compile Include="Controls\Navigation\NavigationType.cs" />
     <Compile Include="Controls\Navigation\PageFactory.cs" />
@@ -199,24 +199,21 @@
     <Compile Include="Controls\Media\Imaging\DownloadProgressEventArgs.cs" />
     <Compile Include="Controls\NativeAppercodeFragment.cs" />
     <Compile Include="Controls\NativeControl\CheckBoxDrawableHelper.cs" />
-    <Compile Include="Controls\NativeControl\NativeContentControl.cs" />
     <Compile Include="Controls\NativeControl\NativeScrollViewer.cs" />
     <Compile Include="Controls\NativeControl\NativeToggleButton.cs" />
     <Compile Include="Controls\NativeControl\RadioButtonDrawableHelper.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\ClickDetector.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\IClickableView.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\IJavaFinalizable.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\ISelectableView.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\ITapableView.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\TapDetector.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\WrapedEditText.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\WrapedImageView.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\WrapedProgressBar.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\WrapedTextView.cs" />
-    <Compile Include="Controls\NativeControl\Wrapers\WrapedViewGroup.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
-    <Compile Include="Controls\NativeControl\Wrapers\WrappedSeekBar.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\ClickDetector.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\IClickableView.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\IJavaFinalizable.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\ISelectableView.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\ITapableView.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\TapDetector.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\WrapedEditText.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\WrapedImageView.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\WrapedProgressBar.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\WrapedTextView.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\WrapedViewGroup.cs" />
+    <Compile Include="Controls\NativeControl\Wrappers\WrappedSeekBar.cs" />
     <Compile Include="Controls\PasswordBox.cs" />
     <Compile Include="Controls\PasswordBox.Droid.cs" />
     <Compile Include="Controls\PresentationFrameworkCollection.cs" />
@@ -474,7 +471,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <!--Import Project="..\..\Dependencies\StyleCop\StyleCop.targets" /-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

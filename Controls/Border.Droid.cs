@@ -111,17 +111,11 @@ namespace Appercode.UI.Controls
         protected internal override void NativeInit()
         {
             base.NativeInit();
-
             if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
-                if (this.NativeUIElement == null)
-                {
-                    this.NativeUIElement = new NativeUserControl(this.Context);
-                }
-
+                this.NativeUIElement = new NativeControl.Wrapers.WrapedViewGroup(this.Context);
                 this.ApplyNativeContent(this.Child);
                 this.ApplyNativeBorderThickness(this.BorderThickness);
-
             }
         }
 
@@ -148,8 +142,9 @@ namespace Appercode.UI.Controls
             if (this.NativeUIElement != null && newContent != null)
             {
                 this.ChildNativeUIElemtnt = newContent.NativeUIElement;
-                ((NativeUserControl)this.NativeUIElement).RemoveAllViews();
-                ((NativeUserControl)this.NativeUIElement).AddViewInLayoutOverride(this.ChildNativeUIElemtnt);
+                var nativeView = (NativeControl.Wrapers.WrapedViewGroup)this.NativeUIElement;
+                nativeView.RemoveAllViews();
+                nativeView.AddViewInLayoutOverride(this.ChildNativeUIElemtnt);
                 this.ApplyNativeBorderThickness(this.BorderThickness);
             }
         }
