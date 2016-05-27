@@ -122,7 +122,6 @@
     <Compile Include="Controls\Media\ImageSource.cs" />
     <Compile Include="Controls\Media\TokenizerHelper.cs" />
     <Compile Include="Controls\NativeControl\UIElementExtensions.Droid.cs" />
-    <Compile Include="Controls\NativeControl\Wrappers\NativeMediaPlayer.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrapedVideoView.cs" />
     <Compile Include="Controls\Navigation\IFrameStyler.cs" />
     <Compile Include="Controls\Navigation\NavigationType.cs" />
@@ -205,7 +204,6 @@
     <Compile Include="Controls\NativeControl\Wrappers\ClickDetector.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\IClickableView.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\IJavaFinalizable.cs" />
-    <Compile Include="Controls\NativeControl\Wrappers\ISelectableView.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\ITapableView.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\TapDetector.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrapedEditText.cs" />

@@ -9,7 +9,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrapers
 {
     public class WrapedVideoView : VideoView, ITapableView, IJavaFinalizable, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, View.IOnClickListener
     {
-        private NativeMediaPlayer player;
+        private MediaPlayer player;
 
         private ISurfaceHolder holder;
 
@@ -81,7 +81,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrapers
             this.holder = this.Holder;
             this.holder.AddCallback(this);
 
-            this.player = new NativeMediaPlayer();
+            this.player = new MediaPlayer();
             this.player.VideoSizeChanged += this.OnVideoSizeChanged;
             this.player.BufferingUpdate += this.OnBufferingUpdate;
             this.player.SetOnCompletionListener(this);
