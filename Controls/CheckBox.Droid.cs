@@ -1,22 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Media;
-using Android.App;
-using Android.Content;
-using Android.Content.Res;
 using Android.Graphics.Drawables;
-using Android.OS;
-using Android.Runtime;
-using Android.Text;
 using Android.Views;
-using Android.Widget;
-using Appercode.UI.Controls.Media;
 using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Device;
+using System;
+using System.Drawing;
+using System.Windows;
 
 namespace Appercode.UI.Controls
 {
@@ -36,18 +24,19 @@ namespace Appercode.UI.Controls
                     this.androidCheckBox = new View(this.Context);
                     this.androidCheckBox.DuplicateParentStateEnabled = true;
                     this.androidCheckBoxBackground = CheckBoxDrawableHelper.GetDrawable(this.Context);
-                    this.NativeIsChecked = IsChecked;
+                    this.NativeIsChecked = this.IsChecked;
                 }
 
-                if (((ViewGroup)this.NativeUIElement).IndexOfChild(this.androidCheckBox) < 0)
+                var nativeView = (ViewGroup)this.NativeUIElement;
+                if (nativeView.IndexOfChild(this.androidCheckBox) < 0)
                 {
-                    ((ViewGroup)this.NativeUIElement).AddView(this.androidCheckBox);
-                    this.androidCheckBox.SetBackgroundDrawable(this.androidCheckBoxBackground);
+                    nativeView.AddView(this.androidCheckBox);
+                    this.androidCheckBox.Background = this.androidCheckBoxBackground;
                 }
             }
         }
 
-        protected override void NativeArrangeContent(System.Drawing.RectangleF finalRect)
+        protected override void NativeArrangeContent(RectangleF finalRect)
         {
             var rectContent = new Rectangle();
             var checkBoxWidhPx = this.androidCheckBoxBackground!=null?ScreenProperties.ConvertPixelsToDPI(this.androidCheckBoxBackground.IntrinsicWidth):0;
@@ -94,7 +83,7 @@ namespace Appercode.UI.Controls
             return new SizeF(measuredSize.Width, measuredSize.Height);
         }
 
-        protected override SizeF NativeMeasureContent(System.Drawing.SizeF availableSize)
+        protected override SizeF NativeMeasureContent(SizeF availableSize)
         {
             var checkBoxHeightPx = ScreenProperties.ConvertPixelsToDPI(this.androidCheckBoxBackground.IntrinsicHeight);
             SizeF measuredContent = base.NativeMeasureContent(availableSize);
@@ -104,9 +93,9 @@ namespace Appercode.UI.Controls
             return new SizeF(width, height);
         }
 
-        protected override System.Windows.Thickness GetNativePadding()
+        protected override Thickness GetNativePadding()
         {
-            return new System.Windows.Thickness(0);
+            return default(Thickness);
         }
     }
 }

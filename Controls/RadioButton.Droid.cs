@@ -4,6 +4,7 @@ using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Device;
 using System;
 using System.Drawing;
+using System.Windows;
 
 namespace Appercode.UI.Controls
 {
@@ -22,15 +23,16 @@ namespace Appercode.UI.Controls
                 this.androidRadioButton.DuplicateParentStateEnabled = true;
                 this.androidRadioButtonBackground = RadioButtonDrawableHelper.GetDrawable(this.Context);
 
-                if (((ViewGroup)this.NativeUIElement).IndexOfChild(this.androidRadioButton) < 0)
+                var nativeView = (ViewGroup)this.NativeUIElement;
+                if (nativeView.IndexOfChild(this.androidRadioButton) < 0)
                 {
-                    ((ViewGroup)this.NativeUIElement).AddView(this.androidRadioButton);
-                    this.androidRadioButton.SetBackgroundDrawable(this.androidRadioButtonBackground);
+                    nativeView.AddView(this.androidRadioButton);
+                    this.androidRadioButton.Background = this.androidRadioButtonBackground;
                 }
             }
         }
 
-        protected override void NativeArrangeContent(System.Drawing.RectangleF finalRect)
+        protected override void NativeArrangeContent(RectangleF finalRect)
         {
             var rectContent = new Rectangle();
             var checkBoxWidhPx = ScreenProperties.ConvertPixelsToDPI(this.androidRadioButtonBackground.IntrinsicWidth);
@@ -77,7 +79,7 @@ namespace Appercode.UI.Controls
             return new SizeF(measuredSize.Width, measuredSize.Height);
         }
 
-        protected override SizeF NativeMeasureContent(System.Drawing.SizeF availableSize)
+        protected override SizeF NativeMeasureContent(SizeF availableSize)
         {
             var checkBoxHeightPx = ScreenProperties.ConvertPixelsToDPI(this.androidRadioButtonBackground.IntrinsicHeight);
             SizeF measuredContent = base.NativeMeasureContent(availableSize);
@@ -87,9 +89,9 @@ namespace Appercode.UI.Controls
             return new SizeF(width, height);
         }
 
-        protected override System.Windows.Thickness GetNativePadding()
+        protected override Thickness GetNativePadding()
         {
-            return new System.Windows.Thickness(0);
+            return default(Thickness);
         }
     }
 }

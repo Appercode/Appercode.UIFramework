@@ -182,9 +182,8 @@ namespace Appercode.UI.Controls
         private void UpdateBackgroundDrawable()
         {
             var background = this.NativeUIElement.Background;
-            this.NativeUIElement
-                    .SetBackgroundDrawable(
-                    this.CreateNativeBorder(this.Background, this.BorderBrush, this.BorderThickness, this.CornerRadius));
+            this.NativeUIElement.Background = 
+                this.CreateNativeBorder(this.Background, this.BorderBrush, this.BorderThickness, this.CornerRadius);
             if (background != null)
             {
                 background.SetCallback(null);

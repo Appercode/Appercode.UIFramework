@@ -74,25 +74,24 @@ namespace Appercode.UI.Controls.Navigation
             var tabsBackground = styledAttributes.GetDrawable(0);
             styledAttributes.Recycle();
 
-            rootLayout = new RootLayout(this);
-
-            this.rootLayout.SetBackgroundDrawable(tabsBackground);
-
-            rootLayout.SetPadding(0, mActionBarSize, 0, 0);
+            this.rootLayout = new RootLayout(this)
+            {
+                Background = tabsBackground
+            };
+            this.rootLayout.SetPadding(0, mActionBarSize, 0, 0);
             this.Window.DecorView.RootView.ViewTreeObserver.AddOnGlobalLayoutListener(this);
 
             frameLayout = new FrameLayout(this);
             frameLayout.Id = this.fragmentPageFrameLayoutResourceId;
             frameLayout.Visibility = ViewStates.Gone;
-            rootLayout.SizeChanged += (s, e) => UpdateRootLayouts();
+            this.rootLayout.SizeChanged += (s, e) => UpdateRootLayouts();
             this.pagerPage.ViewPager.LayoutChange += ViewPagerLayotChange;
-
             this.pagerPage.ViewPager.PageSelected += Pager_PageSelected;
 
-            rootLayout.AddView(this.pagerPage.ViewPager, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-            rootLayout.AddView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+            this.rootLayout.AddView(this.pagerPage.ViewPager, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+            this.rootLayout.AddView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
-            this.SetContentView(rootLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+            this.SetContentView(this.rootLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
         }
 
         private void ViewPagerLayotChange(object sender, View.LayoutChangeEventArgs e)
