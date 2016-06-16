@@ -20,8 +20,8 @@ namespace Appercode.UI.Controls
         /// Identifies the <seealso cref="Background"/> dependency property. 
         /// </summary>
         public static readonly DependencyProperty BackgroundProperty =
-            DependencyProperty.Register("Background", typeof(Brush), typeof(Panel), new PropertyMetadata(null, (d, e) => ((Panel)d).OnBackgroundChanged()));
-        
+            DependencyProperty.Register(nameof(Background), typeof(Brush), typeof(Panel), new PropertyMetadata(null, OnBackgroundChanged));
+
         /// <summary>
         /// Panel constructor
         /// </summary>
@@ -73,7 +73,7 @@ namespace Appercode.UI.Controls
             get { return (Brush)this.GetValue(BackgroundProperty); }
             set { this.SetValue(BackgroundProperty, value); }
         }
-        
+
         protected internal override IEnumerator LogicalChildren
         {
             get
@@ -82,9 +82,16 @@ namespace Appercode.UI.Controls
             }
         }
 
-        protected virtual void OnBackgroundChanged()
+        protected virtual void OnBackgroundChanged(Brush oldValue, Brush newValue)
         {
-            this.NativeOnbackgroundChange();
+            this.ApplyNativeBackground(newValue);
         }
+
+        private static void OnBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((Panel)d).OnBackgroundChanged(e.OldValue as Brush, e.NewValue as Brush);
+        }
+
+        partial void ApplyNativeBackground(Brush newValue);
     }
 }

@@ -159,10 +159,8 @@ namespace Appercode.UI.Controls
 
                 base.NativeInit();
 
-                //TODO:
-                //<Need-approve>
-                this.NativeOnbackgroundChange();
-                //</Need-approve>
+                // TODO: apply only on set of native view
+                this.ApplyNativeBackground(this.Background);
             }
         }
 
@@ -187,31 +185,6 @@ namespace Appercode.UI.Controls
 
         protected virtual void OnIsEnabledChanged()
         {
-        }
-
-        protected virtual void NativeOnbackgroundChange()
-        {
-            //TODO:
-            //<Need-approve>
-            if (this.NativeUIElement != null)
-            {
-                if (this.Background == null)
-                {
-                    this.NativeUIElement.SetBackgroundDrawable(null);
-                }
-                else
-                {
-                    if (this.Background is SolidColorBrush)
-                    {
-                        this.NativeUIElement.SetBackgroundColor(((SolidColorBrush)this.Background).Color.ToNativeColor());
-                    }
-                    else
-                    {
-                        this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-                    }
-                }
-            }
-            //</Need-approve>
         }
 
         protected void ApplyNativePadding(Thickness value)
@@ -554,6 +527,29 @@ namespace Appercode.UI.Controls
                 ((ViewGroup)this.Parent.NativeUIElement).AddView(this.NativeUIElement);
             }
             ((WrapedViewGroup)this.NativeUIElement).AddView(this.controlTemplateInstance.NativeUIElement);
+        }
+
+        partial void ApplyNativeBackground(Brush newValue)
+        {
+            if (this.NativeUIElement != null)
+            {
+                if (newValue == null)
+                {
+                    this.NativeUIElement.Background = null;
+                }
+                else
+                {
+                    var solidColorBrush = newValue as SolidColorBrush;
+                    if (solidColorBrush != null)
+                    {
+                        this.NativeUIElement.SetBackgroundColor(solidColorBrush.Color.ToNativeColor());
+                    }
+                    else
+                    {
+                        this.NativeUIElement.Background = newValue.ToDrawable();
+                    }
+                }
+            }
         }
     }
 }

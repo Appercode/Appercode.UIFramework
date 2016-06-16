@@ -121,6 +121,7 @@
     <Compile Include="Controls\Media\AppercodeColors.cs" />
     <Compile Include="Controls\Media\ImageSource.cs" />
     <Compile Include="Controls\Media\TokenizerHelper.cs" />
+    <Compile Include="Controls\NativeControl\UIElementExtensions.Droid.cs" />
     <Compile Include="Controls\NativeControl\Wrapers\NativeMediaPlayer.cs" />
     <Compile Include="Controls\NativeControl\Wrapers\WrapedVideoView.cs" />
     <Compile Include="Controls\Navigation\IFrameStyler.cs" />

@@ -2,7 +2,7 @@ using Android.Content;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
-using Appercode.UI.Controls.Media.Imaging;
+using Appercode.UI.Controls.NativeControl;
 using System;
 using System.Windows.Media;
 
@@ -33,7 +33,7 @@ namespace Appercode.UI.Controls
             }
             else
             {
-                var innerDefaultControl = new Android.Widget.TextView(this.Context);
+                var innerDefaultControl = new TextView(this.Context);
                 innerDefaultControl.LayoutParameters = this.CreateLayoutParams();
                 innerDefaultControl.SetSingleLine(true);
                 innerDefaultControl.TextFormatted = Html.FromHtml(String.Format("<a href=\"\">{0}</a>", value));
@@ -46,45 +46,15 @@ namespace Appercode.UI.Controls
             ((TextView)this.ContentNativeUIElement).TextFormatted = Html.FromHtml(String.Format("<a href=\"\">{0}</a>", value));
         }
 
-        protected override void NativeOnbackgroundChange()
+        protected override void OnBackgroundChanged(Brush oldValue, Brush newValue)
         {
-            SetBackground();
+            this.SetNativeBackground(newValue);
         }
 
         protected internal override void NativeInit()
         {
             base.NativeInit();
-            SetBackground();
-        }
-
-        private void SetBackground()
-        {
-            if (this.Background != null && this.NativeUIElement != null)
-            {
-                if (IsBackgroundValidImageBrush())
-                {
-                    ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).ImageOpened += (s, e) =>
-                    {
-                        if (IsBackgroundValidImageBrush())
-                        {
-                            this.NativeUIElement.Post(() =>
-                            {
-                                this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-                                this.OnLayoutUpdated();
-                            });
-                        }
-                    };
-                }
-                else
-                    this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-            }
-        }
-
-        private bool IsBackgroundValidImageBrush()
-        {
-            return this.Background is ImageBrush
-                   && ((ImageBrush)this.Background).ImageSource is BitmapImage
-                   && ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).UriSource.IsAbsoluteUri;
+            this.SetNativeBackground(this.Background);
         }
 
         protected override View CreateLayoutControl(UIElement value)

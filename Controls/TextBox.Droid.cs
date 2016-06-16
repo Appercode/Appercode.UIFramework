@@ -1,22 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Media;
-using Android.App;
 using Android.Content;
-using Android.Content.Res;
-using Android.OS;
-using Android.Runtime;
 using Android.Text;
 using Android.Text.Method;
 using Android.Views;
 using Android.Views.InputMethods;
-using Android.Widget;
 using Appercode.UI.Controls.Input;
-using Appercode.UI.Controls.Media.Imaging;
+using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Controls.NativeControl.Wrapers;
+using System;
+using System.Linq;
+using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
@@ -123,9 +115,9 @@ namespace Appercode.UI.Controls
 
         internal InputScope NativeInputScope
         {
-            get 
-            { 
-                return this.InputScope; 
+            get
+            {
+                return this.InputScope;
             }
             set
             {
@@ -251,10 +243,11 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    this.NativeUIElement = new NativeEditText(this.Context);
-
-                    ((NativeEditText)this.NativeUIElement).NativeSelectionChanged += this.TextBoxNativeSelectionChanged;
-                    ((NativeEditText)this.NativeUIElement).TextChanged += this.TextBoxTextChanged;                    
+                    var nativeView = new NativeEditText(this.Context);
+                    this.NativeUIElement = nativeView;
+                    nativeView.NativeSelectionChanged += this.TextBoxNativeSelectionChanged;
+                    nativeView.TextChanged += this.TextBoxTextChanged;
+                    this.SetNativeBackground(this.Background);
                 }
 
                 this.ApplyNativeText(this.Text);
@@ -266,8 +259,8 @@ namespace Appercode.UI.Controls
                 this.ApplyNativeAcceptsReturn(this.AcceptsReturn);
                 this.ApplyNativeIsReadOnly(this.IsReadOnly);
                 this.ApplyNativeInputScope(this.InputScope);
-                this.NativeOnbackgroundChange();
             }
+
             base.NativeInit();
         }
 
@@ -276,39 +269,9 @@ namespace Appercode.UI.Controls
             this.Text = new string(e.Text.ToArray());
         }
 
-        protected override void NativeOnbackgroundChange()
+        protected override void OnBackgroundChanged(Brush oldValue, Brush newValue)
         {
-            SetBackground();
-        }
-
-        private void SetBackground()
-        {
-            if (this.Background != null && this.NativeUIElement != null)
-            {
-                if (IsBackgroundValidImageBrush())
-                {
-                    ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).ImageOpened += (s, e) =>
-                    {
-                        if (IsBackgroundValidImageBrush())
-                        {
-                            this.NativeUIElement.Post(() =>
-                            {
-                                this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-                                this.OnLayoutUpdated();
-                            });
-                        }
-                    };
-                }
-                else
-                    this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-            }
-        }
-
-        private bool IsBackgroundValidImageBrush()
-        {
-            return this.Background is ImageBrush
-                   && ((ImageBrush)this.Background).ImageSource is BitmapImage
-                   && ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).UriSource.IsAbsoluteUri;
+            this.SetNativeBackground(newValue);
         }
 
         private void ApplyNativeInputScope(InputScope inputScope)

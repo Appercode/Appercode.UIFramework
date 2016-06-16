@@ -1,17 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Media;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Text;
-using Android.Views;
-using Android.Widget;
-using Appercode.UI.Controls.Media.Imaging;
+using Appercode.UI.Controls.NativeControl;
+using System.Linq;
+using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
@@ -58,70 +48,30 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    this.NativeUIElement = new NativeEditText(this.Context);
+                    var nativeView = new NativeEditText(this.Context)
+                    {
+                        InputType = InputTypes.TextVariationPassword | InputTypes.ClassText
+                    };
+                    this.NativeUIElement = nativeView;
+                    nativeView.TextChanged += this.NativePasswordChange;
                 }
-
-                ((NativeEditText)this.NativeUIElement).InputType = Android.Text.InputTypes.TextVariationPassword | Android.Text.InputTypes.ClassText;
 
                 this.ApplyNativePassword(this.NativePassword);
                 this.ApplyNativeMaxLength(this.NativeMaxLength);
-
-                ((NativeEditText)this.NativeUIElement).TextChanged -= this.NativePasswordChange;
-                ((NativeEditText)this.NativeUIElement).TextChanged += this.NativePasswordChange;
-                SetBackground();
-                //((NativeEditText)this.NativeUIElement).NativeSelectionChanged += this.NativePasswordSelectionChanged;
-
+                this.SetNativeBackground(this.Background);
                 base.NativeInit();
             }
         }
 
-        protected override void OnBackgroundChanged()
+        protected override void OnBackgroundChanged(Brush oldValue, Brush newValue)
         {
-            SetBackground();
-        }
-
-        private void SetBackground()
-        {
-            if (this.Background != null && this.NativeUIElement != null)
-            {
-                if (IsBackgroundValidImageBrush())
-                {
-                    ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).ImageOpened += (s, e) =>
-                    {
-                        if (IsBackgroundValidImageBrush())
-                        {
-                            this.NativeUIElement.Post(() =>
-                            {
-                                this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-                                this.OnLayoutUpdated();
-                            });
-                        }
-                    };
-                }
-                else
-                    this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-            }
-        }
-
-        private bool IsBackgroundValidImageBrush()
-        {
-            return this.Background is ImageBrush
-                   && ((ImageBrush)this.Background).ImageSource is BitmapImage
-                   && ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).UriSource.IsAbsoluteUri;
+            this.SetNativeBackground(newValue);
         }
 
         private void NativePasswordChange(object sender, Android.Text.TextChangedEventArgs e)
         {
             this.Password = new string(e.Text.ToArray());
-            if (this.PasswordChanged != null)
-            {
-                this.PasswordChanged(this, new RoutedEventArgs());
-            }
-        }
-
-        private void NativePasswordSelectionChanged(object sender, RoutedEventArgs e)
-        {
-            // working with selected part of the text
+            this.PasswordChanged?.Invoke(this, new RoutedEventArgs());
         }
 
         private void ApplyNativePassword(string password)

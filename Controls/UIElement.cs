@@ -825,7 +825,7 @@ namespace Appercode.UI.Controls
             return size;
         }
 
-        protected virtual void OnLayoutUpdated()
+        protected internal virtual void OnLayoutUpdated()
         {
             this.LayoutUpdated(this, EventArgs.Empty);
         }

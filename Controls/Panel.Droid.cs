@@ -1,8 +1,8 @@
 using Android.Views;
-using Appercode.UI.Controls.Media.Imaging;
+using Appercode.UI.Controls.NativeControl;
+using Appercode.UI.Controls.NativeControl.Wrapers;
 using System.Drawing;
 using System.Windows.Media;
-using Appercode.UI.Controls.NativeControl.Wrapers;
 
 namespace Appercode.UI.Controls
 {
@@ -30,18 +30,12 @@ namespace Appercode.UI.Controls
             }
         }
 
-        protected void NativeOnbackgroundChange()
-        {
-            SetBackground();
-        }
-
         protected internal override void NativeInit()
         {
             base.NativeInit();
-
             if (this.Parent != null && this.Context != null)
             {
-                this.NativeOnbackgroundChange();
+                this.SetNativeBackground(this.Background);
                 foreach (var child in this.Children)
                 {
                     if (child.NativeUIElement != null && child.NativeUIElement.Parent != this.NativeUIElement)
@@ -57,34 +51,9 @@ namespace Appercode.UI.Controls
         {
         }
 
-        private void SetBackground()
+        partial void ApplyNativeBackground(Brush newValue)
         {
-            if (this.Background != null && this.NativeUIElement != null)
-            {
-                if (IsBackgroundValidImageBrush())
-                {
-                    ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).ImageOpened += (s, e) =>
-                    {
-                        if (IsBackgroundValidImageBrush())
-                        {
-                            this.NativeUIElement.Post(() =>
-                            {
-                                this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-                                this.OnLayoutUpdated();
-                            });
-                        }
-                    };
-                }
-                else
-                    this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-            }
-        }
-
-        private bool IsBackgroundValidImageBrush()
-        {
-            return this.Background is ImageBrush
-                   && ((ImageBrush)this.Background).ImageSource is BitmapImage
-                   && ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).UriSource.IsAbsoluteUri;
+            this.SetNativeBackground(newValue);
         }
     }
 }

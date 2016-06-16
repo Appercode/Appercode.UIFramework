@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows;
+using System.Windows.Media;
 
 #if __IOS__
 using SizeF = CoreGraphics.CGSize;
@@ -205,9 +206,9 @@ namespace Appercode.UI.Controls
             }
         }
 
-        protected override void OnBackgroundChanged()
+        protected override void OnBackgroundChanged(Brush oldValue, Brush newValue)
         {
-            this.panel.Background = this.Background;
+            this.panel.Background = newValue;
         }
 
         protected virtual void ApplyItemsSource(IEnumerable itemsSource)

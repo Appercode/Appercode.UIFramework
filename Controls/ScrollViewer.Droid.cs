@@ -1,10 +1,9 @@
-using System.Windows.Media;
 using Android.Views;
 using Android.Widget;
-using Appercode.UI.Controls.Media.Imaging;
 using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Device;
 using System.Drawing;
+using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
@@ -32,90 +31,45 @@ namespace Appercode.UI.Controls
             }
         }
 
-        //protected Visibility NativeComputedHorizontalScrollBarVisibility
-        //{
-        //    get
-        //    {
-        //        return ((NativeScrollViewer)this.ContentNativeUIElement).VerticalScrollBarEnabled;
-        //    }
-        //    set
-        //    {
-        //    }
-        //}
-
-        //protected Visibility NativeComputedVerticalScrollBarVisibility
-        //{
-        //    get
-        //    {
-        //        return ((NativeScrollViewer)this.ContentNativeUIElement).VerticalScrollBarEnabled;
-        //    }
-        //    set
-        //    {
-        //    }
-        //}
-
         protected override View CreateDefaultControl(string value)
         {
-            var innerDefaultControl = new NativeScrollViewer(this.Context);
+            var innerDefaultControl = new NativeScrollViewer(this.Context)
+            {
+                LayoutParameters = this.CreateLayoutParams()
+            };
             innerDefaultControl.ScrollChanged += innerDefaultControl_ScrollChanged;
-            innerDefaultControl.LayoutParameters = this.CreateLayoutParams();
             if (this.Background != null)
-                innerDefaultControl.SetBackgroundDrawable(this.Background.ToDrawable());
-            var text = new Android.Widget.TextView(this.Context);
-            text.LayoutParameters = this.CreateLayoutParams();
-            text.Text = value;
-            text.SetSingleLine(true);
-            innerDefaultControl.ChildView = text;
+            {
+                innerDefaultControl.Background = this.Background.ToDrawable();
+            }
+
+            var textView = new TextView(this.Context)
+            {
+                LayoutParameters = this.CreateLayoutParams(),
+                Text = value
+            };
+            textView.SetSingleLine(true);
+            innerDefaultControl.ChildView = textView;
             this.ContentNativeUIElement = innerDefaultControl;
             return innerDefaultControl;
         }
 
-        protected override View/*Group*/ CreateLayoutControl(UIElement value)
+        protected override View CreateLayoutControl(UIElement value)
         {
-            LogicalTreeHelper.AddLogicalChild(this, value);
+            this.AddLogicalChild(value);
             var innerLayoutControl = new NativeScrollViewer(this.Context);
             innerLayoutControl.ScrollChanged += innerDefaultControl_ScrollChanged;
             innerLayoutControl.LayoutParameters = this.CreateLayoutParams();
             innerLayoutControl.ChildView = value.NativeUIElement;
-            SetBackground();
+            this.SetNativeBackground(this.Background);
             this.ContentNativeUIElement = innerLayoutControl;
 
             return this.ContentNativeUIElement;
         }
 
-        protected override void OnBackgroundChanged()
+        protected override void OnBackgroundChanged(Brush oldValue, Brush newValue)
         {
-            SetBackground();
-        }
-
-        private void SetBackground()
-        {
-            if (this.Background != null && this.NativeUIElement != null)
-            {
-                if (IsBackgroundValidImageBrush())
-                {
-                    ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).ImageOpened += (s, e) =>
-                    {
-                        if (IsBackgroundValidImageBrush())
-                        {
-                            this.NativeUIElement.Post(() =>
-                            {
-                                this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-                                this.OnLayoutUpdated();
-                            });
-                        }
-                    };
-                }
-                else
-                    this.NativeUIElement.SetBackgroundDrawable(this.Background.ToDrawable());
-            }
-        }
-
-        private bool IsBackgroundValidImageBrush()
-        {
-            return this.Background is ImageBrush
-                   && ((ImageBrush)this.Background).ImageSource is BitmapImage
-                   && ((BitmapImage)(((ImageBrush)this.Background).ImageSource)).UriSource.IsAbsoluteUri;
+           this.SetNativeBackground(newValue);
         }
 
         protected override void ApplyNativeContentForDefaultControl(string value)
@@ -123,11 +77,11 @@ namespace Appercode.UI.Controls
             ((TextView)((NativeScrollViewer)this.ContentNativeUIElement).ChildView).Text = value;
         }
 
-        protected override void NativeArrangeContent(System.Drawing.RectangleF rectangleF)
+        protected override void NativeArrangeContent(RectangleF rectangleF)
         {
             if (this.Content is UIElement)
             {
-                ((UIElement)this.Content).Arrange(new System.Drawing.RectangleF(rectangleF.X, rectangleF.Y, rectangleF.Width, rectangleF.Height));
+                ((UIElement)this.Content).Arrange(new RectangleF(rectangleF.X, rectangleF.Y, rectangleF.Width, rectangleF.Height));
             }
             else
             {
@@ -135,12 +89,12 @@ namespace Appercode.UI.Controls
             }
         }
 
-        protected override void NativeArrange(System.Drawing.RectangleF finalRect)
+        protected override void NativeArrange(RectangleF finalRect)
         {
             base.NativeArrange(finalRect);
 
-            int newWidth = Android.Views.View.MeasureSpec.MakeMeasureSpec((int)finalRect.Width, MeasureSpecMode.Exactly);
-            int newHeight = Android.Views.View.MeasureSpec.MakeMeasureSpec((int)finalRect.Height, MeasureSpecMode.Exactly);
+            int newWidth = View.MeasureSpec.MakeMeasureSpec((int)finalRect.Width, MeasureSpecMode.Exactly);
+            int newHeight = View.MeasureSpec.MakeMeasureSpec((int)finalRect.Height, MeasureSpecMode.Exactly);
             this.ContentNativeUIElement.Measure(newWidth, newHeight);
 
             this.ContentNativeUIElement.Layout(0,
@@ -168,27 +122,28 @@ namespace Appercode.UI.Controls
             this.OnScrollChanged(args);
         }
 
-        private void SetContentScrolableSize(System.Drawing.SizeF sizeF)
+        private void SetContentScrolableSize(SizeF sizeF)
         {
             ((NativeScrollViewer)this.ContentNativeUIElement).ContentWidth = (int)ScreenProperties.ConvertDPIToPixels(sizeF.Width+(float)(Margin.Left+Margin.Right));
             ((NativeScrollViewer)this.ContentNativeUIElement).ContentHeight = (int)ScreenProperties.ConvertDPIToPixels(sizeF.Height + (float)(Margin.Top + Margin.Bottom));
         }
 
-        private System.Drawing.SizeF MeasureContent(System.Drawing.SizeF sizeF)
+        private SizeF MeasureContent(SizeF sizeF)
         {
             if (this.Content is UIElement)
             {
-                System.Drawing.SizeF measuredSize = ((UIElement)this.Content).MeasureOverride(new System.Drawing.SizeF(sizeF.Width, sizeF.Height));
+                var measuredSize = ((UIElement)this.Content).MeasureOverride(new SizeF(sizeF.Width, sizeF.Height));
                 return measuredSize;
             }
             else
             {
-                System.Drawing.SizeF absoluteSizeF = new SizeF();
-                absoluteSizeF.Width = ScreenProperties.ConvertDPIToPixels(sizeF.Width);
-                absoluteSizeF.Height = ScreenProperties.ConvertDPIToPixels(sizeF.Height);
+                var absoluteSizeF = new SizeF(
+                    ScreenProperties.ConvertDPIToPixels(sizeF.Width),
+                    ScreenProperties.ConvertDPIToPixels(sizeF.Height));
 
-                ((Android.Views.View)this.ContentNativeUIElement).Measure(Android.Views.View.MeasureSpec.MakeMeasureSpec((int)absoluteSizeF.Width, MeasureSpecMode.AtMost),
-                                                                          Android.Views.View.MeasureSpec.MakeMeasureSpec((int)absoluteSizeF.Height, MeasureSpecMode.AtMost));
+                this.ContentNativeUIElement.Measure(
+                    View.MeasureSpec.MakeMeasureSpec((int)absoluteSizeF.Width, MeasureSpecMode.AtMost),
+                    View.MeasureSpec.MakeMeasureSpec((int)absoluteSizeF.Height, MeasureSpecMode.AtMost));
 
                 SizeF dpiMeasuredContentSize = new SizeF();
                 dpiMeasuredContentSize.Width = ScreenProperties.ConvertPixelsToDPI(this.ContentNativeUIElement.MeasuredWidth);

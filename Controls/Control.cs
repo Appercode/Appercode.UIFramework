@@ -48,7 +48,7 @@ namespace Appercode.UI.Controls
                                                 new PropertyMetadata(null, (d, e) => { ((Control)d).NativeForeground = (Brush)e.NewValue; }));
 
         public static readonly DependencyProperty BackgroundProperty =
-            DependencyProperty.Register("Background", typeof(Brush), typeof(Control), new PropertyMetadata(null, (d, e) => ((Control)d).OnBackgroundChanged()));
+            Panel.BackgroundProperty.AddOwner(typeof(Control), new PropertyMetadata(null, OnBackgroundChanged));
 
         public static readonly DependencyProperty TemplateProperty =
             DependencyProperty.Register("Template", typeof(ControlTemplate), typeof(Control), new PropertyMetadata(null, (d, e) => ((Control)d).OnTemplateChanged((ControlTemplate)e.OldValue, (ControlTemplate)e.NewValue)));
@@ -129,6 +129,11 @@ namespace Appercode.UI.Controls
                 }
                 return children.GetEnumerator();
             }
+        }
+
+        private static void OnBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((Control)d).OnBackgroundChanged(e.OldValue as Brush, e.NewValue as Brush);
         }
 
         private static void OnPaddingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -273,9 +278,9 @@ namespace Appercode.UI.Controls
             this.InvalidateMeasure();
         }
 
-        protected virtual void OnBackgroundChanged()
+        protected virtual void OnBackgroundChanged(Brush oldValue, Brush newValue)
         {
-            this.NativeOnbackgroundChange();
+            this.ApplyNativeBackground(newValue);
         }
 
         protected virtual void OnTemplateChanged(ControlTemplate oldTemplate, ControlTemplate newTemplate)
@@ -326,5 +331,7 @@ namespace Appercode.UI.Controls
                 this.InvalidateMeasure();
             }
         }
+
+        partial void ApplyNativeBackground(Brush newValue);
     }
 }
