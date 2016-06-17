@@ -299,17 +299,15 @@ namespace Appercode.UI.Controls
 
         private void TextBoxNativeSelectionChanged(object sender, RoutedEventArgs e)
         {
-            if (!this.nativeAcceptsReturn)
+            if (this.nativeAcceptsReturn == false)
             {
-                this.Text.Replace("\n", " ");
+                this.Text = this.Text.Replace(Environment.NewLine, " ");
             }
 
-            this.nativeSelectionStart = ((NativeEditText)this.NativeUIElement).SelectionStart;
-            this.NativeSelectionLength = ((NativeEditText)this.NativeUIElement).SelectionEnd - ((NativeEditText)this.NativeUIElement).SelectionStart;
-            if (this.SelectionChanged != null)
-            {
-                this.SelectionChanged(this, new RoutedEventArgs());
-            }
+            var nativeView = (NativeEditText)this.NativeUIElement;
+            this.nativeSelectionStart = nativeView.SelectionStart;
+            this.NativeSelectionLength = nativeView.SelectionEnd - nativeView.SelectionStart;
+            this.SelectionChanged?.Invoke(this, new RoutedEventArgs());
         }
 
         private void ApplyNativeText(string value)
