@@ -1,4 +1,5 @@
 using Android.App;
+using Android.Content.Res;
 using Android.Views;
 using Appercode.UI.Controls;
 using System.Drawing;
@@ -9,68 +10,48 @@ namespace Appercode.UI.Device
     {
         private static float GetDensity()
         {
-            return Application.Context.Resources.DisplayMetrics.Density; // StackNavigationFrame.Instance.Resources.DisplayMetrics.Density;
+            return Application.Context.Resources.DisplayMetrics.Density;
         }
 
         private static SizeF GetDisplaySize()
         {
-            Display display = UIElement.StaticContext.WindowManager.DefaultDisplay; // StackNavigationFrame.Instance.WindowManager.DefaultDisplay;
-            return new SizeF(display.Width, display.Height);
+            var display = UIElement.StaticContext.WindowManager.DefaultDisplay;
+            var size = new Android.Graphics.Point();
+            display.GetSize(size);
+            return new SizeF(size.X, size.Y);
         }
 
         private static DisplayType GetDisplayType()
         {
-            switch (Application.Context.Resources.Configuration.ScreenLayout & Android.Content.Res.ScreenLayout.SizeMask)
+            switch (Application.Context.Resources.Configuration.ScreenLayout & ScreenLayout.SizeMask)
             {
-                case Android.Content.Res.ScreenLayout.SizeLarge:
-                    {
-                        return DisplayType.Phablet;
-                    }
-                case Android.Content.Res.ScreenLayout.SizeNormal:
-                    {
-                        return DisplayType.Phone;
-                    }
-                case Android.Content.Res.ScreenLayout.SizeSmall:
-                    {
-                        return DisplayType.Phone;
-                    }
-                case Android.Content.Res.ScreenLayout.SizeXlarge:
-                    {
-                        return DisplayType.Tablet;
-                    }
+                case ScreenLayout.SizeLarge:
+                    return DisplayType.Phablet;
+                case ScreenLayout.SizeNormal:
+                    return DisplayType.Phone;
+                case ScreenLayout.SizeSmall:
+                    return DisplayType.Phone;
+                case ScreenLayout.SizeXlarge:
+                    return DisplayType.Tablet;
                 default:
-                    {
-                        return DisplayType.Phone;
-                    }
+                    return DisplayType.Phone;
             }
         }
 
         private static InterfaceOrientation GetInterfaceOrientation()
         {
-            var rotation = UIElement.StaticContext.WindowManager.DefaultDisplay.Rotation;
-
-            switch (rotation)
+            switch (UIElement.StaticContext.WindowManager.DefaultDisplay.Rotation)
             {
                 case SurfaceOrientation.Rotation0:
-                    {
-                        return Device.InterfaceOrientation.Portrait;
-                    }
+                    return InterfaceOrientation.Portrait;
                 case SurfaceOrientation.Rotation90:
-                    {
-                        return Device.InterfaceOrientation.LandscapeLeft;
-                    }
+                    return InterfaceOrientation.LandscapeLeft;
                 case SurfaceOrientation.Rotation180:
-                    {
-                        return Device.InterfaceOrientation.PortraitUpsideDown;
-                    }
+                    return InterfaceOrientation.PortraitUpsideDown;
                 case SurfaceOrientation.Rotation270:
-                    {
-                        return Device.InterfaceOrientation.LandScapeRight;
-                    }
+                    return InterfaceOrientation.LandScapeRight;
                 default:
-                    {
-                        return Device.InterfaceOrientation.Undefined;
-                    }
+                    return InterfaceOrientation.Undefined;
             }
         }
     }

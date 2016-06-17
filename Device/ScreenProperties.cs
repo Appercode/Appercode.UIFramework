@@ -26,7 +26,6 @@ namespace Appercode.UI.Device
     public static partial class ScreenProperties
     {
         private static float density;
-        private static SizeF displaySize;
         private static DisplayType displayType;
 
         public static float Density
