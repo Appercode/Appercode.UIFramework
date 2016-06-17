@@ -1,18 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.App;
 using Android.Content;
 using Android.Content.Res;
-using Android.OS;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
-using Android.Widget;
-using System.Threading;
 using Appercode.UI.Device;
-using Appercode.UI.Controls.Navigation;
+using System;
+using System.Collections.Generic;
 
 namespace Appercode.UI.Controls.NativeControl
 {
@@ -623,7 +614,7 @@ namespace Appercode.UI.Controls.NativeControl
             }
         }
 
-        public bool CanScrollVertically(int direction)
+        public override bool CanScrollVertically(int direction)
         {
             int offset = this.ComputeVerticalScrollOffset();
             int range = this.ComputeVerticalScrollRange() - this.ComputeVerticalScrollExtent();
@@ -631,6 +622,7 @@ namespace Appercode.UI.Controls.NativeControl
             {
                 return false;
             }
+
             if (direction < 0)
             {
                 return offset > 0;
@@ -640,7 +632,8 @@ namespace Appercode.UI.Controls.NativeControl
                 return offset < range - 1;
             }
         }
-        public bool CanScrollHorizontally(int direction)
+
+        public override bool CanScrollHorizontally(int direction)
         {
             int offset = this.ComputeHorizontalScrollOffset();
             int range = this.ComputeHorizontalScrollRange() - this.ComputeHorizontalScrollExtent();
@@ -648,6 +641,7 @@ namespace Appercode.UI.Controls.NativeControl
             {
                 return false;
             }
+
             if (direction < 0)
             {
                 return offset > 0;
