@@ -612,64 +612,51 @@ namespace Appercode.UI.Controls
                 return new WebResourceResponse("", "", new MemoryStream());
             }
 
-            public override WebResourceResponse ShouldInterceptRequest(WebView view, string url)
+            public override WebResourceResponse ShouldInterceptRequest(WebView view, IWebResourceRequest request)
             {
-                var postData = GetNavigationData(url);
-
-                if (postData != null)
+                var url = request.Url.ToString();
+                var postData = this.GetNavigationData(url);
+                if (postData?.PostData != null)
                 {
-                    if (postData.PostData != null)
-                    {
                     try
                     {
-                        var request = HttpWebRequest.Create(url);
-                        //request.ContentType = "text/plain"; //TODO: What should we set here?
-                        request.Method = "POST";
-
+                        var webRequest = WebRequest.Create(url);
+                        // TODO: What should we set here?
+                        // request.ContentType = "text/plain"; 
+                        webRequest.Method = "POST";
                         if (postData.AdditionalHeaders != null)
                         {
                             foreach (var additionalHeader in postData.AdditionalHeaders)
                             {
-                                request.Headers.Add(additionalHeader.Key, additionalHeader.Value);
+                                webRequest.Headers.Add(additionalHeader.Key, additionalHeader.Value);
                             }
                         }
 
-                        using (var reqestStream = request.GetRequestStream())
+                        using (var reqestStream = webRequest.GetRequestStream())
                         {
                             reqestStream.Write(postData.PostData, 0, postData.PostData.Length);
                             reqestStream.Flush();
                         }
 
-                        //using ( //TODO: Don't we need using directive here?
-                        var response = request.GetResponse() as HttpWebResponse;
-                        //)
-                        {
-                            if (response.StatusCode != HttpStatusCode.OK)
-                            {
-                                //TODO: do we need to rise NavigationFailed event here?
-                            }
+                        // TODO: Don't we need using directive here?
+                        var response = webRequest.GetResponse() as HttpWebResponse;
 
-                            var res = new WebResourceResponse(response.ContentType, response.ContentEncoding, response.GetResponseStream());
-                            return res;
-                        }
+                        // TODO: do we need to rise NavigationFailed event if response.StatusCode != HttpStatusCode.OK?
+                        return new WebResourceResponse(response.ContentType, response.ContentEncoding, response.GetResponseStream());
                     }
                     catch (InvalidOperationException ioex)
                     {
-                        var e = new NavigationFailedEventArgs(
-                            new Uri(url),
-                            ioex // Do we need to set this exception? WP8 WebView always set it to null
-                            );
-                        _Parent.OnNavigationFailed(e);
-
-                        if (e.Handled)
+                        // TODO: Do we need to set this exception? WP8 WebView always set it to null
+                        var args = new NavigationFailedEventArgs(new Uri(url), ioex);
+                        _Parent.OnNavigationFailed(args);
+                        if (args.Handled)
                         {
                             return GetCancelWebResourceResponse();
                         }
                     }
                 }
-                }
 
-                return null; //base.ShouldInterceptRequest(view, url);
+                return null;
             }
 
             #endregion //Overriden methods
