@@ -1,19 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using Android.Content;
 using Android.Runtime;
 using Android.Support.V4.View;
 using Android.Util;
 using Android.Views;
-using Appercode.UI.Controls;
 using Appercode.UI.Controls.NativeControl.Wrapers;
-using Appercode.UI.Controls.Primitives;
 using Java.Lang;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Drawing;
+using System.Linq;
 using ViewPagerIndicator;
 
 namespace Appercode.UI.Controls
@@ -252,15 +248,16 @@ namespace Appercode.UI.Controls
             {
                 if (this.NativeUIElement == null)
                 {
-                    var nativeStackPanel = new WrappedViewPager(this.Context);
-                    _PivotAdapter = new PivotAdapter(this);
-                    nativeStackPanel.Adapter = _PivotAdapter;
-                    nativeStackPanel.CurrentItem = 0;
-
-                    nativeStackPanel.SetOnPageChangeListener(new PageChangeListener(this));
-
+                    this._PivotAdapter = new PivotAdapter(this);
+                    var nativeStackPanel = new WrappedViewPager(this.Context)
+                    {
+                        Adapter = this._PivotAdapter,
+                        CurrentItem = 0
+                    };
+                    nativeStackPanel.AddOnPageChangeListener(new PageChangeListener(this));
                     this.NativeUIElement = nativeStackPanel;
                 }
+
                 base.NativeInit();
             }
         }
