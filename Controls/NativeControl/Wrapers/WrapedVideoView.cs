@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.App;
 using Android.Content;
 using Android.Media;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Appercode.UI.Device;
+using System;
 
 namespace Appercode.UI.Controls.NativeControl.Wrapers
 {
@@ -85,17 +79,11 @@ namespace Appercode.UI.Controls.NativeControl.Wrapers
         public void InitMediaPlayer()
         {
             this.holder = this.Holder;
-            this.holder.SetType(SurfaceType.PushBuffers);
             this.holder.AddCallback(this);
 
             this.player = new NativeMediaPlayer();
-
-            this.player.VideoSizeChanged -= player_VideoSizeChanged;
-            this.player.VideoSizeChanged += player_VideoSizeChanged;
-
-            this.player.BufferingUpdate -= player_BufferingUpdate;
-            this.player.BufferingUpdate += player_BufferingUpdate;
-
+            this.player.VideoSizeChanged += this.OnVideoSizeChanged;
+            this.player.BufferingUpdate += this.OnBufferingUpdate;
             this.player.SetOnCompletionListener(this);
             this.player.SetOnPreparedListener(this);
         }
@@ -184,30 +172,20 @@ namespace Appercode.UI.Controls.NativeControl.Wrapers
             
         }
 
-        private void player_BufferingUpdate(object sender, MediaPlayer.BufferingUpdateEventArgs e)
+        private void OnBufferingUpdate(object sender, MediaPlayer.BufferingUpdateEventArgs e)
         {
             this.bufferingProgress = e.Percent;
-
-            if (this.BufferingProgressUpdate != null)
-            {
-                this.BufferingProgressUpdate(this, new EventArgs());
-            }
+            this.BufferingProgressUpdate?.Invoke(this, e);
         }
 
-        private void player_VideoSizeChanged(object sender, MediaPlayer.VideoSizeChangedEventArgs e)
+        private void OnVideoSizeChanged(object sender, MediaPlayer.VideoSizeChangedEventArgs e)
         {
-            if (this.VideoSizeChanged != null)
-            {
-                this.VideoSizeChanged(this, e);
-            }
+            this.VideoSizeChanged?.Invoke(this, e);
         }
 
         public void OnCompletion(MediaPlayer mp)
         {
-            if (this.Completion != null)
-            {
-                this.Completion(this, new EventArgs());
-            }
+            this.Completion?.Invoke(this, EventArgs.Empty);
         }
 
         public void OnClick(View v)
