@@ -9,14 +9,6 @@ namespace Appercode.UI.Controls.Navigation
     /// </summary>
     public interface IFrame
     {
-        event NavigatedEventHandler Navigated;
-
-        event NavigatingCancelEventHandler Navigating;
-
-        event NavigationFailedEventHandler NavigationFailed;
-
-        event NavigationStoppedEventHandler NavigationStopped;
-
         /// <summary>
         /// Returns an IEnumerable that can be used to enumerate the entries in back navigation history for a Frame.
         /// </summary>

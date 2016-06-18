@@ -17,7 +17,7 @@ namespace Appercode.UI.Controls.Navigation
         private AppercodeVisualRoot visualRoot;
         private AppercodePage currentPage;
         private int currentTabIndex = -1;
-        private bool isNavigationInProgress;
+        private bool isNavigationInProgress = false;
 
 #if __ANDROID__ || WINDOWS_PHONE
         private NavigationService navigationService;
@@ -57,25 +57,6 @@ namespace Appercode.UI.Controls.Navigation
                 this.styler.StyleTabBar(this);
             }
         }
-
-#if WINDOWS_PHONE
-        
-        public new event NavigatedEventHandler Navigated;
-
-        public new event NavigatingCancelEventHandler Navigating;
-
-        public new event NavigationFailedEventHandler NavigationFailed;
-
-        public new event NavigationStoppedEventHandler NavigationStopped;
-#else
-        public event NavigatedEventHandler Navigated;
-
-        public event NavigatingCancelEventHandler Navigating;
-
-        public event NavigationFailedEventHandler NavigationFailed;
-
-        public event NavigationStoppedEventHandler NavigationStopped;
-#endif
 
 #pragma warning disable 108
         /// <summary>

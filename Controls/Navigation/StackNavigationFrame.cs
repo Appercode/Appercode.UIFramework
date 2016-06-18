@@ -39,25 +39,6 @@ namespace Appercode.UI.Controls.Navigation
             this.Initialize();
         }
 
-#if WINDOWS_PHONE
-        
-        public new event NavigatedEventHandler Navigated;
-
-        public new event NavigatingCancelEventHandler Navigating;
-
-        public new event NavigationFailedEventHandler NavigationFailed;
-
-        public new event NavigationStoppedEventHandler NavigationStopped;
-#else
-        public event NavigatedEventHandler Navigated;
-
-        public event NavigatingCancelEventHandler Navigating;
-
-        public event NavigationFailedEventHandler NavigationFailed;
-
-        public event NavigationStoppedEventHandler NavigationStopped;
-#endif
-
 #pragma warning disable 108
         /// <summary>
         /// not used now
@@ -328,38 +309,6 @@ namespace Appercode.UI.Controls.Navigation
 
             // navigated to
             previousPage.InternalOnNavigatedTo(new NavigationEventArgs(previousPageType, null, NavigationMode.Back, true));
-        }
-
-        private void OnNavigated(NavigationEventArgs e)
-        {
-            if (this.Navigated != null)
-            {
-                this.Navigated(this, e);
-            }
-        }
-
-        private void OnNavigating(NavigatingCancelEventArgs e)
-        {
-            if (this.Navigating != null)
-            {
-                this.Navigating(this, e);
-            }
-        }
-
-        private void OnNavigationFailed(NavigationFailedEventArgs e)
-        {
-            if (this.NavigationFailed != null)
-            {
-                this.NavigationFailed(this, e);
-            }
-        }
-
-        private void OnNavigationStoped(NavigationEventArgs e)
-        {
-            if (this.NavigationStopped != null)
-            {
-                this.NavigationStopped(this, e);
-            }
         }
 
         private void CloseApplication()
