@@ -58,7 +58,6 @@ namespace Appercode.UI.Controls.Navigation
             }
         }
 
-#pragma warning disable 108
         /// <summary>
         /// not used now
         /// </summary>
@@ -120,8 +119,6 @@ namespace Appercode.UI.Controls.Navigation
         {
             get { throw new NotImplementedException(); }
         }
-
-#pragma warning restore 108
 
         public PresentationFrameworkCollection<TabBarTab> Tabs
         {
@@ -271,8 +268,6 @@ namespace Appercode.UI.Controls.Navigation
             this.CurrentPage.InternalOnBackKeyPress(new CancelEventArgs(false));
         }
 
-#pragma warning disable 108
-
         public void GoBack()
         { 
 #if __ANDROID__ || WINDOWS_PHONE
@@ -356,8 +351,6 @@ namespace Appercode.UI.Controls.Navigation
         {
             throw new NotImplementedException();
         }
-
-#pragma warning restore 108
 
         private void LoadApplicationResourcesFromAssembly(Assembly assembly)
         {

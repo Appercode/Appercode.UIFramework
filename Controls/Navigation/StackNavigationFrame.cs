@@ -39,7 +39,6 @@ namespace Appercode.UI.Controls.Navigation
             this.Initialize();
         }
 
-#pragma warning disable 108
         /// <summary>
         /// not used now
         /// </summary>
@@ -88,7 +87,6 @@ namespace Appercode.UI.Controls.Navigation
         {
             get { return this.dispatcher; }
         }
-#pragma warning restore 108
 
         /// <summary>
         /// Gets if navigation process is in progress.
@@ -179,8 +177,6 @@ namespace Appercode.UI.Controls.Navigation
             throw new NotImplementedException();
         }
 
-#pragma warning disable 108
-
         public void RemoveBackEntry()
         {
             if (this.backStack.Count > 0)
@@ -212,7 +208,6 @@ namespace Appercode.UI.Controls.Navigation
         {
             throw new NotImplementedException();
         }
-#pragma warning restore 108
 
         private void Initialize()
         {
