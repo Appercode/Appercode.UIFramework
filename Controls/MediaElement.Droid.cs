@@ -273,11 +273,8 @@ namespace Appercode.UI.Controls
                 {
                     try
                     {
-                        if (this.NativeUIElement != null && !string.IsNullOrWhiteSpace(this.Source.OriginalString))
-                        {
-                            this.videoView.Prepare();
-                            this.isApplyNewSource = true;
-                        }
+                        this.videoView.Prepare();
+                        this.isApplyNewSource = true;
                     }
                     catch (Exception e)
                     {
