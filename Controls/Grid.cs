@@ -521,52 +521,37 @@ namespace Appercode.UI.Controls
 
         #endregion //Overriden methods
 
-        #region IAddChild interface implementation
-
-        /// <summary>
-        /// Implements IAddChild.AddChild(object)
-        /// Adds a child ui element
-        /// </summary>
-        /// <param name="value"></param>
         void IAddChild.AddChild(object value)
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             if (value is RowDefinition)
             {
                 this.RowDefinitions.Add(value);
-                return;
             }
-
-            if (value is ColumnDefinition)
+            else if (value is ColumnDefinition)
             {
                 this.ColumnDefinitions.Add(value);
-                return;
             }
-
-            UIElement element = value as UIElement;
-            if (element == null)
+            else
             {
-                throw new ArgumentException(string.Format("Can't add element of type {0}", element.GetType()));
-            }
+                var element = value as UIElement;
+                if (element == null)
+                {
+                    throw new ArgumentException($"Cannot add element of type {value.GetType()}.", nameof(value));
+                }
 
-            this.Children.Add(element);
+                this.Children.Add(element);
+            }
         }
 
-        /// <summary>
-        /// Implements IAddChild.AddText(string)
-        /// Adds a child ui element
-        /// </summary>
-        /// <param name="value"></param>
         void IAddChild.AddText(string value)
         {
             throw new NotImplementedException();
         }
-
-        #endregion //IAddChild interface implementation
 
         #region Internal methods
 
