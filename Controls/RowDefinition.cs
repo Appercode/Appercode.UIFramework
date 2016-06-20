@@ -7,44 +7,26 @@ namespace Appercode.UI.Controls
     /// </summary>
     public class RowDefinition : DefinitionBase
     {
-        #region Dependency property definitions
-
         /// <summary>
-        /// Identifies the RowDefinition.Height property.
+        /// Identifies the <see cref="Height" /> property.
         /// </summary>
-        public static readonly DependencyProperty HeightProperty =
-            DependencyProperty.Register(
-                "Height",
+        public static readonly DependencyProperty HeightProperty = DependencyProperty.Register(
+                nameof(Height),
                 typeof(GridLength),
                 typeof(RowDefinition),
-                new PropertyMetadata(
-                    new GridLength(1.0, GridUnitType.Star),
-                    DefinitionBase.OnUserSizePropertyChanged) /*,
-                    DefinitionBase.IsUserSizePropertyValueValid*/);
+                new PropertyMetadata(new GridLength(1.0, GridUnitType.Star), OnUserSizePropertyChanged));
 
         /// <summary>
-        /// Identifies the RowDefinition.MaxHeight dependency property.
+        /// Identifies the <see cref="MaxHeight" /> dependency property.
         /// </summary>
         public static readonly DependencyProperty MaxHeightProperty =
-            DependencyProperty.Register(
-                "MaxHeight",
-                typeof(double),
-                typeof(RowDefinition),
-                new PropertyMetadata(double.PositiveInfinity));
+            DependencyProperty.Register(nameof(MaxHeight), typeof(double), typeof(RowDefinition), new PropertyMetadata(double.PositiveInfinity));
 
         /// <summary>
-        /// Identifies the RowDefinition.MixHeight dependency property.
+        /// Identifies the <see cref="MinHeight" /> dependency property.
         /// </summary>
         public static readonly DependencyProperty MinHeightProperty =
-            DependencyProperty.Register(
-                "MinWidth",
-                typeof(double),
-                typeof(RowDefinition),
-                new PropertyMetadata(0d));
-
-        #endregion //Dependency property definitions
-
-        #region Properties
+            DependencyProperty.Register(nameof(MinHeight), typeof(double), typeof(RowDefinition), new PropertyMetadata(0d));
 
         /// <summary>
         /// Gets a value that represents the offset value of this RowDefinition
@@ -106,7 +88,5 @@ namespace Appercode.UI.Controls
                 this.SetValue(MinHeightProperty, value);
             }
         }
-
-        #endregion //Properties
     }
 }

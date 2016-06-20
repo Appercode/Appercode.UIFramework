@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using Appercode.UI.Controls.Input;
+using System.Windows;
 
 namespace Appercode.UI.Controls
 {
@@ -12,12 +8,8 @@ namespace Appercode.UI.Controls
         public static readonly DependencyProperty TextAlignmentProperty =
             DependencyProperty.Register("TextAlignment", typeof(TextAlignment), typeof(TextBox), new PropertyMetadata(TextAlignment.Left, (d, e) => (d as TextBox).OnTextAlignmentChanged()));
 
-        public static readonly DependencyProperty TextWrappingProperty =
-            DependencyProperty.Register("TextWrapping", typeof(TextWrapping), typeof(Control),
-                                        new PropertyMetadata(TextWrapping.NoWrap, (d, e) =>
-                                        {
-                                            ((TextBox)d).OnTextWrappingChanged();
-                                        }));
+        public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Register(
+            nameof(TextWrapping), typeof(TextWrapping), typeof(TextBox), new PropertyMetadata(TextWrapping.NoWrap, (d, e) => ((TextBox)d).OnTextWrappingChanged()));
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(TextBox),

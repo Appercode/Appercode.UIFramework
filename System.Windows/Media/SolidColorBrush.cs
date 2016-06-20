@@ -1,32 +1,19 @@
-using Appercode.UI;
-using System;
-using System.Windows.Media;
-
 namespace System.Windows.Media
 {
     public sealed partial class SolidColorBrush : Brush
     {
         public static readonly DependencyProperty ColorProperty =
-                    DependencyProperty.Register("Color", typeof(object), typeof(System.Windows.Media.Color),
-                                                new PropertyMetadata(null, (d, e) =>
-                                                {
-                                                }));
+                DependencyProperty.Register(nameof(Color), typeof(Color), typeof(SolidColorBrush));
 
         public SolidColorBrush(Color color)
         {
             this.Color = color;
         }
 
-        public System.Windows.Media.Color Color
+        public Color Color
         {
-            get
-            {
-                return (Color)this.GetValue(SolidColorBrush.ColorProperty);
-            }
-            set
-            {
-                this.SetValue(SolidColorBrush.ColorProperty, value);
-            }
+            get { return (Color)this.GetValue(ColorProperty); }
+            set { this.SetValue(ColorProperty, value); }
         }
     }
 }

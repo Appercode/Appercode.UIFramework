@@ -46,7 +46,7 @@ namespace Appercode.UI.Controls
             DependencyProperty.Register("CanSeek", typeof(bool), typeof(MediaElement));
 
         public static readonly DependencyProperty CurrentStateProperty =
-            DependencyProperty.Register("CurrentState", typeof(MediaElementState), typeof(MediaElement), new PropertyMetadata(0));
+            DependencyProperty.Register(nameof(CurrentState), typeof(MediaElementState), typeof(MediaElement), new PropertyMetadata(default(MediaElementState)));
 
         public static readonly DependencyProperty DownloadProgressProperty =
             DependencyProperty.Register("DownloadProgress", typeof(double), typeof(MediaElement), new PropertyMetadata(.0));
