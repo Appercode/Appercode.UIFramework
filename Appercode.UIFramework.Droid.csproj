@@ -76,7 +76,6 @@
     <Compile Include="Controls\IPivotItemProvider.cs" />
     <Compile Include="Controls\ListPicker.cs" />
     <Compile Include="Controls\ListPicker.Droid.cs" />
-    <Compile Include="Controls\NativeControl\ActivityEventArgs.cs" />
     <Compile Include="Controls\NativeControl\BundleEventArgs.cs" />
     <Compile Include="Controls\Button.cs" />
     <Compile Include="Controls\Button.Droid.cs" />

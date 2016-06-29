@@ -1,83 +1,49 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
+using Android.Views.InputMethods;
 using Appercode.UI.Controls.NativeControl;
-using Android.App;
+using System;
 
 namespace Appercode.UI.Controls
 {
-    public class NativeAppercodeFragment : Fragment
+    internal class NativeAppercodeFragment : Fragment
     {
-        public NativeAppercodeFragment() : base()
+        private readonly AppercodePage page;
+
+        public NativeAppercodeFragment(AppercodePage page)
         {
+            this.page = page;
         }
 
-        public NativeAppercodeFragment(View nativeViewFromAppercodePage)
-        {
-            this.NativeViewFromAppercodePage = nativeViewFromAppercodePage;
-        }
-
-        public NativeAppercodeFragment(IntPtr javaReference, JniHandleOwnership transfer):base(javaReference, transfer)
-        {
-        }
-
-        public event EventHandler<BundleEventArgs> CreateView = delegate { };
-        public event EventHandler<BundleEventArgs> Create = delegate { };
-        public event EventHandler<ActivityEventArgs> ActivityCreated = delegate { };
-        public event EventHandler DestroyView = delegate { };
-        public event EventHandler Resume = delegate { };
-        public event EventHandler Pause = delegate { };
-        public event EventHandler LowMemory = delegate { };
-
-        internal View NativeViewFromAppercodePage { get; set; }
-
+        public event EventHandler<BundleEventArgs> Create;
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            this.CreateView(this, new BundleEventArgs(savedInstanceState));
-            return this.NativeViewFromAppercodePage;
+            return this.page.NativeUIElement;
         }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
-            this.Create(this, new BundleEventArgs(savedInstanceState));
+            this.Create?.Invoke(this, new BundleEventArgs(savedInstanceState));
             base.OnCreate(savedInstanceState);
         }
 
-        public override void OnActivityCreated(Bundle bundle)
+        public override void OnStop()
         {
-            base.OnActivityCreated(bundle);
-            this.ActivityCreated(this, new ActivityEventArgs(this.Activity));
+            this.HideKeyboard();
+            base.OnStop();
         }
 
-        public override void OnDestroyView()
+        private void HideKeyboard()
         {
-            base.OnDestroyView();
-            //((ViewGroup)this.View).RemoveAllViews();
-            this.DestroyView(this, EventArgs.Empty);
-        }
-
-        public override void OnResume()
-        {
-            base.OnResume();
-            this.Resume(this, EventArgs.Empty);
-        }
-
-        public override void OnPause()
-        {
-            base.OnPause();
-            this.Pause(this, EventArgs.Empty);
-        }
-
-        public override void OnLowMemory()
-        {
-            base.OnLowMemory();
-            this.LowMemory(this, EventArgs.Empty);
+            var context = page.Context as Activity;
+            var focused = context?.CurrentFocus;
+            if (focused != null)
+            {
+                var inputManager = (InputMethodManager)context.GetSystemService(Context.InputMethodService);
+                inputManager.HideSoftInputFromWindow(focused.WindowToken, HideSoftInputFlags.None);
+            }
         }
     }
 }
