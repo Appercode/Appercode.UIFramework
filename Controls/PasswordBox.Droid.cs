@@ -85,7 +85,10 @@ namespace Appercode.UI.Controls
                 nativeView.Text = password ?? string.Empty;
             }
 
-            nativeView.SetSelection(password.Length);
+            if (string.IsNullOrEmpty(password) == false)
+            {
+                nativeView.SetSelection(password.Length);
+            }
         }
 
         private void ApplyNativeMaxLength(int maxLength)
