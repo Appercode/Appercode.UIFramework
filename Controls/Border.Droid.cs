@@ -194,6 +194,13 @@ namespace Appercode.UI.Controls
         private Drawable CreateNativeBorder(Brush background, Brush borderBrush, Thickness borderThickness,
             CornerRadius cornerRadius)
         {
+            var width = (int)ScreenProperties.ConvertDPIToPixels((float)this.ActualWidth);
+            var height = (int)ScreenProperties.ConvertDPIToPixels((float)this.ActualHeight);
+            if (height <= 0 || width <= 0)
+            {
+                return new BitmapDrawable();
+            }
+
             var cornerRadiusArray = new[]
             {
                 (float) cornerRadius.TopLeft, (float) cornerRadius.TopLeft, 
@@ -246,19 +253,14 @@ namespace Appercode.UI.Controls
             var right = ScreenProperties.ConvertDPIToPixels((float)(borderThickness.Right));
             var bottom = ScreenProperties.ConvertDPIToPixels((float)(borderThickness.Bottom));
             var pixelBorderThickness = new Thickness(left, top, right, bottom);
-            Bitmap bitmap = null;
-            using (ShapeDrawable sd = new CustomShapeDrawable(rs, backgroundPaint, borderPaint, cornerRadiusArray, pixelBorderThickness, noChild))
+            using (var sd = new CustomShapeDrawable(rs, backgroundPaint, borderPaint, cornerRadiusArray, pixelBorderThickness, noChild))
             {
-                var width = ScreenProperties.ConvertDPIToPixels((float)(this.ActualWidth));
-                var height = ScreenProperties.ConvertDPIToPixels((float)(this.ActualHeight));
-                if (height <= 0 || width <= 0)
-                    return new BitmapDrawable();
-                bitmap = Bitmap.CreateBitmap((int)width, (int)height, Bitmap.Config.Argb8888);
+                var bitmap = Bitmap.CreateBitmap(width, height, Bitmap.Config.Argb8888);
                 var canvas = new Android.Graphics.Canvas(bitmap);
                 sd.SetBounds(0, 0, canvas.Width, canvas.Height);
                 sd.Draw(canvas);
+                return new BitmapDrawable(bitmap);
             }
-            return new BitmapDrawable(bitmap);
         }
     }
 
