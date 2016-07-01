@@ -2,11 +2,9 @@ using Android.App;
 using Android.Graphics;
 using Java.Net;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using File = Java.IO.File;
 
 namespace Appercode.UI.Controls.Media.Imaging
 {
@@ -20,14 +18,16 @@ namespace Appercode.UI.Controls.Media.Imaging
 
         private void DownloadImage()
         {
-            if (this.UriSource.IsAbsoluteUri && (this.UriSource.Scheme.ToLower() == "http" || this.UriSource.Scheme.ToLower() == "https"))
+            try
             {
-                // download the image
-                try
+                this.ImageLoadStatus = ImageStatus.Loading;
+                var uriSource = this.UriSource;
+                if (uriSource.IsAbsoluteUri
+                    && (string.Equals(uriSource.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(uriSource.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)))
                 {
-                    this.ImageLoadStatus = ImageStatus.Loading;
-
-                    HttpURLConnection connection = (HttpURLConnection)new Java.Net.URL(this.UriSource.ToString()).OpenConnection();
+                    // download the image
+                    var connection = (HttpURLConnection)new URL(uriSource.ToString()).OpenConnection();
                     connection.Connect();
                     Stream dataStream = connection.InputStream;
 
@@ -54,93 +54,60 @@ namespace Appercode.UI.Controls.Media.Imaging
                             }
                         }
 
-                        percent = 100;                        
+                        percent = 100;
                         this.DownloadProgress(this, new DownloadProgressEventArgs(percent));
 
                         outData = ms.ToArray();
                     }
-                    
+
                     this.Image = BitmapFactory.DecodeByteArray(outData, 0, outData.Length, CreateBitmapOptions());
-                    this.ImageLoadStatus = ImageStatus.Loaded;
-                    this.ImageOpened(this, new RoutedEventArgs() { OriginalSource = this });
-                }
-                catch (Exception e)
-                {
-                    this.ImageLoadStatus = ImageStatus.Failed;
-                    this.ImageFailed(this, new ExceptionRoutedEventArgs(e) { ErrorMessage = "Image can not be opened." });
-                }
-            }
-            else
-            {
-                string path = this.UriSource.IsAbsoluteUri ? this.UriSource.AbsolutePath : this.UriSource.ToString();
-
-                if(System.IO.File.Exists(path))
-                {
-                    // load the image from the local storage
-                    try
-                    {
-                        this.ImageLoadStatus = ImageStatus.Loading;
-                        this.Image = BitmapFactory.DecodeFile(path, CreateBitmapOptions());
-                        this.ImageLoadStatus = ImageStatus.Loaded;
-                        this.ImageOpened(this, new RoutedEventArgs() { OriginalSource = this });
-                    }
-                    catch (Exception e)
-                    {
-                        this.ImageLoadStatus = ImageStatus.Failed;
-                            this.ImageFailed(this, new ExceptionRoutedEventArgs(e) { ErrorMessage = "Image can not be opened." });
-                    }
-
                 }
                 else
                 {
-                    this.ImageLoadStatus = ImageStatus.Loading;
-                    if (path[0] == '/')
+                    var path = uriSource.IsAbsoluteUri ? uriSource.AbsolutePath : uriSource.ToString();
+                    if (File.Exists(path))
                     {
-                        path = path.Substring(1, path.Length - 1);
+                        // load the image from the local storage
+                        this.Image = BitmapFactory.DecodeFile(path, CreateBitmapOptions());
                     }
-
-                    // try to load the image from Resources
-                    var packageName = Application.Context.PackageName.ToLower();
-                    var resourceName = string.Format("{0}:drawable/{1}", packageName, path.Split('.')[0].ToLower());
-                    var id = Application.Context.Resources.GetIdentifier(resourceName, null, null);
-                    if (id != 0)
+                    else
                     {
-                        try
+                        if (System.IO.Path.IsPathRooted(path))
                         {
-                            var contentPath = string.Format("android.resource://{0}/drawable/{1}", packageName, id);
+                            path = path.Substring(1);
+                        }
+
+                        // try to load the image from Resources
+                        var context = Application.Context;
+                        var resourceName = System.IO.Path.ChangeExtension(path, string.Empty).TrimEnd('.').ToLower();
+                        var id = context.Resources.GetIdentifier(resourceName, "drawable", context.PackageName);
+                        if (id != 0)
+                        {
+                            var contentPath = string.Format("android.resource://{0}/drawable/{1}", context.PackageName, id);
                             var androidUrl = Android.Net.Uri.Parse(contentPath);
-                            using (var imageStream = Application.Context.ContentResolver.OpenInputStream(androidUrl))
+                            using (var imageStream = context.ContentResolver.OpenInputStream(androidUrl))
                             {
                                 this.Image = BitmapFactory.DecodeStream(imageStream, new Rect(), this.CreateBitmapOptions());
                             }
-
-                            this.ImageLoadStatus = ImageStatus.Loaded;
-                            this.ImageOpened(this, new RoutedEventArgs() { OriginalSource = this });
-                            return;
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Debug.WriteLine(e.ToString());
+                            // load the image from Assets
+                            using (var imageStream = context.Assets.Open(path))
+                            {
+                                this.Image = BitmapFactory.DecodeStream(imageStream, new Rect(), this.CreateBitmapOptions());
+                            }
                         }
-                    }
-
-                    // load the image from Assets
-                    try
-                    {
-                        using (var imageStream = Application.Context.Assets.Open(path))
-                        {
-                            this.Image = BitmapFactory.DecodeStream(imageStream, new Rect(), this.CreateBitmapOptions());
-                        }
-
-                        this.ImageLoadStatus = ImageStatus.Loaded;
-                        this.ImageOpened(this, new RoutedEventArgs() { OriginalSource = this });
-                    }
-                    catch (Exception e)
-                    {
-                        this.ImageLoadStatus = ImageStatus.Failed;
-                        this.ImageFailed(this, new ExceptionRoutedEventArgs(e) { ErrorMessage = "Image can not be opened." });
                     }
                 }
+
+                this.ImageLoadStatus = ImageStatus.Loaded;
+                this.ImageOpened?.Invoke(this, new RoutedEventArgs { OriginalSource = this });
+            }
+            catch (Exception e)
+            {
+                this.ImageLoadStatus = ImageStatus.Failed;
+                this.ImageFailed?.Invoke(this, new ExceptionRoutedEventArgs(e) { ErrorMessage = "Image can not be opened." });
             }
         }
 
@@ -164,10 +131,8 @@ namespace Appercode.UI.Controls.Media.Imaging
         {
             if (this.ImageLoadStatus != ImageStatus.Loading)
             {
-                ThreadPool.QueueUserWorkItem((o) =>
-                {
-                    this.DownloadImage();
-                });
+                // TODO: change loading logic to take in account CreateOptions property
+                Task.Run((Action)this.DownloadImage);
             }
         }
     }
