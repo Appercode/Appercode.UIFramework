@@ -23,8 +23,6 @@ namespace Appercode.UI.Controls
 
         private TextAlignment nativeTextAlignment;
 
-        private FontFamily nativeFontFamily;
-
         private Brush nativeForeground;
 
         private string NativeText
@@ -182,42 +180,6 @@ namespace Appercode.UI.Controls
             }
         }
 
-        private FontFamily NativeFontFamily
-        {
-            get
-            {
-                return this.nativeFontFamily;
-            }
-            set
-            {
-                this.nativeFontFamily = value;
-                if (this.NativeUIElement != null)
-                {
-                    if (value == null || string.IsNullOrWhiteSpace(value.Source))
-                    {
-                        this.UpdateFontWeightAndStyle();
-                        return;
-                    }
-                    int ind = value.Source.IndexOf('#');
-                    UIFont f = null;
-                    if (ind == -1)
-                    {
-                        f = UIFont.FromName(value.Source, (nfloat)this.FontSize);
-                    }
-                    else
-                    {
-                        f = UIFont.FromName(value.Source.Substring(ind + 1), (nfloat)this.FontSize);
-                    }
-                    if (f == null)
-                    {
-                        this.UpdateFontWeightAndStyle();
-                        return;
-                    }
-                    (this.NativeUIElement as UILabel).Font = f;
-                }
-            }
-        }
-
         private Thickness NativePadding
         {
             set
@@ -242,7 +204,7 @@ namespace Appercode.UI.Controls
                 this.NativeFontSize = (double)this.GetValue(FontSizeProperty);
                 this.NativeTextAlignment = (TextAlignment)this.GetValue(TextAlignmentProperty);
                 this.NativeTextWrapping = (TextWrapping)this.GetValue(TextWrappingProperty);
-                this.NativeFontFamily = (FontFamily)this.GetValue(FontFamilyProperty);
+                this.ApplyFontFamily(this.FontFamily);
                 this.NativeFontWeight = this.FontWeight;
                 this.NativeFontStyle = this.FontStyle;
                 this.NativeForeground = this.Foreground;
@@ -361,6 +323,36 @@ namespace Appercode.UI.Controls
             else if (this.FontStyle == FontStyles.Italic)
             {
                 (this.NativeUIElement as UILabel).Font = UIFont.ItalicSystemFontOfSize((nfloat)this.FontSize);
+            }
+        }
+
+        partial void ApplyFontFamily(FontFamily value)
+        {
+            if (this.NativeUIElement != null)
+            {
+                var fontName = value?.Source;
+                if (string.IsNullOrWhiteSpace(fontName))
+                {
+                    this.UpdateFontWeightAndStyle();
+                }
+                else
+                {
+                    int ind = fontName.IndexOf('#');
+                    if (ind >= 0)
+                    {
+                        fontName = fontName.Substring(ind + 1);
+                    }
+
+                    var f = UIFont.FromName(fontName, (nfloat)this.FontSize);
+                    if (f == null)
+                    {
+                        this.UpdateFontWeightAndStyle();
+                    }
+                    else
+                    {
+                        ((UILabel)this.NativeUIElement).Font = f;
+                    }
+                }
             }
         }
 

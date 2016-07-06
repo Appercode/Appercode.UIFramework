@@ -19,11 +19,7 @@ namespace Appercode.UI.Controls
                 }));
 
         public static readonly DependencyProperty FontFamilyProperty =
-            DependencyProperty.Register("FontFamily", typeof(FontFamily), typeof(TextBlock), new PropertyMetadata(null, (d, e) =>
-            {
-                ((TextBlock)d).NativeFontFamily = (FontFamily)e.NewValue;
-                ((TextBlock)d).InvalidateMeasure();
-            }));
+            DependencyProperty.Register(nameof(FontFamily), typeof(FontFamily), typeof(TextBlock), new PropertyMetadata(FontFamilyChanged));
 
         public static readonly DependencyProperty FontWeightProperty =
             DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(TextBlock), new PropertyMetadata(FontWeights.Normal, (d, e) =>
@@ -150,5 +146,14 @@ namespace Appercode.UI.Controls
             availableSize.Height -= this.Padding.VerticalThicknessF();
             return base.MeasureContentViewPort(availableSize);
         }
+
+        private static void FontFamilyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var textBlock = (TextBlock)d;
+            textBlock.ApplyFontFamily(e.NewValue as FontFamily);
+            textBlock.InvalidateMeasure();
+        }
+
+        partial void ApplyFontFamily(FontFamily value);
     }
 }

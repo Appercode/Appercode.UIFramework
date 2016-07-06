@@ -1,8 +1,10 @@
+using Android.Graphics;
 using Android.Text;
 using Android.Views;
+using Android.Widget;
+using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 
@@ -10,7 +12,7 @@ namespace Appercode.UI.Controls
 {
     public partial class TextBlock
     {
-        private FontFamily nativeFontFamily;
+        private static readonly Lazy<FontManager> FontLoader = new Lazy<FontManager>();
 
         protected string NativeText
         {
@@ -110,17 +112,7 @@ namespace Appercode.UI.Controls
                 }
             }
         }
-        protected FontFamily NativeFontFamily
-        {
-            get
-            {
-                return this.nativeFontFamily;
-            }
-            set
-            {
-                this.ApplyNativeFontFamily(value);
-            }
-        }
+
         protected Brush NativeForeground
         {
             get
@@ -163,7 +155,7 @@ namespace Appercode.UI.Controls
                 this.ApplyNativeFontWeight(this.FontWeight);
                 this.ApplyNativeFontStyle(this.FontStyle);
                 this.ApplyNativeTextAlignment(this.TextAlignment);
-                this.ApplyNativeFontFamily(this.FontFamily);
+                this.ApplyFontFamily(this.FontFamily);
                 this.ApplyNativeForeground(this.Foreground);
                 this.ApplyNativePadding(this.Padding);
 
@@ -179,335 +171,80 @@ namespace Appercode.UI.Controls
 
         private void ApplyNativeText(string text)
         {
-            ((Android.Widget.TextView)this.NativeUIElement).Text = text != null ? (string)text : string.Empty;
+            ((TextView)this.NativeUIElement).Text = text ?? string.Empty;
         }
+
         private void ApplyNativeFontSize(double fontSize)
         {
-            ((Android.Widget.TextView)this.NativeUIElement).TextSize = (float)fontSize;
+            ((TextView)this.NativeUIElement).TextSize = (float)fontSize;
         }
+
         private void ApplyNativeTextWrapping(TextWrapping textWrapping)
         {
-            if (textWrapping == TextWrapping.Wrap)
-            {
-                ((Android.Widget.TextView)this.NativeUIElement).SetSingleLine(false);
-            }
-            else
-            {
-                ((Android.Widget.TextView)this.NativeUIElement).SetSingleLine(true);
-            }
+            ((TextView)this.NativeUIElement).SetSingleLine(textWrapping != TextWrapping.Wrap);
         }
+
         private void ApplyNativeTextTrimming(TextTrimming textTrimming)
         {
-            if (textTrimming == TextTrimming.WordEllipsis)
-            {
-                ((Android.Widget.TextView)this.NativeUIElement).Ellipsize = TextUtils.TruncateAt.End;
-            }
-            else
-            {
-                ((Android.Widget.TextView)this.NativeUIElement).Ellipsize = null;
-            }
+            ((TextView)this.NativeUIElement).Ellipsize =
+                textTrimming == TextTrimming.WordEllipsis ? TextUtils.TruncateAt.End : null;
         }
+
         private void ApplyNativeFontWeight(FontWeight fontWeight)
         {
+            this.ApplyFont(this.NativeFontStyle, fontWeight);
+        }
+
+        private void ApplyNativeFontStyle(FontStyle fontStyle)
+        {
+            this.ApplyFont(fontStyle, this.NativeFontWeight);
+        }
+
+        private void ApplyFont(FontStyle fontStyle, FontWeight fontWeight)
+        {
+            var isItalic = fontStyle.ToString() == "Italic";
+            var typeface = Typeface.Default;
+            var typefaceStyle = isItalic ? TypefaceStyle.Italic : TypefaceStyle.Normal;
             switch (fontWeight.ToString())
             {
                 case "Black":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                        }
-                        else
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                        }
-                        break;
-                    }
                 case "Bold":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                        }
-                        else
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                        }
-                        break;
-                    }
                 case "ExtraBlack":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                        }
-                        else
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                        }
-                        break;
-                    }
                 case "ExtraBold":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                        }
-                        else
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                        }
-                        break;
-                    }
-                case "ExtraLight":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Italic);
-                        }
-                        else
-                        {
-                            var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Normal);
-                        }
-                        break;
-                    }
-                case "Light":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Italic);
-                        }
-                        else
-                        {
-                            var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Normal);
-                        }
-                        break;
-                    }
                 case "SemiBold":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                        }
-                        else
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                        }
-                        break;
-                    }
+                    typefaceStyle = isItalic ? TypefaceStyle.BoldItalic : TypefaceStyle.Bold;
+                    break;
+                case "ExtraLight":
+                case "Light":
+                    typeface = Typeface.Create("sans-serif-light", TypefaceStyle.Normal);
+                    break;
                 case "Thin":
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            var tf = Android.Graphics.Typeface.Create("sans-serif" + "-thin", Android.Graphics.TypefaceStyle.Normal);
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Italic);
-                        }
-                        else
-                        {
-                            var tf = Android.Graphics.Typeface.Create("sans-serif" + "-thin", Android.Graphics.TypefaceStyle.Normal);
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Normal);
-                        }
-                        break;
-                    }
-                default:
-                    {
-                        if (this.NativeFontStyle != null && this.NativeFontStyle.ToString() == "Italic")
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Italic);
-                        }
-                        else
-                        {
-                            ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Normal);
-                        }
-                        break;
-                    }
+                    typeface = Typeface.Create("sans-serif-thin", TypefaceStyle.Normal);
+                    break;
             }
+
+            ((TextView)this.NativeUIElement).SetTypeface(typeface, typefaceStyle);
         }
-        private void ApplyNativeFontStyle(FontStyle fontStyle)
-        {
-            if (fontStyle.ToString() == "Italic")
-            {
-                if (this.NativeFontWeight != null)
-                {
-                    switch (this.NativeFontWeight.ToString())
-                    {
-                        case "Black":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                                break;
-                            }
-                        case "Bold":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                                break;
-                            }
-                        case "ExtraBlack":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                                break;
-                            }
-                        case "ExtraBold":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                                break;
-                            }
-                        case "ExtraLight":
-                            {
-                                var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Italic);
-                                break;
-                            }
-                        case "Light":
-                            {
-                                var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Italic);
-                                break;
-                            }
-                        case "SemiBold":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.BoldItalic);
-                                break;
-                            }
-                        case "Thin":
-                            {
-                                var tf = Android.Graphics.Typeface.Create("sans-serif" + "-thin", Android.Graphics.TypefaceStyle.Normal);
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Italic);
-                                break;
-                            }
-                        default:
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Italic);
-                                break;
-                            }
-                    }
-                }
-                else
-                {
-                    ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Italic);
-                }
-            }
-            else
-            {
-                if (this.NativeFontWeight != null)
-                {
-                    switch (this.NativeFontWeight.ToString())
-                    {
-                        case "Black":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                                break;
-                            }
-                        case "Bold":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                                break;
-                            }
-                        case "ExtraBlack":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                                break;
-                            }
-                        case "ExtraBold":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                                break;
-                            }
-                        case "ExtraLight":
-                            {
-                                var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Normal);
-                                break;
-                            }
-                        case "Light":
-                            {
-                                var tf = Android.Graphics.Typeface.Create("sans-serif" + "-light", Android.Graphics.TypefaceStyle.Normal);
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Normal);
-                                break;
-                            }
-                        case "SemiBold":
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Bold);
-                                break;
-                            }
-                        case "Thin":
-                            {
-                                var tf = Android.Graphics.Typeface.Create("sans-serif" + "-thin", Android.Graphics.TypefaceStyle.Normal);
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(tf, Android.Graphics.TypefaceStyle.Normal);
-                                break;
-                            }
-                        default:
-                            {
-                                ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Normal);
-                                break;
-                            }
-                    }
-                }
-                else
-                {
-                    ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.Default, Android.Graphics.TypefaceStyle.Normal);
-                }
-            }
-        }
+
         private void ApplyNativeTextAlignment(TextAlignment textAlignment)
         {
+            GravityFlags gravity;
             switch (textAlignment)
             {
-                case Controls.TextAlignment.Center:
-                    {
-                        ((Android.Widget.TextView)this.NativeUIElement).Gravity = GravityFlags.Center;
-                        break;
-                    }
-                case Controls.TextAlignment.Left:
-                    {
-                        ((Android.Widget.TextView)this.NativeUIElement).Gravity = GravityFlags.Left;
-                        break;
-                    }
-                case Controls.TextAlignment.Right:
-                    {
-                        ((Android.Widget.TextView)this.NativeUIElement).Gravity = GravityFlags.Right;
-                        break;
-                    }
+                case TextAlignment.Center:
+                    gravity = GravityFlags.Center;
+                    break;
+                case TextAlignment.Right:
+                    gravity = GravityFlags.Right;
+                    break;
                 default:
-                    {
-                        ((Android.Widget.TextView)this.NativeUIElement).Gravity = GravityFlags.Left;
-                        break;
-                    }
+                    gravity = GravityFlags.Left;
+                    break;
             }
+
+            ((TextView)this.NativeUIElement).Gravity = gravity;
         }
-        private void ApplyNativeFontFamily(FontFamily fontFamily)
-        {
-            if (fontFamily != null)
-            {
-                int indBegin = fontFamily.Source.IndexOf("Assets");
-                int indEnd = fontFamily.Source.IndexOf('#');
-                if (indEnd < 0) indEnd = fontFamily.Source.Length-1;
-                string font = "";
 
-                if (indBegin != -1)
-                {
-                    font = fontFamily.Source.Substring(indBegin + 7, indEnd - 1 - indBegin - 6);
-                    this.nativeFontFamily = new FontFamily(font);
-
-                }
-
-                
-                if (this.NativeUIElement != null)
-                {
-                    try
-                    {
-                        ((Android.Widget.TextView)this.NativeUIElement).SetTypeface(Android.Graphics.Typeface.CreateFromAsset(this.Context.Assets, this.nativeFontFamily.Source), Android.Graphics.TypefaceStyle.Normal);
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.WriteLine(e.ToString());
-                    }
-                }
-            }
-        }
         private void ApplyNativeForeground(Brush foreground)
         {
             if (foreground != null)
@@ -519,14 +256,24 @@ namespace Appercode.UI.Controls
 
                 if (this.NativeUIElement != null)
                 {
-                    Color color = ((SolidColorBrush)foreground).Color;
-                    ((Android.Widget.TextView)this.NativeUIElement).SetTextColor(new Android.Graphics.Color(color.R, color.G, color.B, color.A));
+                    var color = ((SolidColorBrush)foreground).Color;
+                    ((TextView)this.NativeUIElement).SetTextColor(new Android.Graphics.Color(color.R, color.G, color.B, color.A));
                 }
             }
         }
+
         private void ApplyNativePadding(Thickness padding)
         {
-            ((Android.Widget.TextView)this.NativeUIElement).SetPadding((int)padding.Left, (int)padding.Top, (int)padding.Right, (int)padding.Bottom);
+            ((TextView)this.NativeUIElement).SetPadding((int)padding.Left, (int)padding.Top, (int)padding.Right, (int)padding.Bottom);
+        }
+
+        partial void ApplyFontFamily(FontFamily value)
+        {
+            if (value != null && this.NativeUIElement != null)
+            {
+                var font = FontLoader.Value.GetFont(this.Context.Assets, value);
+                ((TextView)this.NativeUIElement).SetTypeface(font, TypefaceStyle.Normal);
+            }
         }
     }
 }

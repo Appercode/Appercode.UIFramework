@@ -120,6 +120,7 @@
     <Compile Include="Controls\Media\AppercodeColors.cs" />
     <Compile Include="Controls\Media\ImageSource.cs" />
     <Compile Include="Controls\Media\TokenizerHelper.cs" />
+    <Compile Include="Controls\NativeControl\FontManager.cs" />
     <Compile Include="Controls\NativeControl\UIElementExtensions.Droid.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrappedListView.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrappedCirclePageIndicator.cs" />

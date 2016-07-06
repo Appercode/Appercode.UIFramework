@@ -1,7 +1,6 @@
-using System;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Markup;
+using System.Windows.Media;
 
 namespace Appercode.UI.Controls
 {
@@ -14,18 +13,16 @@ namespace Appercode.UI.Controls
 
         protected TextWrapping NativeTextWrapping { get; set; }
 
-        protected TextTrimming NativeTextTrimming { get; set; } 
-        
+        protected TextTrimming NativeTextTrimming { get; set; }
+
         protected FontWeight NativeFontWeight { get; set; }
-        
+
         protected FontStyle NativeFontStyle { get; set; }
-        
+
         protected TextAlignment NativeTextAlignment { get; set; }
-        
-        protected FontFamily NativeFontFamily { get; set; }
-        
+
         protected Brush NativeForeground { get; set; }
-        
+
         protected Thickness NativePadding { get; set; }
 
         private static double GetDefaultFontSize()
