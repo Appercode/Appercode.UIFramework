@@ -20,7 +20,7 @@ namespace Appercode.UI.Controls
 
         internal virtual bool IsFocused => false;
 
-        internal virtual bool ShouldInterceptTouchEvent => Tap != null;
+        internal virtual bool ShouldInterceptTouchEvent => false;
 
         internal virtual void OnTap()
         {
