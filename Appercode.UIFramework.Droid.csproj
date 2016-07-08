@@ -197,6 +197,8 @@
     <Compile Include="System.Windows\Expression.cs" />
     <Compile Include="System.Windows\GetReadOnlyValueCallback.cs" />
     <Compile Include="System.Windows\ReadOnlyFrameworkPropertyMetadata.cs" />
+    <Compile Include="System.Windows\Threading\SynchronousDelegateWrapper.cs" />
+    <Compile Include="System.Windows\Threading\DelegateWrapper.cs" />
     <Compile Include="ValueConverterFactory.cs" />
     <Compile Include="Controls\Border.Droid.cs" />
     <Compile Include="Device\GeoCoordinate.cs" />

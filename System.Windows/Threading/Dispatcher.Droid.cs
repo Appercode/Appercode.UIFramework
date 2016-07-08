@@ -1,39 +1,29 @@
 using Android.OS;
-using System.Threading;
 
 namespace System.Windows.Threading
 {
     public sealed partial class Dispatcher
     {
-        /// <summary>
-        /// Invoke in UI thread.
-        /// </summary>
-        public void BeginInvoke(Action a)
+        private static readonly Lazy<Handler> Handler = new Lazy<Handler>(CreateHandler);
+
+        private static Handler CreateHandler()
         {
-            var h = new Handler(Looper.MainLooper);
-            h.Post(a);
+            return new Handler(Looper.MainLooper);
         }
 
-        /// <summary>
-        /// Invoke in UI thread.
-        /// </summary>
-        public void BeginInvoke(Delegate d, params object[] args)
+        partial void NativeBeginInvoke(Action a)
         {
-            var h = new Handler(Looper.MainLooper);
-            h.Post(() => d.DynamicInvoke(args));
+            Handler.Value.Post(a);
         }
 
-        /// <summary>
-        /// Is current thread the UI thread.
-        /// </summary>
-        public bool CheckAccess()
+        partial void NativeInvoke(ref object result, Delegate d, params object[] args)
         {
-            return SynchronizationContext.Current != null;
-        }
-
-        private static object InvokeInternal(Delegate d, object[] args)
-        {
-            throw new NotImplementedException("Synchronous invocation from a non-UI thread is not implemented.");
+            using (var wrapper = new SynchronousDelegateWrapper(d, args))
+            {
+                Handler.Value.Post(wrapper.Invoke);
+                wrapper.Wait();
+                result = wrapper.Result;
+            }
         }
     }
 }

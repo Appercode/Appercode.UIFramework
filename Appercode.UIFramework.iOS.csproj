@@ -384,6 +384,7 @@
     <Compile Include="System.Windows\ReadOnlyFrameworkPropertyMetadata.cs" />
     <Compile Include="System.Windows\RoutedPropertyChangedEventHandler.cs" />
     <Compile Include="System.Windows\Thickness.cs" />
+    <Compile Include="System.Windows\Threading\DelegateWrapper.cs" />
     <Compile Include="System.Windows\Threading\Dispatcher.cs" />
     <Compile Include="System.Windows\Threading\Dispatcher.iOS.cs" />
     <Compile Include="System.Windows\Threading\DispatcherObject.cs" />

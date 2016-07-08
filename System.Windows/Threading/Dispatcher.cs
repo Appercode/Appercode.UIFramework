@@ -95,21 +95,50 @@ namespace System.Windows.Threading
         }
 
         /// <summary>
+        /// Executes the specified <see cref="Action" /> delegate asynchronously on the UI thread.
+        /// </summary>
+        /// <param name="a">An <see cref="Action" /> delegate to execute.</param>
+        public void BeginInvoke(Action a)
+        {
+            this.NativeBeginInvoke(a);
+        }
+
+        /// <summary>
+        /// Executes the specified delegate with the specified arguments asynchronously on the UI thread.
+        /// </summary>
+        /// <param name="d">A delegate to execute.</param>
+        /// <param name="args">Arguments to pass to the delegate.</param>
+        public void BeginInvoke(Delegate d, params object[] args)
+        {
+            this.BeginInvoke(new DelegateWrapper(d, args).Invoke);
+        }
+
+        /// <summary>
+        /// Checks if current thread equals to the UI thread.
+        /// </summary>
+        public bool CheckAccess()
+        {
+            return SynchronizationContext.Current != null;
+        }
+
+        /// <summary>
         /// Executes the specified delegate with the specified arguments synchronously on the UI thread.
         /// <para /> If current thread is the UI thread, the delegate will be executed immediately, otherwise execution will be queued on the UI thread.
         /// </summary>
-        /// <param name="d">Delegate to execute.</param>
+        /// <param name="d">A delegate to execute.</param>
         /// <param name="args">Arguments to pass to the delegate.</param>
         /// <returns>The value returned from the delegate or null if the delegate has no return value.</returns>
         public object Invoke(Delegate d, params object[] args)
         {
-            if (CheckAccess())
+            if (this.CheckAccess())
             {
                 return d.DynamicInvoke(args);
             }
             else
             {
-                return InvokeInternal(d, args);
+                object result = null;
+                this.NativeInvoke(ref result, d, args);
+                return result;
             }
         }
 
@@ -120,5 +149,9 @@ namespace System.Windows.Threading
                 throw new UnauthorizedAccessException("Invalid cross-thread access.");
             }
         }
+
+        partial void NativeBeginInvoke(Action a);
+
+        partial void NativeInvoke(ref object result, Delegate d, params object[] args);
     }
 }
