@@ -1,0 +1,36 @@
+﻿<AppercodePage
+    x:Class="Appercode.Samples.Pages.TestPage"
+    xmlns="http://schemas.appercode.com/2013"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Appercode Samples: Test Page">
+
+  <UIElement.Resources>
+    <Style TargetType="Border">
+      <Setter Property="Background" Value="White" />
+      <Setter Property="BorderBrush" Value="#AAAAAA" />
+      <Setter Property="BorderThickness" Value="0.5" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Margin" Value="0,4" />
+      <Setter Property="Padding" Value="4,2" />
+    </Style>
+    <Style TargetType="TextBlock">
+      <Setter Property="Margin" Value="2,16,0,4" />
+    </Style>
+  </UIElement.Resources>
+
+  <StackPanel Margin="24">
+    <TextBlock Text="First Name" />
+    <TextBox Text="{Binding FirstName, Mode=TwoWay}" />
+    <TextBlock Text="Last Name" />
+    <TextBox Text="{Binding LastName, Mode=TwoWay}" />
+
+    <TextBlock Text="Insurance Carrier" />
+    <Border>
+      <TextBlock Margin="4" Text="{Binding Carrier}">
+        <PickerBase.Picker>
+          <ListPicker ItemsSource="{Binding Carriers}" SelectedValue="{Binding Carrier, Mode=TwoWay}" />
+        </PickerBase.Picker>
+      </TextBlock>
+    </Border>
+  </StackPanel>
+</AppercodePage>
