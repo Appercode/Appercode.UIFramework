@@ -1,10 +1,9 @@
 using Android.Views;
 using Android.Widget;
-using System;
 
 namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    internal class WrappedSeekBar : SeekBar, IJavaFinalizable, View.IOnClickListener
+    internal class WrappedSeekBar : SeekBar, View.IOnClickListener
     {
         private readonly UIElement owner;
 
@@ -16,8 +15,6 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
             this.Orientation = Orientation.Horizontal;
         }
 
-        public event EventHandler JavaFinalized;
-
         public Orientation Orientation { get; set; }
 
         public void OnClick(View v)
@@ -27,7 +24,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
 
         protected override void JavaFinalize()
         {
-            this.JavaFinalized?.Invoke(null, null);
+            this.owner.FreeNativeView(this);
             base.JavaFinalize();
         }
 

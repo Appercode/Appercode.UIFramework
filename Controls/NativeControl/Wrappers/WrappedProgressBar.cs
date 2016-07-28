@@ -1,10 +1,9 @@
 using Android.Util;
 using Android.Views;
-using System;
 
 namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    internal class WrappedProgressBar : Android.Widget.ProgressBar, IJavaFinalizable, View.IOnClickListener
+    internal class WrappedProgressBar : Android.Widget.ProgressBar, View.IOnClickListener
     {
         private readonly UIElement owner;
 
@@ -15,8 +14,6 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
             this.SetOnClickListener(this);
         }
 
-        public event EventHandler JavaFinalized;
-
         public void OnClick(View v)
         {
             this.owner.OnTap();
@@ -24,7 +21,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
 
         protected override void JavaFinalize()
         {
-            this.JavaFinalized?.Invoke(null, null);
+            this.owner.FreeNativeView(this);
             base.JavaFinalize();
         }
     }

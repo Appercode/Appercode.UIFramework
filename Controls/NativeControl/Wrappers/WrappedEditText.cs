@@ -1,11 +1,10 @@
 using Android.Views;
 using Android.Widget;
 using Java.Lang;
-using System;
 
 namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    internal class WrappedEditText : EditText, IJavaFinalizable, View.IOnClickListener
+    internal class WrappedEditText : EditText, View.IOnClickListener
     {
         private readonly UIElement owner;
 
@@ -16,7 +15,6 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
             this.SetOnClickListener(this);
         }
 
-        public event EventHandler JavaFinalized;
         public event RoutedEventHandler NativeSelectionChanged;
 
         public void OnClick(View v)
@@ -43,7 +41,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
 
         protected override void JavaFinalize()
         {
-            this.JavaFinalized?.Invoke(null, null);
+            this.owner.FreeNativeView(this);
             base.JavaFinalize();
         }
     }

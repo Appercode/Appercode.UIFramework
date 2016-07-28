@@ -1,20 +1,19 @@
 using Android.Views;
-using System;
 using ViewPagerIndicator;
 
 namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    internal class WrappedCirclePageIndicator : CirclePageIndicator, IJavaFinalizable
+    internal class WrappedCirclePageIndicator : CirclePageIndicator
     {
+        private readonly UIElement owner;
         private readonly TapDetector tapDetector;
 
         public WrappedCirclePageIndicator(UIElement owner)
             : base(owner.Context)
         {
+            this.owner = owner;
             this.tapDetector = new TapDetector(owner);
         }
-
-        public event EventHandler JavaFinalized;
 
         public override bool OnTouchEvent(MotionEvent e)
         {
@@ -24,7 +23,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
 
         protected override void JavaFinalize()
         {
-            this.JavaFinalized?.Invoke(null, null);
+            this.owner.FreeNativeView(this);
             base.JavaFinalize();
         }
     }

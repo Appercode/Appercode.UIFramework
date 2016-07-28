@@ -1,7 +1,6 @@
 using Android.App;
 using Android.Content;
 using Android.Views;
-using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Device;
 using System;
 using System.Drawing;
@@ -21,13 +20,6 @@ namespace Appercode.UI.Controls
         internal virtual bool IsFocused => false;
 
         internal virtual bool ShouldInterceptTouchEvent => false;
-
-        internal virtual void OnTap()
-        {
-            RaiseTap();
-        }
-
-        internal virtual void OnNativeClick() { }
 
         protected internal virtual double NativeWidth
         {
@@ -84,6 +76,21 @@ namespace Appercode.UI.Controls
                         this.NativeUIElement.Visibility = ViewStates.Visible;
                     }
                 }
+            }
+        }
+
+        internal virtual void OnTap()
+        {
+            RaiseTap();
+        }
+
+        internal virtual void OnNativeClick() { }
+
+        internal void FreeNativeView(View nativeView)
+        {
+            if (this.NativeUIElement == nativeView)
+            {
+                this.NativeUIElement = null;
             }
         }
 
@@ -199,26 +206,6 @@ namespace Appercode.UI.Controls
             this.NativeWidth = this.Width;
             this.NativeHeight = this.Height;
             this.NativeVisibility = this.Visibility;
-
-            if (this.NativeUIElement != null)
-            {
-                ((IJavaFinalizable)this.NativeUIElement).JavaFinalized -= this.UIElement_JavaFinalized;
-                ((IJavaFinalizable)this.NativeUIElement).JavaFinalized += this.UIElement_JavaFinalized;
-            }
-        }
-
-        protected void NativeUIElement_Touch(object sender, View.TouchEventArgs e)
-        {
-            e.Handled = false;
-        }
-
-        private void UIElement_JavaFinalized(object sender, EventArgs e)
-        {
-            if (this.NativeUIElement != null)
-            {
-                ((IJavaFinalizable)this.NativeUIElement).JavaFinalized -= this.UIElement_JavaFinalized;
-                this.NativeUIElement = null;
-            }
         }
     }
 }

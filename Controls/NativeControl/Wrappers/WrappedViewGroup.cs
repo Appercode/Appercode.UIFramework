@@ -1,9 +1,8 @@
 using Android.Views;
-using System;
 
 namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    internal class WrappedViewGroup : ViewGroup, IJavaFinalizable
+    internal class WrappedViewGroup : ViewGroup
     {
         private static LayoutParams layoutParams;
         private readonly UIElement owner;
@@ -16,8 +15,6 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
             this.owner = owner;
             this.tapDetector = new TapDetector(owner);
         }
-
-        public event EventHandler JavaFinalized;
 
         public static bool FillNativeUIElement(UIElement owner)
         {
@@ -59,7 +56,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
 
         protected override void JavaFinalize()
         {
-            this.JavaFinalized?.Invoke(this, EventArgs.Empty);
+            this.owner.FreeNativeView(this);
             base.JavaFinalize();
         }
     }

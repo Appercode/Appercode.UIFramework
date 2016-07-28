@@ -208,7 +208,6 @@
     <Compile Include="Controls\NativeControl\NativeScrollViewer.cs" />
     <Compile Include="Controls\NativeControl\NativeToggleButton.cs" />
     <Compile Include="Controls\NativeControl\RadioButtonDrawableHelper.cs" />
-    <Compile Include="Controls\NativeControl\IJavaFinalizable.cs" />
     <Compile Include="Controls\NativeControl\TapDetector.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrappedEditText.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrappedImageView.cs" />

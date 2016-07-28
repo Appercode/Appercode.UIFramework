@@ -1,10 +1,9 @@
 using Android.Views;
 using Android.Widget;
-using System;
 
 namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    internal class WrappedTextView : TextView, IJavaFinalizable, View.IOnClickListener
+    internal class WrappedTextView : TextView, View.IOnClickListener
     {
         private readonly UIElement owner;
 
@@ -16,8 +15,6 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
             this.SetOnClickListener(this);
         }
 
-        public event EventHandler JavaFinalized;
-
         public void OnClick(View v)
         {
             this.owner.OnTap();
@@ -25,7 +22,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
 
         protected override void JavaFinalize()
         {
-            this.JavaFinalized?.Invoke(null, null);
+            this.owner.FreeNativeView(this);
             base.JavaFinalize();
         }
     }

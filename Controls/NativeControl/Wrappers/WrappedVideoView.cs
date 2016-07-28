@@ -6,7 +6,7 @@ using System;
 
 namespace Appercode.UI.Controls.NativeControl.Wrappers
 {
-    internal class WrappedVideoView : VideoView, IJavaFinalizable, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, View.IOnClickListener
+    internal class WrappedVideoView : VideoView, ISurfaceHolderCallback, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnCompletionListener, View.IOnClickListener
     {
         private readonly UIElement owner;
 
@@ -21,7 +21,6 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
             this.SetOnClickListener(this);
         }
 
-        public event EventHandler JavaFinalized;
         public event EventHandler VideoSizeChanged;
         public new event EventHandler Completion;
         public new event EventHandler Prepared;
@@ -134,7 +133,7 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
 
         protected override void JavaFinalize()
         {
-            this.JavaFinalized?.Invoke(null, null);
+            this.owner.FreeNativeView(this);
             base.JavaFinalize();
         }
 
