@@ -18,6 +18,7 @@ namespace Appercode.UI.Controls
         }
 
         public event EventHandler<BundleEventArgs> Create;
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             return this.page.NativeUIElement;
@@ -35,7 +36,7 @@ namespace Appercode.UI.Controls
             base.OnStop();
         }
 
-        private void HideKeyboard()
+        internal void HideKeyboard()
         {
             var context = page.Context as Activity;
             var focused = context?.CurrentFocus;
