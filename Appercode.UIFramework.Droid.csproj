@@ -154,6 +154,7 @@
     <Compile Include="Controls\Primitives\IconElement.cs" />
     <Compile Include="Controls\Primitives\PickerBase.cs" />
     <Compile Include="Controls\Primitives\PickerBase.Droid.cs" />
+    <Compile Include="Controls\ProgressRing.Droid.cs" />
     <Compile Include="Controls\ProgressRing.cs" />
     <Compile Include="Controls\RangePicker.cs" />
     <Compile Include="Controls\TextChangedEventHandler.cs" />
