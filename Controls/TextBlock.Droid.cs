@@ -5,6 +5,7 @@ using Android.Widget;
 using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Controls.NativeControl.Wrappers;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 
@@ -12,7 +13,7 @@ namespace Appercode.UI.Controls
 {
     public partial class TextBlock
     {
-        private static readonly Lazy<FontManager> FontLoader = new Lazy<FontManager>();
+        private static readonly Lazy<FontManager> FontManager = new Lazy<FontManager>(GetFontManager);
 
         protected string NativeText
         {
@@ -169,6 +170,11 @@ namespace Appercode.UI.Controls
             return t.GetDimensionPixelOffset(0, -1);
         }
 
+        private static FontManager GetFontManager()
+        {
+            return new FontManager(StaticContext.Assets);
+        }
+
         private void ApplyNativeText(string text)
         {
             ((TextView)this.NativeUIElement).Text = text ?? string.Empty;
@@ -267,12 +273,24 @@ namespace Appercode.UI.Controls
             ((TextView)this.NativeUIElement).SetPadding((int)padding.Left, (int)padding.Top, (int)padding.Right, (int)padding.Bottom);
         }
 
+        private async void LoadAndApplyFontFamily(FontFamily value)
+        {
+            try
+            {
+                var font = await FontManager.Value.GetFont(value);
+                ((TextView)this.NativeUIElement).SetTypeface(font, TypefaceStyle.Normal);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"An error occurred during loading of {value} font:{Environment.NewLine}{ex}");
+            }
+        }
+
         partial void ApplyFontFamily(FontFamily value)
         {
             if (value != null && this.NativeUIElement != null)
             {
-                var font = FontLoader.Value.GetFont(this.Context.Assets, value);
-                ((TextView)this.NativeUIElement).SetTypeface(font, TypefaceStyle.Normal);
+                LoadAndApplyFontFamily(value);
             }
         }
     }

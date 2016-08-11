@@ -160,6 +160,7 @@
     <Compile Include="Controls\TextChangedEventHandler.cs" />
     <Compile Include="Controls\RangePicker.Droid.cs" />
     <Compile Include="ControlTemplate.cs" />
+    <Compile Include="Internals\AsyncLazy.cs" />
     <Compile Include="Internals\Helpers\MathF.cs" />
     <Compile Include="Internals\Helpers\ThicknessExtensions.cs" />
     <Compile Include="mono\mcs\class\System.Xaml\System.Windows.Markup\INameScope.cs" />
