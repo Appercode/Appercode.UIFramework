@@ -16,24 +16,6 @@ namespace Appercode.UI.Controls.NativeControl.Wrappers
             this.tapDetector = new TapDetector(owner);
         }
 
-        public static bool FillNativeUIElement(UIElement owner)
-        {
-            if (owner.Parent != null && owner.Context != null && owner.NativeUIElement == null)
-            {
-                owner.NativeUIElement = new WrappedViewGroup(owner)
-                {
-                    LayoutParameters = new LayoutParams(0, 0)
-                    {
-                        Width = double.IsNaN(owner.NativeWidth) ? LayoutParams.WrapContent : (int)owner.NativeWidth,
-                        Height = double.IsNaN(owner.NativeHeight) ? LayoutParams.WrapContent : (int)owner.NativeHeight
-                    }
-                };
-                return true;
-            }
-
-            return false;
-        }
-
         public override bool OnTouchEvent(MotionEvent e)
         {
             this.tapDetector.Detect(e);

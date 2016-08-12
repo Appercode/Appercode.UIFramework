@@ -7,7 +7,11 @@ namespace Appercode.UI.Controls
     {
         protected internal override void NativeInit()
         {
-            WrappedViewGroup.FillNativeUIElement(this);
+            if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
+            {
+                this.NativeUIElement = new WrappedViewGroup(this);
+            }
+
             base.NativeInit();
         }
 

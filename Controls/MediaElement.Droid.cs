@@ -158,9 +158,11 @@ namespace Appercode.UI.Controls
                     nativeView.AddView(this.videoView);
                     this.NativeUIElement = nativeView;
 
+                    var width = this.Width;
+                    var height = this.Height;
                     var layoutParams = new ViewGroup.LayoutParams(
-                        double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeWidth,
-                        double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.MatchParent : (int)this.NativeHeight);
+                        double.IsNaN(width) ? ViewGroup.LayoutParams.MatchParent : (int)width,
+                        double.IsNaN(height) ? ViewGroup.LayoutParams.MatchParent : (int)height);
                     this.NativeUIElement.LayoutParameters = layoutParams;
                     this.videoView.LayoutParameters = layoutParams;
 

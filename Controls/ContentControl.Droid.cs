@@ -17,8 +17,9 @@ namespace Appercode.UI.Controls
 
         protected internal override void NativeInit()
         {
-            if (WrappedViewGroup.FillNativeUIElement(this))
+            if (this.Parent != null && this.Context != null && this.NativeUIElement == null)
             {
+                this.NativeUIElement = new WrappedViewGroup(this);
                 this.ApplyNativeContent(null, this.Content);
             }
 

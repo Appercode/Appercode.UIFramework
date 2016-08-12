@@ -1,14 +1,12 @@
 using CoreGraphics;
 using Foundation;
-using System.Windows;
+using System;
 using UIKit;
 
 namespace Appercode.UI.Controls
 {
     public partial class UIElement
     {
-        private double nativeWidth = double.NaN;
-        private double nativeHeight = double.NaN;
         private UIView nativeUIElement;
         private UIGestureRecognizer touchGestureRecognizer;
 
@@ -49,51 +47,6 @@ namespace Appercode.UI.Controls
                 // NativeUIElement might be null even after initialization,
                 // because the control is not presented by a descendant of UIView.
                 return this.NativeUIElement != null && this.NativeUIElement.IsFirstResponder;
-            }
-        }
-
-        protected double NativeWidth
-        {
-            get
-            {
-                return this.nativeWidth;
-            }
-            set
-            {
-                this.nativeWidth = value;
-                if (this.NativeUIElement != null)
-                {
-                    this.NativeUIElement.InvokeOnMainThread(() =>
-                    {
-                        this.NativeUIElement.Frame = new CGRect(this.NativeUIElement.Frame.X, this.NativeUIElement.Frame.Y, double.IsNaN(value) ? 0f : value, this.NativeUIElement.Frame.Height);
-                    });
-                }
-            }
-        }
-
-        protected double NativeHeight
-        {
-            get
-            {
-                return this.nativeHeight;
-            }
-            set
-            {
-                this.nativeHeight = value;
-                if (this.NativeUIElement != null)
-                {
-                    this.NativeUIElement.InvokeOnMainThread(() =>
-                    {
-                        this.NativeUIElement.Frame = new CGRect(this.NativeUIElement.Frame.X, this.NativeUIElement.Frame.Y, this.NativeUIElement.Frame.Width, double.IsNaN(value) ? 0f : value);
-                    });
-                }
-            }
-        }
-
-        protected Thickness NativeMargin
-        {
-            set
-            {
             }
         }
 
@@ -155,6 +108,33 @@ namespace Appercode.UI.Controls
                 finalRect.Y + margin.TopF(),
                 MathF.Max(0, finalRect.Width - margin.HorizontalThicknessF()),
                 MathF.Max(0, finalRect.Height - margin.VerticalThicknessF()));
+        }
+
+        partial void ApplySize(double? width, double? height)
+        {
+            if (this.NativeUIElement != null)
+            {
+                var isChanged = false;
+                var frame = this.NativeUIElement.Frame;
+                var newWidth = (nfloat)(double.IsNaN(width.Value) ? default(double) : width.Value);
+                if (MathF.AreNotClose(frame.Width, newWidth))
+                {
+                    frame.Width = newWidth;
+                    isChanged = true;
+                }
+
+                var newHeight = (nfloat)(double.IsNaN(height.Value) ? default(double) : height.Value);
+                if (MathF.AreNotClose(frame.Height, newHeight))
+                {
+                    frame.Height = newHeight;
+                    isChanged = true;
+                }
+
+                if (isChanged)
+                {
+                    this.NativeUIElement.Frame = frame;
+                }
+            }
         }
 
         private class TouchRecognizer : UIGestureRecognizer

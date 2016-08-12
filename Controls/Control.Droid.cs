@@ -124,11 +124,10 @@ namespace Appercode.UI.Controls
 
             if (this.Parent != null && this.Context != null)
             {
-                if (this.NativeUIElement is TextView)
+                var textBlock = this.NativeUIElement as TextView;
+                if (textBlock != null)
                 {
-                    var textBlock = (Android.Widget.TextView)this.NativeUIElement;
                     this.ApplyNativeIsEnabled(this.NativeIsEnabled);
-
                     if (this.Foreground != null)
                     {
                         this.ApplyNativeForeground(this.Foreground);
@@ -136,7 +135,6 @@ namespace Appercode.UI.Controls
 
                     this.ApplyNativeFontSize(this.FontSize);
                     this.ApplyNativePadding(this.Padding);
-
                     if (this.FontWeight != null)
                     {
                         this.ApplyNativeFontWeight(this.FontWeight);
@@ -151,10 +149,6 @@ namespace Appercode.UI.Controls
                     {
                         this.ApplyNativeFontFamily(this.FontFamily);
                     }
-
-                    textBlock.LayoutParameters = this.CreateWrapContentLayoutParams();
-
-                    this.NativeUIElement = textBlock;
                 }
 
                 base.NativeInit();
@@ -168,14 +162,6 @@ namespace Appercode.UI.Controls
         {
             var t = Android.App.Application.Context.ObtainStyledAttributes(new int[] { Android.Resource.Attribute.TextSize });
             return t.GetDimensionPixelOffset(0, -1);
-        }
-
-        protected ViewGroup.LayoutParams CreateWrapContentLayoutParams()
-        {
-            var layoutParams = new ViewGroup.LayoutParams(0, 0);
-            layoutParams.Width = double.IsNaN(this.NativeWidth) ? ViewGroup.LayoutParams.WrapContent : (int)this.NativeWidth;
-            layoutParams.Height = double.IsNaN(this.NativeHeight) ? ViewGroup.LayoutParams.WrapContent : (int)this.NativeHeight;
-            return layoutParams;
         }
 
         protected virtual bool InternalFocus()

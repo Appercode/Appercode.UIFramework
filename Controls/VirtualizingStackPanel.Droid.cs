@@ -10,38 +10,9 @@ namespace Appercode.UI.Controls
 {
     public partial class VirtualizingStackPanel
     {
-        protected internal override double NativeWidth
+        internal override ViewGroup.LayoutParams GetDefaultLayoutParameters()
         {
-            get
-            {
-                return base.NativeWidth;
-            }
-            protected set
-            {
-                if (this.NativeUIElement != null)
-                {
-                    var oldParams = this.NativeUIElement.LayoutParameters ?? new AbsListView.LayoutParams(0, 0);
-                    oldParams.Width = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
-                    this.NativeUIElement.LayoutParameters = new AbsListView.LayoutParams(oldParams);
-                }
-            }
-        }
-
-        protected internal override double NativeHeight
-        {
-            get
-            {
-                return base.NativeHeight;
-            }
-            protected set
-            {
-                if (this.NativeUIElement != null)
-                {
-                    var oldParams = this.NativeUIElement.LayoutParameters ?? new AbsListView.LayoutParams(0, 0);
-                    oldParams.Height = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
-                    this.NativeUIElement.LayoutParameters = new AbsListView.LayoutParams(oldParams);
-                }
-            }
+            return new AbsListView.LayoutParams(0, 0);
         }
 
         protected internal override void NativeInit()

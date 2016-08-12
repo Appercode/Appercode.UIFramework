@@ -44,24 +44,14 @@ namespace Appercode.UI.Controls
         /// <summary>
         /// Identifies the <seealso cref="Height"/> dependency property. 
         /// </summary>
-        public static readonly DependencyProperty HeightProperty =
-            DependencyProperty.Register("Height", typeof(double), typeof(UIElement), new PropertyMetadata(double.NaN, (d, e) =>
-            {
-                var uiEl = (UIElement)d;
-                uiEl.NativeHeight = (double)e.NewValue;
-                uiEl.InvalidateMeasure();
-            }));
+        public static readonly DependencyProperty HeightProperty = DependencyProperty.Register(
+            nameof(Height), typeof(double), typeof(UIElement), new PropertyMetadata(double.NaN, OnSizePropertyChanged));
 
         /// <summary>
         /// Identifies the <seealso cref="Width"/> dependency property. 
         /// </summary>
-        public static readonly DependencyProperty WidthProperty =
-            DependencyProperty.Register("Width", typeof(double), typeof(UIElement), new PropertyMetadata(double.NaN, (d, e) =>
-            {
-                var uiEl = (UIElement)d;
-                uiEl.NativeWidth = (double)e.NewValue;
-                uiEl.InvalidateMeasure();
-            }));
+        public static readonly DependencyProperty WidthProperty = DependencyProperty.Register(
+            nameof(Width), typeof(double), typeof(UIElement), new PropertyMetadata(double.NaN, OnSizePropertyChanged));
 
         /// <summary>
         /// Identifies the <seealso cref="Margin"/> dependency property. 
@@ -114,42 +104,26 @@ namespace Appercode.UI.Controls
         /// <summary>
         /// Identifies the <seealso cref="MaxWidth"/> dependency property. 
         /// </summary>
-        public static readonly DependencyProperty MaxWidthProperty =
-            DependencyProperty.Register("MaxWidth", typeof(double), typeof(UIElement), new PropertyMetadata(double.PositiveInfinity, (d, e) =>
-                {
-                    var uiEl = (UIElement)d;
-                    uiEl.InvalidateMeasure();
-                }));
+        public static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Register(
+            nameof(MaxWidth), typeof(double), typeof(UIElement), new PropertyMetadata(double.PositiveInfinity, OnSizePropertyChanged));
 
         /// <summary>
         /// Identifies the <seealso cref="MaxHeight"/> dependency property. 
         /// </summary>
-        public static readonly DependencyProperty MaxHeightProperty =
-            DependencyProperty.Register("MaxHeight", typeof(double), typeof(UIElement), new PropertyMetadata(double.PositiveInfinity, (d, e) =>
-            {
-                var uiEl = (UIElement)d;
-                uiEl.InvalidateMeasure();
-            }));
+        public static readonly DependencyProperty MaxHeightProperty = DependencyProperty.Register(
+            nameof(MaxHeight), typeof(double), typeof(UIElement), new PropertyMetadata(double.PositiveInfinity, OnSizePropertyChanged));
 
         /// <summary>
         /// Identifies the <seealso cref="MinWidth"/> dependency property. 
         /// </summary>
-        public static readonly DependencyProperty MinWidthProperty =
-            DependencyProperty.Register("MinWidth", typeof(double), typeof(UIElement), new PropertyMetadata(0.0, (d, e) =>
-            {
-                var uiEl = (UIElement)d;
-                uiEl.InvalidateMeasure();
-            }));
+        public static readonly DependencyProperty MinWidthProperty = DependencyProperty.Register(
+            nameof(MinWidth), typeof(double), typeof(UIElement), new PropertyMetadata(default(double), OnSizePropertyChanged));
 
         /// <summary>
         /// Identifies the <seealso cref="MinHeight"/> dependency property. 
         /// </summary>
-        public static readonly DependencyProperty MinHeightProperty =
-            DependencyProperty.Register("MinHeight", typeof(double), typeof(UIElement), new PropertyMetadata(0.0, (d, e) =>
-            {
-                var uiEl = (UIElement)d;
-                uiEl.InvalidateMeasure();
-            }));
+        public static readonly DependencyProperty MinHeightProperty = DependencyProperty.Register(
+            nameof(MinHeight), typeof(double), typeof(UIElement), new PropertyMetadata(default(double), OnSizePropertyChanged));
 
         /// <summary>
         /// Identifies the <seealso cref="Style"/> dependency property. 
@@ -873,17 +847,35 @@ namespace Appercode.UI.Controls
             }
         }
 
+        private static void OnSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var element = (UIElement)d;
+            if (element != null && e.NewValue is double)
+            {
+                if (e.Property == WidthProperty)
+                {
+                    element.ApplySize((double)e.NewValue, null);
+                }
+                else if (e.Property == HeightProperty)
+                {
+                    element.ApplySize(null, (double)e.NewValue);
+                }
+
+                element.InvalidateMeasure();
+            }
+        }
+
         private static void OnStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var uiElement = d as UIElement;
             if (uiElement != null)
-        {
+            {
                 uiElement.styleCache = e.NewValue as Style;
                 if (uiElement.NativeUIElement != null)
-            {
-                uiElement.NativeInit();
+                {
+                    uiElement.NativeInit();
+                }
             }
-        }
         }
 
         private static object GetActualHeight(DependencyObject d, out BaseValueSourceInternal source)
@@ -997,5 +989,7 @@ namespace Appercode.UI.Controls
                 currentElement = currentElement.Parent;
             }
         }
+
+        partial void ApplySize(double? width, double? height);
     }
 }

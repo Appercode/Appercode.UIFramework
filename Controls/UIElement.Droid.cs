@@ -21,40 +21,6 @@ namespace Appercode.UI.Controls
 
         internal virtual bool ShouldInterceptTouchEvent => false;
 
-        protected internal virtual double NativeWidth
-        {
-            get
-            {
-                return this.Width;
-            }
-            protected set
-            {
-                if (this.NativeUIElement != null)
-                {
-                    var oldParams = this.NativeUIElement.LayoutParameters ?? new ViewGroup.LayoutParams(0, 0);
-                    oldParams.Width = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
-                    this.NativeUIElement.LayoutParameters = new ViewGroup.LayoutParams(oldParams);
-                }
-            }
-        }
-
-        protected internal virtual double NativeHeight
-        {
-            get
-            {
-                return this.Height;
-            }
-            protected set
-            {
-                if (this.NativeUIElement != null)
-                {
-                    var oldParams = this.NativeUIElement.LayoutParameters ?? new ViewGroup.LayoutParams(0, 0);
-                    oldParams.Height = double.IsNaN(value) ? ViewGroup.LayoutParams.WrapContent : (int)ScreenProperties.ConvertDPIToPixels((float)value);
-                    this.NativeUIElement.LayoutParameters = new ViewGroup.LayoutParams(oldParams);
-                }
-            }
-        }
-
         protected Visibility NativeVisibility
         {
             get
@@ -77,6 +43,11 @@ namespace Appercode.UI.Controls
                     }
                 }
             }
+        }
+
+        internal virtual ViewGroup.LayoutParams GetDefaultLayoutParameters()
+        {
+            return new ViewGroup.LayoutParams(0, 0);
         }
 
         internal virtual void OnTap()
@@ -203,9 +174,56 @@ namespace Appercode.UI.Controls
 
         protected internal virtual void NativeInit()
         {
-            this.NativeWidth = this.Width;
-            this.NativeHeight = this.Height;
+            this.ApplySize(this.Width, this.Height);
             this.NativeVisibility = this.Visibility;
+        }
+
+        partial void ApplySize(double? width, double? height)
+        {
+            if (this.NativeUIElement != null)
+            {
+                var oldParams = this.NativeUIElement.LayoutParameters;
+                var isChanged = oldParams == null;
+                var currentWidth = default(int);
+                var currentHeight = default(int);
+                if (oldParams != null)
+                {
+                    currentWidth = oldParams.Width;
+                    currentHeight = oldParams.Height;
+                }
+
+                if (width.HasValue)
+                {
+                    var newWidth = double.IsNaN(width.Value)
+                        ? ViewGroup.LayoutParams.WrapContent
+                        : (int)ScreenProperties.ConvertDPIToPixels((float)width);
+                    if (currentWidth != newWidth)
+                    {
+                        currentWidth = newWidth;
+                        isChanged = true;
+                    }
+                }
+
+                if (height.HasValue)
+                {
+                    var newHeight = double.IsNaN(height.Value)
+                       ? ViewGroup.LayoutParams.WrapContent
+                       : (int)ScreenProperties.ConvertDPIToPixels((float)height);
+                    if (currentHeight != newHeight)
+                    {
+                        currentHeight = newHeight;
+                        isChanged = true;
+                    }
+                }
+
+                if (isChanged)
+                {
+                    var newParams = this.GetDefaultLayoutParameters();
+                    newParams.Width = currentWidth;
+                    newParams.Height = currentHeight;
+                    this.NativeUIElement.LayoutParameters = newParams;
+                }
+            }
         }
     }
 }
