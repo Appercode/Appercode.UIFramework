@@ -8,8 +8,6 @@ namespace Appercode.UI.Controls
 {
     public partial class DatePicker
     {
-        private PickerView pickerView;
-
         protected internal override void NativeInit()
         {
             if (this.NativeUIElement == null)
@@ -23,15 +21,6 @@ namespace Appercode.UI.Controls
         private static NSDate ConvertDate(DateTimeOffset value)
         {
             return (NSDate)value.LocalDateTime.Date;
-        }
-
-        partial void AddPickerView()
-        {
-            if (this.pickerView == null)
-            {
-                this.pickerView = new PickerView(this);
-                this.pickerPresenter.Content = pickerView;
-            }
         }
 
         partial void ApplyDate(DateTimeOffset value)
@@ -57,15 +46,9 @@ namespace Appercode.UI.Controls
             }
         }
 
-        private class PickerView : UIElement
+        private partial class PickerView
         {
             private const float DefaultHeight = 162f;
-            private readonly DatePicker parent;
-
-            internal PickerView(DatePicker parent)
-            {
-                this.parent = parent;
-            }
 
             internal UIDatePicker NativePicker
             {

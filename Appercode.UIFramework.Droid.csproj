@@ -71,6 +71,7 @@
     <Compile Include="Controls\CommandBar.cs" />
     <Compile Include="Controls\CommandBarElementCollection.cs" />
     <Compile Include="Controls\DatePicker.cs" />
+    <Compile Include="Controls\DatePicker.Droid.cs" />
     <Compile Include="Controls\FontWeight.cs" />
     <Compile Include="Controls\ICommandBarElement.cs" />
     <Compile Include="Controls\IPivotItemProvider.cs" />

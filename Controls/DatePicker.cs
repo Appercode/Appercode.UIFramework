@@ -21,6 +21,7 @@ namespace Appercode.UI.Controls
 
         private ContentPresenter pickerPresenter;
         private Button mainButton;
+        private PickerView pickerView;
 
         static DatePicker()
         {
@@ -171,7 +172,12 @@ namespace Appercode.UI.Controls
         {
             if (this.pickerPresenter != null)
             {
-                this.AddPickerView();
+                if (this.pickerView == null)
+                {
+                    this.pickerView = new PickerView(this);
+                    this.pickerPresenter.Content = pickerView;
+                }
+
                 if (this.pickerPresenter.Visibility == Visibility.Collapsed)
                 {
                     this.ShowPicker();
@@ -193,12 +199,20 @@ namespace Appercode.UI.Controls
             this.pickerPresenter.Visibility = Visibility.Collapsed;
         }
 
-        partial void AddPickerView();
-
         partial void ApplyDate(DateTimeOffset value);
 
         partial void ApplyMaxYear(DateTimeOffset value);
 
         partial void ApplyMinYear(DateTimeOffset value);
+
+        private partial class PickerView : UIElement
+        {
+            private readonly DatePicker parent;
+
+            internal PickerView(DatePicker parent)
+            {
+                this.parent = parent;
+            }
+        }
     }
 }
