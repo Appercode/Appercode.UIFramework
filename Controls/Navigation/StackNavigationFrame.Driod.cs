@@ -34,7 +34,8 @@ namespace Appercode.UI.Controls.Navigation
     [Activity(Label = "Appercode", ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden)]
     public partial class StackNavigationFrame : Activity
     {
-        protected int fragmentPageFrameLayoutResourceId = 1;
+        private const string DialogFragmentTag = "DialogFragment";
+        private const int FragmentPageFrameLayoutResourceId = 1;
 
         public StackNavigationFrame(IntPtr javaReference, JniHandleOwnership transfer)
             : base(javaReference, transfer)
@@ -72,7 +73,7 @@ namespace Appercode.UI.Controls.Navigation
         {
             base.OnCreate(bundle);
             var rootLayout = new RootLayout(this);
-            var frgmCont = new FrameLayout(this) { Id = this.fragmentPageFrameLayoutResourceId };
+            var frgmCont = new FrameLayout(this) { Id = FragmentPageFrameLayoutResourceId };
             rootLayout.AddView(frgmCont, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
             rootLayout.SizeChanged +=
                 (s, e) =>
@@ -93,10 +94,28 @@ namespace Appercode.UI.Controls.Navigation
 
         private void NativeShowPage(AppercodePage page, NavigationMode mode, NavigationType navigationType)
         {
-            this.Title = page.Title;
-            var transaction = this.FragmentManager.BeginTransaction();
-            transaction.Replace(this.fragmentPageFrameLayoutResourceId, page.NativeFragment);
-            transaction.Commit();
+            if (navigationType == NavigationType.Modal)
+            {
+                if (mode == NavigationMode.Back)
+                {
+                    var fragment = this.FragmentManager.FindFragmentByTag<DialogFragment>(DialogFragmentTag);
+                    fragment.Dismiss();
+                }
+                else
+                {
+                    var fragment = (DialogFragment)page.NativeFragment;
+                    fragment.Show(this.FragmentManager, DialogFragmentTag);
+                }
+            }
+            else
+            {
+                this.Title = page.Title;
+                var transaction = this.FragmentManager.BeginTransaction();
+                transaction.Replace(FragmentPageFrameLayoutResourceId, page.NativeFragment);
+                transaction.SetTransition(
+                    mode == NavigationMode.Back ? FragmentTransit.FragmentClose : FragmentTransit.FragmentOpen);
+                transaction.Commit();
+            }
         }
 
         private void NativeCloseApplication()

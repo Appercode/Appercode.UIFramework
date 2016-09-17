@@ -265,6 +265,7 @@ namespace Appercode.UI.Controls.Navigation
             }
 
             var pageInstance = PageFactory.InstantiatePage(sourcePageType, ref this.isNavigationInProgress);
+            pageInstance.SetNavigationType(navigationType);
             pageInstance.NavigationService = this.NavigationService;
             this.visualRoot.Child = pageInstance;
             this.NativeShowPage(pageInstance, NavigationMode.New, navigationType);

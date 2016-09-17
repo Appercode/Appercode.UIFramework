@@ -1,3 +1,4 @@
+using Appercode.UI.Controls.Navigation;
 using System.Windows;
 
 namespace Appercode.UI.Controls
@@ -35,5 +36,12 @@ namespace Appercode.UI.Controls
             get { return (SupportedPageOrientation)this.GetValue(SupportedOrientationsProperty); }
             set { this.SetValue(SupportedOrientationsProperty, value); }
         }
+
+        internal void SetNavigationType(NavigationType navigationType)
+        {
+            this.ApplyNavigationType(navigationType);
+        }
+
+        partial void ApplyNavigationType(NavigationType navigationType);
     }
 }

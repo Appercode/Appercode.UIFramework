@@ -122,6 +122,8 @@
     <Compile Include="Controls\Media\ImageSource.cs" />
     <Compile Include="Controls\Media\TokenizerHelper.cs" />
     <Compile Include="Controls\NativeControl\FontManager.cs" />
+    <Compile Include="Controls\NativeControl\NativeDialogFragment.cs" />
+    <Compile Include="Controls\NativeControl\NativeFragment.cs" />
     <Compile Include="Controls\NativeControl\UIElementExtensions.Droid.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrappedListView.cs" />
     <Compile Include="Controls\NativeControl\Wrappers\WrappedCirclePageIndicator.cs" />
@@ -206,7 +208,6 @@
     <Compile Include="Controls\Border.Droid.cs" />
     <Compile Include="Device\GeoCoordinate.cs" />
     <Compile Include="Controls\Media\Imaging\DownloadProgressEventArgs.cs" />
-    <Compile Include="Controls\NativeAppercodeFragment.cs" />
     <Compile Include="Controls\NativeControl\CheckBoxDrawableHelper.cs" />
     <Compile Include="Controls\NativeControl\NativeScrollViewer.cs" />
     <Compile Include="Controls\NativeControl\NativeToggleButton.cs" />

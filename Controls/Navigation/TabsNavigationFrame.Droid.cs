@@ -198,7 +198,7 @@ namespace Appercode.UI.Controls.Navigation
             transaction.SetCustomAnimations(Resource.Animation.fadein, Resource.Animation.fadeout, Resource.Animation.fadein, Resource.Animation.fadeout);
             transaction.Replace(this.fragmentPageFrameLayoutResourceId, page.NativeFragment);
 
-            page.NativeFragment.Create += (s, e) =>
+            page.Create += (s, e) =>
             {
                 if (mode == NavigationMode.New && !isTabSwitching)
                 {
