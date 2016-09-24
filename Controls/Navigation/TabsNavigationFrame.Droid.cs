@@ -84,7 +84,6 @@ namespace Appercode.UI.Controls.Navigation
             frameLayout = new FrameLayout(this);
             frameLayout.Id = this.fragmentPageFrameLayoutResourceId;
             frameLayout.Visibility = ViewStates.Gone;
-            this.rootLayout.SizeChanged += (s, e) => UpdateRootLayouts();
             this.pagerPage.ViewPager.LayoutChange += ViewPagerLayotChange;
             this.pagerPage.ViewPager.PageSelected += Pager_PageSelected;
 
@@ -300,6 +299,26 @@ namespace Appercode.UI.Controls.Navigation
                 keyboardShown = keyboardShown == true ? !keyboardShown : true;
                 prevoiusDiff = diff;
                 UpdateRootLayouts();
+            }
+        }
+
+        private class RootLayout : RelativeLayout
+        {
+            private readonly TabsNavigationFrame frame;
+
+            public RootLayout(TabsNavigationFrame frame)
+                : base(frame)
+            {
+                this.frame = frame;
+            }
+
+            protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
+            {
+                base.OnSizeChanged(w, h, oldw, oldh);
+                if (h != 0 && w != 0 && (oldh != h || oldw != w))
+                {
+                    this.frame.UpdateRootLayouts();
+                }
             }
         }
     }

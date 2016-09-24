@@ -16,6 +16,7 @@ namespace Appercode.UI.Controls.Native
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+            this.Dialog.Window.DecorView.LayoutChange += this.OnLayoutChanged;
             return this.page.NativeUIElement;
         }
 
@@ -26,10 +27,27 @@ namespace Appercode.UI.Controls.Native
             base.OnCreate(savedInstanceState);
         }
 
+        public override void Dismiss()
+        {
+            this.Dialog.Window.DecorView.LayoutChange -= this.OnLayoutChanged;
+            base.Dismiss();
+        }
+
         public override void OnStop()
         {
             this.page.HideKeyboard();
             base.OnStop();
+        }
+
+        private void OnLayoutChanged(object sender, View.LayoutChangeEventArgs e)
+        {
+            var width = e.Right - e.Left;
+            var height = e.Bottom - e.Top;
+            if (width != e.OldRight - e.OldLeft
+                || height != e.OldBottom - e.OldTop)
+            {
+                this.page.ApplyPageSize(width, height);
+            }
         }
     }
 }

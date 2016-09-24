@@ -4,8 +4,12 @@ using Android.Views.InputMethods;
 using Appercode.UI.Controls.Native;
 using Appercode.UI.Controls.NativeControl;
 using Appercode.UI.Controls.Navigation;
+using Appercode.UI.Device;
 using Appercode.UI.Input;
 using System;
+using System.Drawing;
+using Android.Views;
+using Android.Widget;
 
 namespace Appercode.UI.Controls
 {
@@ -30,6 +34,17 @@ namespace Appercode.UI.Controls
             {
                 var inputManager = (InputMethodManager)this.Context.GetSystemService(Android.Content.Context.InputMethodService);
                 inputManager.HideSoftInputFromWindow(focused.WindowToken, HideSoftInputFlags.None);
+            }
+        }
+
+        internal void ApplyPageSize(int pageWidth, int pageHeight)
+        {
+            var pageSize = new SizeF(
+                ScreenProperties.ConvertPixelsToDPI(pageWidth),
+                ScreenProperties.ConvertPixelsToDPI(pageHeight));
+            if (pageSize.IsEmpty == false)
+            {
+                AppercodeVisualRoot.Instance.Arrange(new RectangleF(PointF.Empty, pageSize));
             }
         }
 
