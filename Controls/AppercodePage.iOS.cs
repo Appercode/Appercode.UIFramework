@@ -106,7 +106,7 @@ namespace Appercode.UI.Controls
                         var visualRoot = AppercodeVisualRoot.Instance;
                         if (visualRoot.Child == this.parentPage)
                         {
-                            visualRoot.Arrange(visualRoot.CurrentRect);
+                            visualRoot.Arrange();
                         }
                     }
                 }

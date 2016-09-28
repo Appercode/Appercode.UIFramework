@@ -55,12 +55,7 @@ namespace Appercode.UI.Controls.Navigation
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-
-            if (this.pagerPage == null)
-            {
-                this.pagerPage = new ViewPagerPage() { FragmentManager = this.FragmentManager };
-                this.visualRoot.Child = pagerPage;
-            }
+            this.EnsurePagerPage();
 
             // this will start Navigation to first tab
             this.ActionBar.NavigationMode = ActionBarNavigationMode.Tabs;
@@ -134,9 +129,9 @@ namespace Appercode.UI.Controls.Navigation
                     {
                         androidTab.SetText("  " + tab.Title);
                     }
+
                     if (tab.Icon != null)
                     {
-
                         if (tab.Icon.ImageLoadStatus == Media.ImageStatus.Loaded)
                         {
                             androidTab.SetIcon(new BitmapDrawable(tab.Icon.GetBitmap()));
@@ -149,11 +144,7 @@ namespace Appercode.UI.Controls.Navigation
 
                     androidTab.TabSelected += TabSelected;
                     this.ActionBar.AddTab(androidTab, e.NewStartingIndex);
-                    if (this.pagerPage == null)
-                    {
-                        this.pagerPage = new ViewPagerPage { FragmentManager = this.FragmentManager };
-                        this.visualRoot.Child = pagerPage;
-                    }
+                    this.EnsurePagerPage();
 
                     var page = PageFactory.InstantiatePage(tab.PageType, ref this.isNavigationInProgress);
                     page.NavigationService = this.navigationService;
@@ -165,6 +156,16 @@ namespace Appercode.UI.Controls.Navigation
                     break;
                 default:
                     throw new InvalidEnumArgumentException();
+            }
+        }
+
+        private void EnsurePagerPage()
+        {
+            if (this.pagerPage == null)
+            {
+                this.pagerPage = new ViewPagerPage { FragmentManager = this.FragmentManager };
+                this.visualRoot.Child = this.pagerPage;
+                this.visualRoot.Arrange();
             }
         }
 
@@ -189,8 +190,8 @@ namespace Appercode.UI.Controls.Navigation
         private void NativeShowPage(AppercodePage page, NavigationMode mode, bool isTabSwitching)
         {
             this.Title = page.Title;
-
             this.visualRoot.Child = page;
+            this.visualRoot.Arrange();
 
             frameLayout.Visibility = ViewStates.Visible;
             var transaction = this.FragmentManager.BeginTransaction();

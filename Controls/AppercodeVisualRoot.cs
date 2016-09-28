@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 #if __IOS__
 using RectangleF = CoreGraphics.CGRect;
@@ -12,13 +9,10 @@ using System.Drawing;
 namespace Appercode.UI.Controls
 {
     /// <summary>
-    /// Internal class for VisualRoot (AppercodePage Parent) 
+    /// Internal class for VisualRoot (AppercodePage Parent)
     /// </summary>
     internal class AppercodeVisualRoot : UIElement
     {
-        internal RectangleF CurrentRect = new RectangleF();
-
-        private static AppercodeVisualRoot instance;
         private AppercodePage child;
         private bool isRearrangeScheduled;
 
@@ -26,17 +20,7 @@ namespace Appercode.UI.Controls
         {
         }
 
-        public static AppercodeVisualRoot Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new AppercodeVisualRoot();
-                }
-                return instance;
-            }
-        }
+        public static AppercodeVisualRoot Instance { get; } = new AppercodeVisualRoot();
 
         public AppercodePage Child
         {
@@ -46,27 +30,28 @@ namespace Appercode.UI.Controls
             }
             set
             {
-                if (this.child == value)
+                if (this.child != value)
                 {
-                    return;
-                }
-                if (this.child != null)
-                {
-                    this.RemoveLogicalChild(this.child);
-                    this.child.LayoutUpdated -= this.Child_LayoutUpdated;
-                }
+                    if (this.child != null)
+                    {
+                        this.RemoveLogicalChild(this.child);
+                        this.child.LayoutUpdated -= this.OnChildLayoutUpdated;
+                    }
 
-                this.child = value;
-                if (this.child == null)
-                    return;
-                this.child.LayoutUpdated += this.Child_LayoutUpdated;
-                this.AddLogicalChild(this.child);
+                    this.child = value;
+                    if (value != null)
+                    {
+                        value.LayoutUpdated += this.OnChildLayoutUpdated;
+                        this.AddLogicalChild(value);
 
-                // first of all apply values from style, arrange goes next 
-                this.UpdateVisualTreeProperties();
-                this.Arrange(this.CurrentRect);
+                        // first of all apply values from style, arrange should be called after that
+                        UpdateProperties(this.child);
+                    }
+                }
             }
         }
+
+        internal RectangleF CurrentRect { get; private set; }
 
         public override void Arrange(RectangleF finalRect)
         {
@@ -74,59 +59,54 @@ namespace Appercode.UI.Controls
 
             if (!finalRect.IsEmpty && this.child != null)
             {
-                this.Child.MeasureOverride(finalRect.Size);
-                this.Child.Arrange(finalRect);
+                this.child.MeasureOverride(finalRect.Size);
+                this.child.Arrange(finalRect);
             }
         }
 
-        internal void UpdateVisualTreeProperties()
+        internal void Arrange()
         {
-            this.UpdateProperties(this.child);
+            this.Arrange(this.CurrentRect);
         }
 
-        private void Child_LayoutUpdated(object sender, EventArgs e)
-        {
-            this.ScheduleReArrangeIfNeeded();
-        }
-
-        private void ScheduleReArrangeIfNeeded()
-        {
-            if (this.isRearrangeScheduled)
-            {
-                return;
-            }
-
-            this.isRearrangeScheduled = true;
-
-            this.Dispatcher.BeginInvoke(
-                delegate
-                {
-                    try
-                    {
-                        if (!this.CurrentRect.IsEmpty)
-                        {
-                            this.Arrange(this.CurrentRect);
-                        }
-                    }
-                    finally
-                    {
-                        this.isRearrangeScheduled = false;
-                    }
-                });
-        }
-
-        private void UpdateProperties(UIElement child)
+        private static void UpdateProperties(UIElement child)
         {
             child.NativeInit();
             var children = LogicalTreeHelper.GetChildren(child);
             foreach (var item in children)
             {
-                if (item is UIElement)
+                var childElement = item as UIElement;
+                if (childElement != null)
                 {
-                    this.UpdateProperties((UIElement)item);
+                    UpdateProperties(childElement);
                 }
             }
+
             child.OnLoaded();
+        }
+
+        private void OnChildLayoutUpdated(object sender, EventArgs e)
+        {
+            if (this.isRearrangeScheduled == false)
+            {
+                this.isRearrangeScheduled = true;
+                this.Dispatcher.BeginInvoke(this.Rearrange);
+            }
+        }
+
+        private void Rearrange()
+        {
+            try
+            {
+                if (this.CurrentRect.IsEmpty == false)
+                {
+                    this.Arrange();
+                }
+            }
+            finally
+            {
+                this.isRearrangeScheduled = false;
+            }
         }
     }
 }

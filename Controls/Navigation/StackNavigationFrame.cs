@@ -269,6 +269,7 @@ namespace Appercode.UI.Controls.Navigation
             pageInstance.NavigationService = this.NavigationService;
             this.visualRoot.Child = pageInstance;
             this.NativeShowPage(pageInstance, NavigationMode.New, navigationType);
+            this.visualRoot.Arrange();
             this.modalIsDisplayed |= navigationType == NavigationType.Modal;
 
             // navigated to
@@ -300,6 +301,7 @@ namespace Appercode.UI.Controls.Navigation
             // navigation
             this.visualRoot.Child = previousPage;
             this.NativeShowPage(previousPage, NavigationMode.Back, this.modalIsDisplayed ? NavigationType.Modal : NavigationType.Default);
+            this.visualRoot.Arrange();
             this.modalIsDisplayed = false;
             this.CurrentPage = previousPage;
 

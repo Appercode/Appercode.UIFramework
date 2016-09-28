@@ -56,6 +56,7 @@ namespace Appercode.UI.Controls.Navigation
             }
             this.CurrentPage = this.navigationStacks[this.currentTabIndex].CurrentPage;
             this.visualRoot.Child = this.CurrentPage;
+            this.visualRoot.Arrange();
         }
 
         private void OnTabBadgeChanged(object sender, EventArgs e)
@@ -81,6 +82,7 @@ namespace Appercode.UI.Controls.Navigation
 
             this.CurrentPage = this.navigationStacks[this.currentTabIndex].CurrentPage;
             this.visualRoot.Child = this.CurrentPage;
+            this.visualRoot.Arrange();
         }
 
         private void NativeSetBage(int index, string value)
